@@ -1,1 +1,1 @@
-ClangSharpPInvokeGenerator @lvgl.rsp
+dotnet ClangSharpPInvokeGenerator  @lvgl.rsp

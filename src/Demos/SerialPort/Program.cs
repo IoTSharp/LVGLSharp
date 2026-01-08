@@ -164,8 +164,16 @@ unsafe class Program
     static void RefSerialPort()
     {
         serialPorts = SerialPort.GetPortNames().ToList();
-        fixed (byte* utf8Ptr = Encoding.UTF8.GetBytes(string.Join('\n', serialPorts)))
-            lv_dropdown_set_options(port_dropdown, utf8Ptr);
+        if (serialPorts.Count > 0)
+        {
+            fixed (byte* utf8Ptr = Encoding.UTF8.GetBytes(string.Join('\n', serialPorts)))
+                lv_dropdown_set_options(port_dropdown, utf8Ptr);
+        }
+        else
+        {
+            lv_dropdown_clear_options(port_dropdown);
+        } 
+            
     }
 
     static void InitUI()

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36121.58
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVGLSharp.Core", "src\LVGLSharp.Core\LVGLSharp.Core.csproj", "{D065EC18-6DB2-41BF-9573-99E071BB18C5}"
 EndProject
@@ -14,6 +14,17 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVGLSharp.Runtime.Linux", "src\LVGLSharp.Runtime.Linux\LVGLSharp.Runtime.Linux.csproj", "{8836E179-4FC7-4EAD-AD1B-91BFA30DD3F7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVGLSharp.Interop", "src\LVGLSharp.Interop\LVGLSharp.Interop.csproj", "{6EF0D260-CD1A-5486-DB08-B17DB37F29D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsDemo", "src\Demos\WinFormsDemo\WinFormsDemo.csproj", "{8A4F7729-413F-4FCE-9722-510825308631}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVGLSharp.Forms", "src\LVGLSharp.WinForms\LVGLSharp.Forms.csproj", "{8BFE4E2E-D0AC-D99A-C1C1-2D3EC0F12838}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{34EF8BC5-CA73-4729-8C30-9D6541AAC6BB}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+		README_en.md = README_en.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,12 +52,21 @@ Global
 		{6EF0D260-CD1A-5486-DB08-B17DB37F29D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EF0D260-CD1A-5486-DB08-B17DB37F29D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EF0D260-CD1A-5486-DB08-B17DB37F29D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A4F7729-413F-4FCE-9722-510825308631}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A4F7729-413F-4FCE-9722-510825308631}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A4F7729-413F-4FCE-9722-510825308631}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A4F7729-413F-4FCE-9722-510825308631}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BFE4E2E-D0AC-D99A-C1C1-2D3EC0F12838}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BFE4E2E-D0AC-D99A-C1C1-2D3EC0F12838}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BFE4E2E-D0AC-D99A-C1C1-2D3EC0F12838}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BFE4E2E-D0AC-D99A-C1C1-2D3EC0F12838}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D371C54A-E3C9-40EB-BCBD-9FEDB246AE76} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{8A4F7729-413F-4FCE-9722-510825308631} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {03A6E35C-AA75-408E-ABBE-C67319A14A6A}

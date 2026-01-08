@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<IsTrimmable>True</IsTrimmable>
+		<IsAotCompatible>True</IsAotCompatible>
+		<InvariantGlobalization>true</InvariantGlobalization>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+		<PublishPlatform>Windows</PublishPlatform>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(RuntimeIdentifier)' == 'linux-arm' Or '$(RuntimeIdentifier)' == 'linux-arm64' Or '$(RuntimeIdentifier)' == 'linux-x64'">
+		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+		<PublishPlatform>Linux</PublishPlatform>
+	</PropertyGroup>
+
+	 
+	 
+	<ItemGroup>
+		<DirectPInvoke Include="lvgl" />
+		<NativeLibrary Condition="'$(PublishPlatform)' == 'Windows'" Include="lvgl.lib" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Windows_NT'">
+		<None Update="lvgl.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(PublishPlatform)' == 'Windows'">
+		<Compile Remove="Runtime\Linux\**" />
+		<EmbeddedResource Remove="Runtime\Linux\**" />
+		<None Remove="Runtime\Linux\**" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(PublishPlatform)' == 'Linux'">
+		<Compile Remove="Runtime\Windows\**" />
+		<EmbeddedResource Remove="Runtime\Windows\**" />
+		<None Remove="Runtime\Windows\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="SixLabors.Fonts" Version="2.1.3" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.10" />
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.6" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\LVGLSharp.Core\LVGLSharp.Core.csproj" />
+		<ProjectReference Include="..\LVGLSharp.Interop\LVGLSharp.Interop.csproj" />
+	</ItemGroup>
+
+</Project>

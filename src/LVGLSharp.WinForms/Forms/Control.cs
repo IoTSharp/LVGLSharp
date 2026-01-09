@@ -13,7 +13,7 @@ namespace LVGLSharp.Forms
         //     settings.
         public Control() : base()
         {
-
+            Controls = new ControlCollection();
         }
         //
         // 摘要:
@@ -278,7 +278,7 @@ namespace LVGLSharp.Forms
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [SRDescriptionAttribute("ControlHandleCreatedDescr")]
-        public bool IsHandleCreated { get; }
+        public bool IsHandleCreated => Handle!= nint.Zero;
         //
         // 摘要:
         //     Gets or sets the height of the control.
@@ -313,7 +313,7 @@ namespace LVGLSharp.Forms
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [DispId(-515)]
         [SRDescriptionAttribute("ControlHandleDescr")]
-        public nint Handle { get; }
+        public nint Handle { get; internal set; }
         //
         // 摘要:
         //     Gets or sets the foreground color of the control.
@@ -989,6 +989,8 @@ namespace LVGLSharp.Forms
         [SRCategoryAttribute("CatBehavior")]
         [SRDescriptionAttribute("ControlContextMenuDescr")]
         public virtual ContextMenuStrip? ContextMenuStrip { get; set; }
+
+        
         //
         // 摘要:
         //     Gets the collection of controls contained within the control.
@@ -3424,23 +3426,7 @@ namespace LVGLSharp.Forms
         {
 
         }
-        //
-        // 摘要:
-        //     Determines the size of the entire control from the height and width of its client
-        //     area.
-        //
-        // 参数:
-        //   clientSize:
-        //     A System.Drawing.Size value representing the height and width of the control's
-        //     client area.
-        //
-        // 返回结果:
-        //     A System.Drawing.Size value representing the height and width of the entire control.
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual Size SizeFromClientSize(Size clientSize)
-        {
-            return default(Size);
-        }
+       
         //
         // 摘要:
         //     Updates the bounds of the control with the specified size, location, and client

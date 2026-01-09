@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
@@ -14,7 +15,8 @@ namespace LVGLSharp.Forms
     [ListBindable(false)]
     public class ControlCollection : IList<Control>, ICollection, IEnumerable
     {
-        private List<Control> _ctls = new List<Control>();
+        
+        private Collection<Control> _ctls = new Collection<Control>();
         public Control? this[int index] { get => _ctls[index]; set => _ctls[index] = value; }
 
         public int Count => _ctls.Count;
@@ -24,8 +26,11 @@ namespace LVGLSharp.Forms
         public bool IsSynchronized => false;
 
         public object SyncRoot => _ctls;
-
         public void Add(Control item)
+        {
+            _ctls.Add(item);
+        }
+        public void Add(Control item, int v, int v1)
         {
             _ctls.Add(item);
         }

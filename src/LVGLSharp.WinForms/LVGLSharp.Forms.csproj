@@ -52,8 +52,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\LVGLSharp.Core\LVGLSharp.Core.csproj" />
 		<ProjectReference Include="..\LVGLSharp.Interop\LVGLSharp.Interop.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Forms\CheckBox.cs">
+	    <SubType>Component</SubType>
+	  </Compile>
+	  <Compile Update="Forms\FlowLayoutPanel.cs">
+	    <SubType>Component</SubType>
+	  </Compile>
 	</ItemGroup>
 
 </Project>

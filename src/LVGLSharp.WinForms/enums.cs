@@ -4,6 +4,33 @@ using System.Text;
 
 namespace LVGLSharp.Forms
 {
+    public enum FlatStyle
+    {
+        Flat
+    }
+    public enum ContentAlignment
+    {
+        MiddleCenter
+    }
+    //
+    // 摘要:
+    //     Specifies how rows or columns of user interface (UI) elements should be sized
+    //     relative to their container.
+    public enum SizeType
+    {
+        //
+        // 摘要:
+        //     The row or column should be automatically sized to share space with its peers.
+        AutoSize = 0,
+        //
+        // 摘要:
+        //     The row or column should be sized to an exact number of pixels.
+        Absolute = 1,
+        //
+        // 摘要:
+        //     The row or column should be sized as a percentage of the parent container.
+        Percent = 2
+    }
     public enum HighDpiMode
     {
         SystemAware
@@ -42,7 +69,8 @@ namespace LVGLSharp.Forms
     }
     public enum DockStyle
     {
-        None
+        None,
+        Fill
     }
     public enum  RightToLeft
     {

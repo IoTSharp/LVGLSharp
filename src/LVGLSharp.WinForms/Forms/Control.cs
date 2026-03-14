@@ -3756,8 +3756,10 @@ namespace LVGLSharp.Forms
         /// <summary>LVGL object handle (lv_obj_t*) stored as nint.</summary>
         internal nint _lvglObjectHandle;
 
-        /// <summary>Converts a percentage value to an LVGL LV_PCT coordinate.</summary>
-        protected static int LvPct(int percent) => percent | (1 << 29);
+        /// <summary>Converts a percentage value to an LVGL LV_PCT coordinate.
+        /// LVGL identifies percentage coordinates by setting bit 29 (LV_COORD_TYPE_SPEC flag).
+        /// </summary>
+        protected static int LvPct(int percent) => percent | (1 << 29); // bit 29 = LV_COORD_TYPE_SPEC
 
         /// <summary>Converts a C# string to a null-terminated UTF-8 byte array for LVGL.</summary>
         protected static byte[] ToUtf8(string? text)

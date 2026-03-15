@@ -38,6 +38,7 @@ namespace LVGLSharp.Runtime.Windows
         static bool ignore_next_wmchar = false;
         static volatile int mouseWheelDelta = 0;
         static ConcurrentQueue<uint> key_queue = new ConcurrentQueue<uint>();
+        static ConcurrentQueue<string> ime_commit_queue = new ConcurrentQueue<string>();
 
         public static lv_obj_t* root { get; set; }
         public static lv_group_t* key_inputGroup { get; set; }
@@ -123,7 +124,11 @@ namespace LVGLSharp.Runtime.Windows
         static void KeyboardReadCb(lv_indev_t* indev, lv_indev_data_t* data)
         {
             if (ignore_next_wmchar)
+            {
+                data->key = 0;
+                data->state = LV_INDEV_STATE_REL;
                 return;
+            }
 
             if (last_key_state_processed == LV_INDEV_STATE_PR)
             {
@@ -173,6 +178,29 @@ namespace LVGLSharp.Runtime.Windows
 
                 ImmSetCompositionWindow(hIMC, ref compForm);
                 ImmReleaseContext(g_hwnd, hIMC);
+            }
+        }
+
+        static unsafe void DrainImeCommitQueue()
+        {
+            while (ime_commit_queue.TryDequeue(out var text))
+            {
+                if (string.IsNullOrEmpty(text) || key_inputGroup == null)
+                {
+                    continue;
+                }
+
+                var inputObj = lv_group_get_focused(key_inputGroup);
+                if (inputObj == null)
+                {
+                    continue;
+                }
+
+                var utf8 = Encoding.UTF8.GetBytes(text + "\0");
+                fixed (byte* utf8Ptr = utf8)
+                {
+                    lv_textarea_add_text(inputObj, utf8Ptr);
+                }
             }
         }
 
@@ -240,12 +268,9 @@ namespace LVGLSharp.Runtime.Windows
                                     ImmGetCompositionStringW(hIMC, GCS_RESULTSTR, buffer, size);
                                     string result = Encoding.Unicode.GetString(buffer);
                                     ime_content = result;
-                                    unsafe
+                                    if (!string.IsNullOrEmpty(result))
                                     {
-                                        byte[] utf8 = Encoding.UTF8.GetBytes(result + "\0");
-                                        var inputObj = lv_group_get_focused(key_inputGroup);
-                                        fixed (byte* utf8Ptr = utf8)
-                                            lv_textarea_add_text(inputObj, utf8Ptr);
+                                        ime_commit_queue.Enqueue(result);
                                     }
                                     ignore_next_wmchar = true;
                                 }
@@ -266,7 +291,6 @@ namespace LVGLSharp.Runtime.Windows
 
         private string _title;
         private lv_font_t* _fallbackFont;
-        private lv_font_t* _defaultFont;
         private lv_style_t* _defaultFontStyle;
         private SixLaborsFontManager _fontManager;
         private lv_indev_t* kbd_indev;
@@ -340,27 +364,16 @@ namespace LVGLSharp.Runtime.Windows
             lv_display_set_flush_cb(g_display, &FlushCb);
 
             root = lv_scr_act();
-            lv_obj_set_flex_flow(root, LV_FLEX_FLOW_COLUMN);
-            lv_obj_set_style_pad_all(root, 10, 0);
-
             _fallbackFont = lv_obj_get_style_text_font(root, LV_PART_MAIN);
 
-            _fontManager = new SixLaborsFontManager(SixLaborsSystemFonts.Get("Microsoft YaHei"), 12, GetDPI(), _fallbackFont, [
-                61441, 61448, 61451, 61452, 61453, 61457, 61459, 61461, 61465, 61468,
-                61473, 61478, 61479, 61480, 61502, 61507, 61512, 61515, 61516, 61517,
-                61521, 61522, 61523, 61524, 61543, 61544, 61550, 61552, 61553, 61556,
-                61559, 61560, 61561, 61563, 61587, 61589, 61636, 61637, 61639, 61641,
-                61664, 61671, 61674, 61683, 61724, 61732, 61787, 61931, 62016, 62017,
-                62018, 62019, 62020, 62087, 62099, 62189, 62212, 62810, 63426, 63650
-            ]);
-            _defaultFont = _fontManager.GetLvFontPtr();
+            _fontManager = new SixLaborsFontManager(
+                SixLaborsSystemFonts.Get("Microsoft YaHei"),
+                12,
+                GetDPI(),
+                _fallbackFont,
+                LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
 
-            _defaultFontStyle = (lv_style_t*)NativeMemory.Alloc((nuint)sizeof(lv_style_t));
-            NativeMemory.Clear(_defaultFontStyle, (nuint)sizeof(lv_style_t));
-            lv_style_init(_defaultFontStyle);
-            lv_style_set_text_font(_defaultFontStyle, _defaultFont);
-
-            lv_obj_add_style(root, _defaultFontStyle, 0);
+            _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(root, _fontManager.GetLvFontPtr());
         }
 
         public void StartLoop(Action handle)
@@ -378,6 +391,7 @@ namespace LVGLSharp.Runtime.Windows
 
         public void ProcessEvents()
         {
+            DrainImeCommitQueue();
             lv_timer_handler();
 
             if (PeekMessage(out msg, IntPtr.Zero, 0, 0, 1))

@@ -59,6 +59,7 @@ namespace LVGLSharp.Forms
             root = _window.Root;
             key_inputGroup = _window.KeyInputGroup;
             SendTextAreaFocusCb = _window.SendTextAreaFocusCallback;
+            Application.CurrentStyleSet.Root.Apply(root);
 
             _lvglObjectHandle = (nint)root;
             Handle = _lvglObjectHandle;

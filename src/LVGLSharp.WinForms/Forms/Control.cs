@@ -1,6 +1,5 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using LVGLSharp.Darwing;
@@ -9,13 +8,28 @@ namespace LVGLSharp.Forms
 {
     public class Control : Component, IComponent, IDisposable
     {
+        private int _layoutSuspendCount;
+        private bool _layoutPending;
+        private Control? _layoutAffectedControl;
+        private string? _layoutAffectedProperty;
+        private Size _anchorReferenceParentSize;
+        private Rectangle _anchorReferenceBounds;
+
         //
         // 摘要:
         //     Initializes a new instance of the System.Windows.Forms.Control class with default
         //     settings.
         public Control() : base()
         {
-            Controls = new ControlCollection(this);
+            Controls = CreateControlsInstance();
+            Visible = true;
+            Enabled = true;
+            TabStop = true;
+            Text = string.Empty;
+            Name = string.Empty;
+            Margin = new Padding(3);
+            Padding = Padding.Empty;
+            Anchor = AnchorStyles.Top | AnchorStyles.Left;
         }
         //
         // 摘要:
@@ -1951,7 +1965,7 @@ namespace LVGLSharp.Forms
         //     true if the specified control is a child of the control; otherwise, false.
         public bool Contains([NotNullWhen(true)] Control? ctl)
         {
-            return false;
+            return ctl is not null && Controls.Contains(ctl);
         }
         //
         // 摘要:
@@ -1959,7 +1973,25 @@ namespace LVGLSharp.Forms
         //     and any visible child controls.
         public void CreateControl()
         {
+            if (_lvglObjectHandle != 0)
+            {
+                return;
+            }
 
+            if (Parent?._lvglObjectHandle != 0)
+            {
+                CreateLvglObject(Parent._lvglObjectHandle);
+            }
+
+            foreach (var child in Controls)
+            {
+                if (child.Visible)
+                {
+                    child.CreateControl();
+                }
+            }
+
+            OnCreateControl();
         }
 
         //
@@ -1970,6 +2002,14 @@ namespace LVGLSharp.Forms
         //     The System.Windows.Forms.Form that the control is on.
         public Form? FindForm()
         {
+            for (Control? current = this; current is not null; current = current.Parent)
+            {
+                if (current is Form form)
+                {
+                    return form;
+                }
+            }
+
             return null;
         }
         //
@@ -1991,7 +2031,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void PerformLayout()
         {
-
+            PerformLayout(null, null);
         }
         //
         // 摘要:
@@ -2007,7 +2047,28 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void PerformLayout(Control? affectedControl, string? affectedProperty)
         {
+            if (_layoutSuspendCount > 0)
+            {
+                _layoutPending = true;
+                _layoutAffectedControl = affectedControl;
+                _layoutAffectedProperty = affectedProperty;
+                return;
+            }
 
+            if (this is TableLayoutPanel tableLayoutPanel)
+            {
+                tableLayoutPanel.PerformTableLayout();
+            }
+            else if (this is FlowLayoutPanel flowLayoutPanel)
+            {
+                flowLayoutPanel.PerformFlowLayout();
+            }
+            else
+            {
+                PerformDockAndAnchorLayout();
+            }
+
+            OnLayout(new LayoutEventArgs(affectedControl, affectedProperty));
         }
         //
         // 摘要:
@@ -2179,7 +2240,8 @@ namespace LVGLSharp.Forms
         //     Resets the System.Windows.Forms.Control.Text property to its default value (System.String.Empty).
         public virtual void ResetText()
         {
-
+            Text = string.Empty;
+            OnTextChanged(EventArgs.Empty);
         }
         //
         // 摘要:
@@ -2191,14 +2253,27 @@ namespace LVGLSharp.Forms
         //     true to execute pending layout requests; otherwise, false.
         public void ResumeLayout(bool performLayout)
         {
+            if (_layoutSuspendCount > 0)
+            {
+                _layoutSuspendCount--;
+            }
 
+            if (_layoutSuspendCount == 0 && (performLayout || _layoutPending))
+            {
+                var affectedControl = _layoutAffectedControl;
+                var affectedProperty = _layoutAffectedProperty;
+                _layoutPending = false;
+                _layoutAffectedControl = null;
+                _layoutAffectedProperty = null;
+                PerformLayout(affectedControl, affectedProperty);
+            }
         }
         //
         // 摘要:
         //     Resumes usual layout logic.
         public void ResumeLayout()
         {
-
+            ResumeLayout(true);
         }
 
         //
@@ -2276,7 +2351,7 @@ namespace LVGLSharp.Forms
         //     The new System.Windows.Forms.Control.Height property value of the control.
         public void SetBounds(int x, int y, int width, int height)
         {
-
+            SetBounds(x, y, width, height, BoundsSpecified.All);
         }
         //
         // 摘要:
@@ -2301,21 +2376,36 @@ namespace LVGLSharp.Forms
         //     any parameter not specified, the current value will be used.
         public void SetBounds(int x, int y, int width, int height, BoundsSpecified specified)
         {
+            var currentLocation = Location;
+            var currentSize = Size;
 
+            if ((specified & BoundsSpecified.X) == 0)
+                x = currentLocation.X;
+
+            if ((specified & BoundsSpecified.Y) == 0)
+                y = currentLocation.Y;
+
+            if ((specified & BoundsSpecified.Width) == 0)
+                width = currentSize.Width;
+
+            if ((specified & BoundsSpecified.Height) == 0)
+                height = currentSize.Height;
+
+            SetBoundsCore(x, y, width, height, specified);
         }
         //
         // 摘要:
         //     Displays the control to the user.
         public void Show()
         {
-
+            SetVisibleCore(true);
         }
         //
         // 摘要:
         //     Temporarily suspends the layout logic for the control.
         public void SuspendLayout()
         {
-
+            _layoutSuspendCount++;
         }
         //
         // 摘要:
@@ -2367,7 +2457,13 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void DestroyHandle()
         {
+            if (Handle == 0)
+            {
+                return;
+            }
 
+            Handle = 0;
+            OnHandleDestroyed(EventArgs.Empty);
         }
         //
         // 摘要:
@@ -2651,7 +2747,15 @@ namespace LVGLSharp.Forms
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnClientSizeChanged(EventArgs e) { ClientSizeChanged?.Invoke(this, e); }
+        protected virtual void OnClientSizeChanged(EventArgs e)
+        {
+            ClientSizeChanged?.Invoke(this, e);
+
+            if (Controls.Count > 0)
+            {
+                PerformLayout(this, nameof(ClientSize));
+            }
+        }
 
         //
         // 摘要:
@@ -2670,7 +2774,10 @@ namespace LVGLSharp.Forms
         //   e:
         //     A System.Windows.Forms.ControlEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnControlAdded(ControlEventArgs e) { ControlAdded?.Invoke(this, e); }
+        protected virtual void OnControlAdded(ControlEventArgs e)
+        {
+            ControlAdded?.Invoke(this, e);
+        }
         //
         // 摘要:
         //     Raises the System.Windows.Forms.Control.ControlRemoved event.
@@ -2679,7 +2786,10 @@ namespace LVGLSharp.Forms
         //   e:
         //     A System.Windows.Forms.ControlEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnControlRemoved(ControlEventArgs e) { ControlRemoved?.Invoke(this, e); }
+        protected virtual void OnControlRemoved(ControlEventArgs e)
+        {
+            ControlRemoved?.Invoke(this, e);
+        }
         //
         // 摘要:
         //     Raises the System.Windows.Forms.Control.CreateControl method.
@@ -2766,7 +2876,10 @@ namespace LVGLSharp.Forms
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnHandleCreated(EventArgs e) { HandleCreated?.Invoke(this, e); }
+        protected virtual void OnHandleCreated(EventArgs e)
+        {
+            HandleCreated?.Invoke(this, e);
+        }
         //
         // 摘要:
         //     Raises the System.Windows.Forms.Control.HandleDestroyed event.
@@ -2775,7 +2888,10 @@ namespace LVGLSharp.Forms
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnHandleDestroyed(EventArgs e) { HandleDestroyed?.Invoke(this, e); }
+        protected virtual void OnHandleDestroyed(EventArgs e)
+        {
+            HandleDestroyed?.Invoke(this, e);
+        }
         //
         // 摘要:
         //     Raises the System.Windows.Forms.Control.HelpRequested event.
@@ -2832,7 +2948,10 @@ namespace LVGLSharp.Forms
         //   levent:
         //     A System.Windows.Forms.LayoutEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnLayout(LayoutEventArgs levent) { Layout?.Invoke(this, levent); }
+        protected virtual void OnLayout(LayoutEventArgs levent)
+        {
+            Layout?.Invoke(this, levent);
+        }
         //
         // 摘要:
         //     Raises the System.Windows.Forms.Control.LocationChanged event.
@@ -2841,7 +2960,10 @@ namespace LVGLSharp.Forms
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnLocationChanged(EventArgs e) { LocationChanged?.Invoke(this, e); }
+        protected virtual void OnLocationChanged(EventArgs e)
+        {
+            LocationChanged?.Invoke(this, e);
+        }
         //
         // 摘要:
         //     Raises the System.Windows.Forms.Control.LostFocus event.
@@ -2957,7 +3079,10 @@ namespace LVGLSharp.Forms
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnMove(EventArgs e) { Move?.Invoke(this, e); }
+        protected virtual void OnMove(EventArgs e)
+        {
+            Move?.Invoke(this, e);
+        }
         //
         // 摘要:
         //     Notifies the control of Windows messages.
@@ -3052,7 +3177,10 @@ namespace LVGLSharp.Forms
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnParentChanged(EventArgs e) { ParentChanged?.Invoke(this, e); }
+        protected virtual void OnParentChanged(EventArgs e)
+        {
+            ParentChanged?.Invoke(this, e);
+        }
         //
         // 摘要:
         //     Raises the System.Windows.Forms.Control.CursorChanged event.
@@ -3184,7 +3312,10 @@ namespace LVGLSharp.Forms
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnResize(EventArgs e) { Resize?.Invoke(this, e); }
+        protected virtual void OnResize(EventArgs e)
+        {
+            Resize?.Invoke(this, e);
+        }
         //
         // 摘要:
         //     Raises the System.Windows.Forms.Control.RightToLeftChanged event.
@@ -3202,7 +3333,15 @@ namespace LVGLSharp.Forms
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnSizeChanged(EventArgs e) { SizeChanged?.Invoke(this, e); }
+        protected virtual void OnSizeChanged(EventArgs e)
+        {
+            SizeChanged?.Invoke(this, e);
+
+            if (Controls.Count > 0)
+            {
+                PerformLayout(this, nameof(Size));
+            }
+        }
         //
         // 摘要:
         //     Raises the System.Windows.Forms.Control.StyleChanged event.
@@ -3247,7 +3386,10 @@ namespace LVGLSharp.Forms
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnTextChanged(EventArgs e) { TextChanged?.Invoke(this, e); }
+        protected virtual void OnTextChanged(EventArgs e)
+        {
+            TextChanged?.Invoke(this, e);
+        }
         //
         // 摘要:
         //     Raises the System.Windows.Forms.Control.Validated event.
@@ -3274,7 +3416,10 @@ namespace LVGLSharp.Forms
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnVisibleChanged(EventArgs e) { VisibleChanged?.Invoke(this, e); }
+        protected virtual void OnVisibleChanged(EventArgs e)
+        {
+            VisibleChanged?.Invoke(this, e);
+        }
         //
         // 摘要:
         //     Processes a command key.
@@ -3512,7 +3657,15 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
         {
+            UpdateBounds(x, y, width, height);
 
+            if (_lvglObjectHandle != 0)
+            {
+                unsafe
+                {
+                    ApplyLvglProperties();
+                }
+            }
         }
         //
         // 摘要:
@@ -3571,9 +3724,29 @@ namespace LVGLSharp.Forms
         // 参数:
         //   value:
         //     true to make the control visible; otherwise, false.
-        protected virtual void SetVisibleCore(bool value)
+        protected virtual unsafe void SetVisibleCore(bool value)
         {
+            if (Visible == value)
+            {
+                return;
+            }
 
+            Visible = value;
+
+            var obj = (Interop.lv_obj_t*)_lvglObjectHandle;
+            if (obj != null)
+            {
+                if (value)
+                {
+                    lv_obj_remove_flag(obj, LV_OBJ_FLAG_HIDDEN);
+                }
+                else
+                {
+                    lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
+                }
+            }
+
+            OnVisibleChanged(EventArgs.Empty);
         }
        
         //
@@ -3602,7 +3775,35 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected void UpdateBounds(int x, int y, int width, int height, int clientWidth, int clientHeight)
         {
+            var oldLocation = Location;
+            var oldSize = Size;
+            var oldClientSize = ClientSize;
 
+            Left = x;
+            Top = y;
+            Width = width;
+            Height = height;
+            Location = new Point(x, y);
+            Size = new Size(width, height);
+            Bounds = new Rectangle(x, y, width, height);
+            ClientSize = new Size(clientWidth, clientHeight);
+
+            if (oldLocation != Location)
+            {
+                OnLocationChanged(EventArgs.Empty);
+                OnMove(EventArgs.Empty);
+            }
+
+            if (oldSize != Size)
+            {
+                OnSizeChanged(EventArgs.Empty);
+                OnResize(EventArgs.Empty);
+            }
+
+            if (oldClientSize != ClientSize)
+            {
+                OnClientSizeChanged(EventArgs.Empty);
+            }
         }
         //
         // 摘要:
@@ -3623,7 +3824,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected void UpdateBounds(int x, int y, int width, int height)
         {
-
+            UpdateBounds(x, y, width, height, width, height);
         }
         //
         // 摘要:
@@ -3708,11 +3909,28 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected internal void UpdateBounds()
         {
-
+            UpdateBounds(Location.X, Location.Y, Size.Width, Size.Height, ClientSize.Width, ClientSize.Height);
         }
 
-        internal void RaiseControlAdded(Control child) => OnControlAdded(new ControlEventArgs(child));
-        internal void RaiseControlRemoved(Control child) => OnControlRemoved(new ControlEventArgs(child));
+        internal void HandleChildAdded(Control child)
+        {
+            ArgumentNullException.ThrowIfNull(child);
+
+            child.Parent = this;
+            child.CaptureAnchorLayout();
+            child.InitLayout();
+            OnControlAdded(new ControlEventArgs(child));
+            PerformLayout(child, nameof(Controls));
+        }
+
+        internal void HandleChildRemoved(Control child)
+        {
+            ArgumentNullException.ThrowIfNull(child);
+
+            child.Parent = null;
+            OnControlRemoved(new ControlEventArgs(child));
+            PerformLayout(child, nameof(Controls));
+        }
 
         // Backing fields for tracked properties
         private bool _visible = true;
@@ -3883,18 +4101,10 @@ namespace LVGLSharp.Forms
             var obj = (Interop.lv_obj_t*)_lvglObjectHandle;
             if (obj == null) return;
 
-            if (Dock == DockStyle.Fill)
-            {
-                lv_obj_set_size(obj, LvPct(100), LvPct(100));
-            }
-            else
-            {
-                // Use explicit size when set (non-negative); fall back to LV_SIZE_CONTENT.
-                int w = Size.Width >= 0 ? Size.Width : LV_SIZE_CONTENT;
-                int h = Size.Height >= 0 ? Size.Height : LV_SIZE_CONTENT;
-                lv_obj_set_size(obj, w, h);
-                lv_obj_set_pos(obj, Location.X, Location.Y);
-            }
+            int w = Size.Width > 0 ? Size.Width : LV_SIZE_CONTENT;
+            int h = Size.Height > 0 ? Size.Height : LV_SIZE_CONTENT;
+            lv_obj_set_size(obj, w, h);
+            lv_obj_set_pos(obj, Location.X, Location.Y);
 
             if (!Visible)
                 lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
@@ -3909,6 +4119,148 @@ namespace LVGLSharp.Forms
             {
                 child.CreateLvglObject(_lvglObjectHandle);
             }
+        }
+
+        private void PerformDockAndAnchorLayout()
+        {
+            var availableWidth = Math.Max(0, (ClientSize.Width > 0 ? ClientSize.Width : Size.Width) - Padding.Horizontal);
+            var availableHeight = Math.Max(0, (ClientSize.Height > 0 ? ClientSize.Height : Size.Height) - Padding.Vertical);
+            var left = Padding.Left;
+            var top = Padding.Top;
+            var right = Padding.Left + availableWidth;
+            var bottom = Padding.Top + availableHeight;
+
+            foreach (var child in Controls)
+            {
+                var margin = child.Margin;
+                switch (child.Dock)
+                {
+                    case DockStyle.Top:
+                    {
+                        var height = child.Size.Height;
+                        child.SetBounds(
+                            left + margin.Left,
+                            top + margin.Top,
+                            Math.Max(0, right - left - margin.Horizontal),
+                            height,
+                            BoundsSpecified.All);
+                        top += height + margin.Vertical;
+                        child.CaptureAnchorLayout();
+                        break;
+                    }
+                    case DockStyle.Bottom:
+                    {
+                        var height = child.Size.Height;
+                        child.SetBounds(
+                            left + margin.Left,
+                            bottom - height + margin.Top - margin.Bottom,
+                            Math.Max(0, right - left - margin.Horizontal),
+                            height,
+                            BoundsSpecified.All);
+                        bottom -= height + margin.Vertical;
+                        child.CaptureAnchorLayout();
+                        break;
+                    }
+                    case DockStyle.Left:
+                    {
+                        var width = child.Size.Width;
+                        child.SetBounds(
+                            left + margin.Left,
+                            top + margin.Top,
+                            width,
+                            Math.Max(0, bottom - top - margin.Vertical),
+                            BoundsSpecified.All);
+                        left += width + margin.Horizontal;
+                        child.CaptureAnchorLayout();
+                        break;
+                    }
+                    case DockStyle.Right:
+                    {
+                        var width = child.Size.Width;
+                        child.SetBounds(
+                            right - width + margin.Left - margin.Right,
+                            top + margin.Top,
+                            width,
+                            Math.Max(0, bottom - top - margin.Vertical),
+                            BoundsSpecified.All);
+                        right -= width + margin.Horizontal;
+                        child.CaptureAnchorLayout();
+                        break;
+                    }
+                    case DockStyle.Fill:
+                    {
+                        child.SetBounds(
+                            left + margin.Left,
+                            top + margin.Top,
+                            Math.Max(0, right - left - margin.Horizontal),
+                            Math.Max(0, bottom - top - margin.Vertical),
+                            BoundsSpecified.All);
+                        child.CaptureAnchorLayout();
+                        break;
+                    }
+                }
+            }
+
+            foreach (var child in Controls)
+            {
+                if (child.Dock != DockStyle.None)
+                {
+                    continue;
+                }
+
+                child.ApplyAnchorLayout(availableWidth, availableHeight);
+            }
+        }
+
+        private void ApplyAnchorLayout(int parentWidth, int parentHeight)
+        {
+            if (_anchorReferenceParentSize.Width == 0 && _anchorReferenceParentSize.Height == 0)
+            {
+                CaptureAnchorLayout();
+                return;
+            }
+
+            var deltaWidth = parentWidth - _anchorReferenceParentSize.Width;
+            var deltaHeight = parentHeight - _anchorReferenceParentSize.Height;
+            var bounds = _anchorReferenceBounds;
+            var x = bounds.X;
+            var y = bounds.Y;
+            var width = bounds.Width;
+            var height = bounds.Height;
+            var anchorLeft = (Anchor & AnchorStyles.Left) == AnchorStyles.Left;
+            var anchorRight = (Anchor & AnchorStyles.Right) == AnchorStyles.Right;
+            var anchorTop = (Anchor & AnchorStyles.Top) == AnchorStyles.Top;
+            var anchorBottom = (Anchor & AnchorStyles.Bottom) == AnchorStyles.Bottom;
+
+            if (anchorLeft && anchorRight)
+            {
+                width = Math.Max(0, width + deltaWidth);
+            }
+            else if (!anchorLeft && anchorRight)
+            {
+                x += deltaWidth;
+            }
+
+            if (anchorTop && anchorBottom)
+            {
+                height = Math.Max(0, height + deltaHeight);
+            }
+            else if (!anchorTop && anchorBottom)
+            {
+                y += deltaHeight;
+            }
+
+            SetBounds(x, y, width, height, BoundsSpecified.All);
+        }
+
+        internal void CaptureAnchorLayout()
+        {
+            var parentSize = Parent is null
+                ? new Size(0, 0)
+                : (Parent.ClientSize.Width > 0 || Parent.ClientSize.Height > 0 ? Parent.ClientSize : Parent.Size);
+
+            _anchorReferenceParentSize = parentSize;
+            _anchorReferenceBounds = Bounds;
         }
 
     }

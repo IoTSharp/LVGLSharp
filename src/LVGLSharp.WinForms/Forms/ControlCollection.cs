@@ -18,7 +18,11 @@ namespace LVGLSharp.Forms
         private readonly Control? _owner;
         private Collection<Control> _ctls = new Collection<Control>();
 
-        public ControlCollection(Control? owner = null)
+        public ControlCollection()
+        {
+        }
+
+        internal ControlCollection(Control owner)
         {
             _owner = owner;
         }
@@ -35,18 +39,34 @@ namespace LVGLSharp.Forms
 
         public void Add(Control item)
         {
+            ArgumentNullException.ThrowIfNull(item);
+
             _ctls.Add(item);
-            _owner?.RaiseControlAdded(item);
+            _owner?.HandleChildAdded(item);
+
+            if (_owner?._lvglObjectHandle != 0 && item._lvglObjectHandle == 0)
+            {
+                item.CreateLvglObject(_owner._lvglObjectHandle);
+            }
         }
 
         public void Add(Control item, int v, int v1)
         {
-            _ctls.Add(item);
-            _owner?.RaiseControlAdded(item);
+            if (_owner is TableLayoutPanel tableLayoutPanel)
+            {
+                tableLayoutPanel.SetCellPosition(item, v, v1);
+            }
+
+            Add(item);
         }
 
         public void Clear()
         {
+            foreach (var control in _ctls)
+            {
+                _owner?.HandleChildRemoved(control);
+            }
+
             _ctls.Clear();
         }
 
@@ -72,20 +92,30 @@ namespace LVGLSharp.Forms
 
         public int IndexOf(Control item) => _ctls.IndexOf(item);
 
-        public void Insert(int index, Control item) => _ctls.Insert(index, item);
+        public void Insert(int index, Control item)
+        {
+            ArgumentNullException.ThrowIfNull(item);
+
+            _ctls.Insert(index, item);
+            _owner?.HandleChildAdded(item);
+        }
 
         public bool Remove(Control item)
         {
-            bool removed = _ctls.Remove(item);
-            if (removed) _owner?.RaiseControlRemoved(item);
-            return removed;
+            if (!_ctls.Remove(item))
+            {
+                return false;
+            }
+
+            _owner?.HandleChildRemoved(item);
+            return true;
         }
 
         public void RemoveAt(int index)
         {
             var item = _ctls[index];
             _ctls.RemoveAt(index);
-            _owner?.RaiseControlRemoved(item);
+            _owner?.HandleChildRemoved(item);
         }
 
         IEnumerator IEnumerable.GetEnumerator() { return _ctls.GetEnumerator(); }

@@ -2,13 +2,11 @@
 {
     public class ControlEventArgs : EventArgs
     {
-        public Control? Control { get; }
-
-        public ControlEventArgs() { }
-
-        public ControlEventArgs(Control? control)
+        public ControlEventArgs(Control control)
         {
             Control = control;
         }
+
+        public Control Control { get; }
     }
 }

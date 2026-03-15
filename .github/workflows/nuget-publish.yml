@@ -1,0 +1,188 @@
+name: Pack and Publish NuGet Packages
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Package version (e.g. 9.3.0)"
+        required: true
+        default: "9.3.0"
+      publish_nuget:
+        description: "Publish to NuGet.org"
+        type: boolean
+        default: true
+      publish_github:
+        description: "Publish to GitHub Packages"
+        type: boolean
+        default: true
+
+env:
+  # Derive version: prefer workflow_dispatch input, then release tag, then branch name.
+  # Strip any leading 'v' so we always get a semver string.
+  PACKAGE_VERSION: ${{ github.event.inputs.version || github.event.release.tag_name || github.ref_name }}
+
+jobs:
+  # ──────────────────────────────────────────────────────────────────────────
+  # 1. Build native libraries for every supported platform
+  # ──────────────────────────────────────────────────────────────────────────
+  build-native:
+    uses: ./.github/workflows/build-native.yml
+    permissions:
+      contents: read
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 2. Assemble the LVGLSharp.Native NuGet package and managed packages
+  # ──────────────────────────────────────────────────────────────────────────
+  pack:
+    needs: build-native
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: false   # managed code only — no need to build C
+
+      - name: Normalise version (strip leading 'v')
+        id: ver
+        run: |
+          VER="${{ env.PACKAGE_VERSION }}"
+          VER="${VER#v}"
+          echo "version=${VER}" >> "$GITHUB_OUTPUT"
+
+      # ── Download every native artifact ────────────────────────────────────
+      - name: Download all native artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: native-*
+          path: native_artifacts
+
+      # ── Place native libs under runtimes/{rid}/native/ ─────────────────────
+      - name: Organise native libs into runtimes layout
+        shell: bash
+        run: |
+          declare -A LIB_NAME=(
+            [win-x64]="lvgl.dll"
+            [win-x86]="lvgl.dll"
+            [win-arm64]="lvgl.dll"
+            [linux-x64]="liblvgl.so"
+            [linux-arm]="liblvgl.so"
+            [linux-arm64]="liblvgl.so"
+            [linux-loongarch64]="liblvgl.so"
+          )
+          missing=()
+          for rid in "${!LIB_NAME[@]}"; do
+            src_dir="native_artifacts/native-${rid}"
+            dst_dir="src/LVGLSharp.Native/runtimes/${rid}/native"
+            mkdir -p "$dst_dir"
+            lib="${LIB_NAME[$rid]}"
+            placed=false
+            if [ -f "${src_dir}/${lib}" ]; then
+              cp "${src_dir}/${lib}" "${dst_dir}/"
+              echo "Placed ${lib} -> ${dst_dir}/"
+              placed=true
+            else
+              # Fall back to the first .so or .dll found in the artifact folder
+              first=$(find "$src_dir" \( -name "*.dll" -o -name "*.so" \) | head -1)
+              if [ -n "$first" ]; then
+                cp "$first" "${dst_dir}/${lib}"
+                echo "Placed (fallback) $(basename "$first") -> ${dst_dir}/${lib}"
+                placed=true
+              fi
+            fi
+            if [ "$placed" = "false" ]; then
+              echo "ERROR: No native library found for ${rid} in ${src_dir}"
+              missing+=("$rid")
+            fi
+          done
+          if [ ${#missing[@]} -ne 0 ]; then
+            echo "The following RIDs have missing native libraries: ${missing[*]}"
+            exit 1
+          fi
+
+      # ── Pack LVGLSharp.Native ──────────────────────────────────────────────
+      - name: Pack LVGLSharp.Native
+        run: |
+          dotnet pack src/LVGLSharp.Native/LVGLSharp.Native.csproj \
+            -c Release \
+            -p:Version=${{ steps.ver.outputs.version }} \
+            --output nupkgs
+
+      # ── Pack LVGLSharp.Interop ─────────────────────────────────────────────
+      - name: Pack LVGLSharp.Interop
+        run: |
+          dotnet pack src/LVGLSharp.Interop/LVGLSharp.Interop.csproj \
+            -c Release \
+            -p:Version=${{ steps.ver.outputs.version }} \
+            --output nupkgs
+
+      # ── Pack LVGLSharp.Forms ───────────────────────────────────────────────
+      - name: Pack LVGLSharp.Forms
+        run: |
+          dotnet pack src/LVGLSharp.WinForms/LVGLSharp.Forms.csproj \
+            -c Release \
+            -p:Version=${{ steps.ver.outputs.version }} \
+            --output nupkgs
+
+      # ── Upload packed NuGet packages as artifacts ──────────────────────────
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: nupkgs/*.nupkg
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 3. Publish
+  # ──────────────────────────────────────────────────────────────────────────
+  publish:
+    needs: pack
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    # Only publish on real releases (not manual dry-runs that disabled both)
+    if: |
+      github.event_name == 'release' ||
+      github.event.inputs.publish_nuget == 'true' ||
+      github.event.inputs.publish_github == 'true'
+
+    steps:
+      - name: Download NuGet packages
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+          path: nupkgs
+
+      # ── Publish to NuGet.org ──────────────────────────────────────────────
+      - name: Publish to NuGet.org
+        if: |
+          github.event_name == 'release' ||
+          github.event.inputs.publish_nuget == 'true'
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          dotnet nuget push nupkgs/*.nupkg \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key "$NUGET_API_KEY" \
+            --skip-duplicate
+
+      # ── Publish to GitHub Packages ────────────────────────────────────────
+      - name: Publish to GitHub Packages
+        if: |
+          github.event_name == 'release' ||
+          github.event.inputs.publish_github == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet nuget add source \
+            "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --name github \
+            --username "${{ github.actor }}" \
+            --password "$GITHUB_TOKEN" \
+            --store-password-in-clear-text
+          dotnet nuget push nupkgs/*.nupkg \
+            --source github \
+            --skip-duplicate

@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <!-- Shared NuGet metadata inherited by every project in the repo. -->
+    <Authors>IoTSharp</Authors>
+    <Company>IoTSharp</Company>
+    <Copyright>Copyright © IoTSharp contributors</Copyright>
+    <PackageProjectUrl>https://github.com/IoTSharp/LVGLSharp.Forms</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/IoTSharp/LVGLSharp.Forms</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>lvgl;embedded;ui;winforms;cross-platform</PackageTags>
+    <!-- Default version; overridden by CI via -p:Version=... -->
+    <Version>9.3.0</Version>
+  </PropertyGroup>
+
+  <!-- Include the repo-level README in every NuGet package. -->
+  <ItemGroup Condition="'$(IsPackable)' != 'false' And Exists('$(MSBuildThisFileDirectory)README.md')">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+</Project>

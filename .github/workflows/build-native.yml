@@ -1,0 +1,130 @@
+name: Build LVGL Native Libraries
+
+on:
+  push:
+    branches: [main, develop, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build:
+    name: Build ${{ matrix.rid }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows — native and cross-compile via MSVC -A flag
+          - rid: win-x64
+            os: windows-latest
+            cmake_generator: "Visual Studio 17 2022"
+            cmake_arch: x64
+          - rid: win-x86
+            os: windows-latest
+            cmake_generator: "Visual Studio 17 2022"
+            cmake_arch: Win32
+          - rid: win-arm64
+            os: windows-latest
+            cmake_generator: "Visual Studio 17 2022"
+            cmake_arch: ARM64
+
+          # Linux — native x64
+          - rid: linux-x64
+            os: ubuntu-latest
+            cmake_extra: ""
+
+          # Linux — ARM cross-compile (hard-float)
+          - rid: linux-arm
+            os: ubuntu-latest
+            apt_packages: gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
+            cmake_extra: >-
+              -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/libs/cmake/toolchains/arm-linux-gnueabihf.cmake
+
+          # Linux — ARM64 cross-compile
+          - rid: linux-arm64
+            os: ubuntu-latest
+            apt_packages: gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+            cmake_extra: >-
+              -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/libs/cmake/toolchains/aarch64-linux-gnu.cmake
+
+          # Linux — LoongArch64 cross-compile (requires Ubuntu 24.04)
+          - rid: linux-loongarch64
+            os: ubuntu-24.04
+            apt_packages: gcc-loongarch64-linux-gnu g++-loongarch64-linux-gnu
+            cmake_extra: >-
+              -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/libs/cmake/toolchains/loongarch64-linux-gnu.cmake
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ─── Linux: optional cross-compilation toolchain ───────────────────────
+      - name: Install cross-compilation toolchain
+        if: ${{ matrix.apt_packages != '' && runner.os == 'Linux' }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ${{ matrix.apt_packages }}
+
+      # ─── Windows build ──────────────────────────────────────────────────────
+      - name: Configure CMake (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          cmake -S libs/lvgl -B libs/lvgl/build_shared \
+            -G "${{ matrix.cmake_generator }}" \
+            -A "${{ matrix.cmake_arch }}" \
+            -DLVGL_ROOT_DIR="${{ github.workspace }}/libs/lvgl" \
+            -DCONFIG_LV_BUILD_EXAMPLES=OFF \
+            -DCONFIG_LV_BUILD_DEMOS=OFF \
+            -DCONFIG_LV_USE_THORVG_INTERNAL=OFF \
+            -DBUILD_SHARED_LIBS=ON \
+            -DCONFIG_LV_USE_PRIVATE_API=ON
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: cmake --build libs/lvgl/build_shared --config Release
+
+      # ─── Linux build ────────────────────────────────────────────────────────
+      - name: Configure CMake (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          cmake -S libs/lvgl -B libs/lvgl/build_shared \
+            -DCMAKE_BUILD_TYPE=Release \
+            ${{ matrix.cmake_extra }} \
+            -DCONFIG_LV_BUILD_EXAMPLES=OFF \
+            -DCONFIG_LV_BUILD_DEMOS=OFF \
+            -DCONFIG_LV_USE_THORVG_INTERNAL=OFF \
+            -DBUILD_SHARED_LIBS=ON \
+            -DCONFIG_LV_USE_PRIVATE_API=ON
+
+      - name: Build (Linux)
+        if: runner.os == 'Linux'
+        run: cmake --build libs/lvgl/build_shared
+
+      # ─── Collect outputs ────────────────────────────────────────────────────
+      - name: Collect native library
+        shell: bash
+        run: |
+          mkdir -p native_output
+          # Windows: copy DLL from the Release subdirectory
+          find libs/lvgl/build_shared -name "lvgl.dll" | head -1 | xargs -I{} cp {} native_output/ 2>/dev/null || true
+          # Linux: prefer the unversioned symlink; copy and rename to strip any version suffix
+          so=$(find libs/lvgl/build_shared -name "liblvgl.so" | head -1)
+          if [ -n "$so" ]; then
+            cp "$so" native_output/liblvgl.so
+          fi
+          ls -la native_output/
+
+      - name: Upload native artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-${{ matrix.rid }}
+          path: native_output/
+          if-no-files-found: error

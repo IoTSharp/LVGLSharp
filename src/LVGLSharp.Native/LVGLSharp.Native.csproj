@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Targeting netstandard2.0 makes the package consumable by .NET Framework
+         and all modern .NET runtimes while keeping the project buildable without
+         a platform-specific SDK. -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+
+    <!-- Do not emit managed DLL — this package ships only native binaries. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <NoBuild>false</NoBuild>
+
+    <PackageId>LVGLSharp.Native</PackageId>
+    <Title>LVGLSharp Native Libraries</Title>
+    <Description>Platform-native shared libraries (DLL/SO) for LVGL used by LVGLSharp. Supports win-x64, win-x86, win-arm64, linux-x64, linux-arm, linux-arm64, and linux-loongarch64.</Description>
+    <PackageTags>lvgl;native;embedded;ui</PackageTags>
+  </PropertyGroup>
+
+  <!-- Include every file under runtimes/ so dotnet automatically picks the
+       correct binary for the current runtime identifier at restore time. -->
+  <ItemGroup>
+    <None Include="runtimes/**/*" Pack="true" PackagePath="runtimes/" />
+  </ItemGroup>
+
+</Project>

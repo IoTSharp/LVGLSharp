@@ -1,4 +1,4 @@
-name: Pack and Publish NuGet Packages
+name: 打包并发布 NuGet 包
 
 on:
   release:
@@ -6,26 +6,26 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Package version (e.g. 9.3.0)"
+        description: "包版本号（如 9.3.0）"
         required: true
         default: "9.3.0"
       publish_nuget:
-        description: "Publish to NuGet.org"
+        description: "发布到 NuGet.org"
         type: boolean
         default: true
       publish_github:
-        description: "Publish to GitHub Packages"
+        description: "发布到 GitHub Packages"
         type: boolean
         default: true
 
 env:
-  # Derive version: prefer workflow_dispatch input, then release tag, then branch name.
-  # Strip any leading 'v' so we always get a semver string.
+  # 版本来源：优先使用 workflow_dispatch 输入，其次使用 release 标签，最后使用分支名。
+  # 注意：该值可能含有 'v' 前缀（如 v9.3.0），打包时会在 Normalise version 步骤中去除。
   PACKAGE_VERSION: ${{ github.event.inputs.version || github.event.release.tag_name || github.ref_name }}
 
 jobs:
   # ──────────────────────────────────────────────────────────────────────────
-  # 1. Build native libraries for every supported platform
+  # 1. 为各平台构建原生库
   # ──────────────────────────────────────────────────────────────────────────
   build-native:
     uses: ./.github/workflows/build-native.yml
@@ -33,7 +33,7 @@ jobs:
       contents: read
 
   # ──────────────────────────────────────────────────────────────────────────
-  # 2. Assemble the LVGLSharp.Native NuGet package and managed packages
+  # 2. 组装 LVGLSharp.Native NuGet 包及托管代码包
   # ──────────────────────────────────────────────────────────────────────────
   pack:
     needs: build-native
@@ -42,27 +42,27 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout
+      - name: 检出代码
         uses: actions/checkout@v4
         with:
-          submodules: false   # managed code only — no need to build C
+          submodules: false   # 仅托管代码，无需构建 C 库
 
-      - name: Normalise version (strip leading 'v')
+      - name: 规范化版本号（去除 'v' 前缀）
         id: ver
         run: |
           VER="${{ env.PACKAGE_VERSION }}"
           VER="${VER#v}"
           echo "version=${VER}" >> "$GITHUB_OUTPUT"
 
-      # ── Download every native artifact ────────────────────────────────────
-      - name: Download all native artifacts
+      # ── 下载所有原生库制品 ────────────────────────────────────────────────
+      - name: 下载所有原生库制品
         uses: actions/download-artifact@v4
         with:
           pattern: native-*
           path: native_artifacts
 
-      # ── Place native libs under runtimes/{rid}/native/ ─────────────────────
-      - name: Organise native libs into runtimes layout
+      # ── 按 runtimes/{rid}/native/ 结构组织原生库 ──────────────────────────
+      - name: 整理原生库到 runtimes 目录结构
         shell: bash
         run: |
           declare -A LIB_NAME=(
@@ -72,7 +72,6 @@ jobs:
             [linux-x64]="liblvgl.so"
             [linux-arm]="liblvgl.so"
             [linux-arm64]="liblvgl.so"
-            [linux-loongarch64]="liblvgl.so"
           )
           missing=()
           for rid in "${!LIB_NAME[@]}"; do
@@ -83,81 +82,87 @@ jobs:
             placed=false
             if [ -f "${src_dir}/${lib}" ]; then
               cp "${src_dir}/${lib}" "${dst_dir}/"
-              echo "Placed ${lib} -> ${dst_dir}/"
+              echo "已放置 ${lib} -> ${dst_dir}/"
               placed=true
             else
-              # Fall back to the first .so or .dll found in the artifact folder
+              # 回退：查找制品目录中的第一个 .so 或 .dll
               first=$(find "$src_dir" \( -name "*.dll" -o -name "*.so" \) | head -1)
               if [ -n "$first" ]; then
                 cp "$first" "${dst_dir}/${lib}"
-                echo "Placed (fallback) $(basename "$first") -> ${dst_dir}/${lib}"
+                echo "已放置（回退）$(basename "$first") -> ${dst_dir}/${lib}"
                 placed=true
               fi
             fi
             if [ "$placed" = "false" ]; then
-              echo "ERROR: No native library found for ${rid} in ${src_dir}"
+              echo "错误：在 ${src_dir} 中找不到 ${rid} 的原生库"
               missing+=("$rid")
             fi
           done
           if [ ${#missing[@]} -ne 0 ]; then
-            echo "The following RIDs have missing native libraries: ${missing[*]}"
+            echo "以下 RID 缺少原生库：${missing[*]}"
             exit 1
           fi
 
-      # ── Pack LVGLSharp.Native ──────────────────────────────────────────────
-      - name: Pack LVGLSharp.Native
+      # ── 打包 LVGLSharp.Native ─────────────────────────────────────────────
+      - name: 打包 LVGLSharp.Native
         run: |
           dotnet pack src/LVGLSharp.Native/LVGLSharp.Native.csproj \
             -c Release \
             -p:Version=${{ steps.ver.outputs.version }} \
             --output nupkgs
 
-      # ── Pack LVGLSharp.Interop ─────────────────────────────────────────────
-      - name: Pack LVGLSharp.Interop
+      # ── 注册本地 NuGet 源，供 Interop 打包时解析 LVGLSharp.Native 依赖 ────
+      # CI 环境中 $(CI)==true 会激活 LVGLSharp.Native 包引用，
+      # 此时该包尚未发布到 NuGet.org，需要指向本地 nupkgs/ 目录。
+      - name: 注册本地 NuGet 源
+        run: dotnet nuget add source "$(pwd)/nupkgs" --name local-packages
+
+      # ── 打包 LVGLSharp.Interop ────────────────────────────────────────────
+      - name: 打包 LVGLSharp.Interop
         run: |
           dotnet pack src/LVGLSharp.Interop/LVGLSharp.Interop.csproj \
             -c Release \
             -p:Version=${{ steps.ver.outputs.version }} \
             --output nupkgs
 
-      # ── Pack LVGLSharp.Forms ───────────────────────────────────────────────
-      - name: Pack LVGLSharp.Forms
+      # ── 打包 LVGLSharp.Forms ──────────────────────────────────────────────
+      - name: 打包 LVGLSharp.Forms
         run: |
           dotnet pack src/LVGLSharp.WinForms/LVGLSharp.Forms.csproj \
             -c Release \
             -p:Version=${{ steps.ver.outputs.version }} \
             --output nupkgs
 
-      # ── Upload packed NuGet packages as artifacts ──────────────────────────
-      - name: Upload NuGet packages
+      # ── 将打包好的 NuGet 包上传为制品 ────────────────────────────────────
+      - name: 上传 NuGet 包制品
         uses: actions/upload-artifact@v4
         with:
           name: nuget-packages
           path: nupkgs/*.nupkg
 
   # ──────────────────────────────────────────────────────────────────────────
-  # 3. Publish
+  # 3. 发布
   # ──────────────────────────────────────────────────────────────────────────
   publish:
     needs: pack
     runs-on: ubuntu-latest
     permissions:
       packages: write
-    # Only publish on real releases (not manual dry-runs that disabled both)
+    # 仅在真实发布时执行（手动触发且两个发布选项都禁用时跳过）
     if: |
       github.event_name == 'release' ||
       github.event.inputs.publish_nuget == 'true' ||
       github.event.inputs.publish_github == 'true'
 
     steps:
-      - name: Download NuGet packages
+      - name: 下载 NuGet 包制品
         uses: actions/download-artifact@v4
         with:
           name: nuget-packages
           path: nupkgs
 
-      # ── Publish to NuGet.org ──────────────────────────────────────────────
-      - name: Publish to NuGet.org
+      # ── 发布到 NuGet.org ──────────────────────────────────────────────────
+      - name: 发布到 NuGet.org
         if: |
           github.event_name == 'release' ||
           github.event.inputs.publish_nuget == 'true'
@@ -169,8 +174,8 @@ jobs:
             --api-key "$NUGET_API_KEY" \
             --skip-duplicate
 
-      # ── Publish to GitHub Packages ────────────────────────────────────────
-      - name: Publish to GitHub Packages
+      # ── 发布到 GitHub Packages ────────────────────────────────────────────
+      - name: 发布到 GitHub Packages
         if: |
           github.event_name == 'release' ||
           github.event.inputs.publish_github == 'true'

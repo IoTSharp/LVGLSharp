@@ -13,7 +13,7 @@
 	<PropertyGroup>
 		<PackageId>LVGLSharp.Forms</PackageId>
 		<Title>LVGLSharp.Forms — WinForms API over LVGL</Title>
-		<Description>A cross-platform WinForms API compatibility layer that renders UI through LVGL. Targets Windows and Linux (x64, arm, arm64, loongarch64) with NativeAOT support.</Description>
+		<Description>A cross-platform WinForms API compatibility layer that renders UI through LVGL. Targets Windows and Linux (x64, arm, arm64) with NativeAOT support.</Description>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -21,7 +21,7 @@
 		<PublishPlatform>Windows</PublishPlatform>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(RuntimeIdentifier)' == 'linux-arm' Or '$(RuntimeIdentifier)' == 'linux-arm64' Or '$(RuntimeIdentifier)' == 'linux-x64' Or '$(RuntimeIdentifier)' == 'linux-loongarch64'">
+	<PropertyGroup Condition="'$(RuntimeIdentifier)' == 'linux-arm' Or '$(RuntimeIdentifier)' == 'linux-arm64' Or '$(RuntimeIdentifier)' == 'linux-x64'">
 		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
 		<PublishPlatform>Linux</PublishPlatform>
 	</PropertyGroup>

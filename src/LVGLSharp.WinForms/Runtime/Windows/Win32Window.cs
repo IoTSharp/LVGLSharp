@@ -2,6 +2,7 @@
 using LVGLSharp.Interop;
 using SixLabors.Fonts;
 using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,12 +35,10 @@ namespace LVGLSharp.Runtime.Windows
         static readonly object renderLock = new object();
         static uint last_key_processed;
         static lv_indev_state_t last_key_state_processed = LV_INDEV_STATE_REL;
-        static string ime_content = "";
         static bool ime_composing = false;
         static int pending_ime_char_skips = 0;
         static volatile int mouseWheelDelta = 0;
         static ConcurrentQueue<uint> key_queue = new ConcurrentQueue<uint>();
-        static ConcurrentQueue<string> ime_commit_queue = new ConcurrentQueue<string>();
 
         public static lv_obj_t* root { get; set; }
         public static lv_group_t* key_inputGroup { get; set; }
@@ -203,27 +202,91 @@ namespace LVGLSharp.Runtime.Windows
             }
         }
 
-        static unsafe void DrainImeCommitQueue()
+        static unsafe void CommitImeText(string text)
         {
-            while (ime_commit_queue.TryDequeue(out var text))
+            if (string.IsNullOrEmpty(text))
             {
-                if (string.IsNullOrEmpty(text) || key_inputGroup == null)
-                {
-                    continue;
-                }
+                return;
+            }
 
-                var inputObj = lv_group_get_focused(key_inputGroup);
-                if (inputObj == null)
-                {
-                    continue;
-                }
+            var inputObj = GetFocusedTextInput();
+            if (inputObj == null)
+            {
+                return;
+            }
 
-                var utf8 = Encoding.UTF8.GetBytes(text + "\0");
+            var encoding = Encoding.UTF8;
+            int byteCount = encoding.GetByteCount(text);
+            byte[]? rentedBuffer = null;
+            Span<byte> utf8 = byteCount + 1 <= 256
+                ? stackalloc byte[byteCount + 1]
+                : (rentedBuffer = ArrayPool<byte>.Shared.Rent(byteCount + 1));
+
+            try
+            {
+                encoding.GetBytes(text.AsSpan(), utf8);
+                utf8[byteCount] = 0;
+
                 fixed (byte* utf8Ptr = utf8)
                 {
                     lv_textarea_add_text(inputObj, utf8Ptr);
                 }
             }
+            finally
+            {
+                if (rentedBuffer != null)
+                {
+                    ArrayPool<byte>.Shared.Return(rentedBuffer);
+                }
+            }
+        }
+
+        static string? TryGetCompositionText(IntPtr hIMC, int compositionType)
+        {
+            int size = ImmGetCompositionStringW(hIMC, compositionType, null, 0);
+            if (size <= 0)
+            {
+                return null;
+            }
+
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(size);
+            try
+            {
+                int bytesWritten = ImmGetCompositionStringW(hIMC, compositionType, buffer, size);
+                return bytesWritten > 0 ? Encoding.Unicode.GetString(buffer, 0, bytesWritten) : null;
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
+
+        static bool PumpPendingMessages()
+        {
+            bool hadMessages = false;
+
+            while (PeekMessage(out msg, IntPtr.Zero, 0, 0, 1))
+            {
+                hadMessages = true;
+
+                if (msg.message == 0x0012)
+                {
+                    g_running = false;
+                    break;
+                }
+
+                TranslateMessage(ref msg);
+                DispatchMessage(ref msg);
+            }
+
+            return hadMessages;
+        }
+
+        bool ProcessEventsCore()
+        {
+            bool hadMessages = PumpPendingMessages();
+            lv_timer_handler();
+            return hadMessages;
         }
 
         static unsafe bool IsPointInsideObject(lv_obj_t* obj, int x, int y)
@@ -314,26 +377,26 @@ namespace LVGLSharp.Runtime.Windows
                 case WM_IME_COMPOSITION:
                     {
                         UpdateImeCompositionWindow(GetFocusedTextInput());
+                        int compositionFlags = (int)lParam;
 
-                        if (((int)lParam & GCS_RESULTSTR) != 0)
+                        if ((compositionFlags & GCS_COMPSTR) != 0)
+                        {
+                            ime_composing = true;
+                        }
+
+                        if ((compositionFlags & GCS_RESULTSTR) != 0)
                         {
                             IntPtr hIMC = ImmGetContext(hWnd);
                             if (hIMC != IntPtr.Zero)
                             {
-                                int size = ImmGetCompositionStringW(hIMC, GCS_RESULTSTR, null, 0);
-                                if (size > 0)
+                                string? result = TryGetCompositionText(hIMC, GCS_RESULTSTR);
+                                if (!string.IsNullOrEmpty(result))
                                 {
-                                    byte[] buffer = new byte[size];
-                                    ImmGetCompositionStringW(hIMC, GCS_RESULTSTR, buffer, size);
-                                    string result = Encoding.Unicode.GetString(buffer);
-                                    ime_content = result;
-                                    if (!string.IsNullOrEmpty(result))
-                                    {
-                                        ime_commit_queue.Enqueue(result);
-                                        pending_ime_char_skips = Math.Max(pending_ime_char_skips, result.Length);
-                                    }
-                                    ime_composing = false;
+                                    CommitImeText(result);
+                                    pending_ime_char_skips = Math.Max(pending_ime_char_skips, result.Length);
                                 }
+
+                                ime_composing = false;
                                 ImmReleaseContext(hWnd, hIMC);
                             }
                         }
@@ -443,9 +506,13 @@ namespace LVGLSharp.Runtime.Windows
         {
             while (g_running)
             {
-                ProcessEvents();
+                bool hadMessages = ProcessEventsCore();
                 handle?.Invoke();
-                Thread.Sleep(5);
+
+                if (!hadMessages)
+                {
+                    Thread.Sleep(1);
+                }
             }
 
             g_running = false;
@@ -454,20 +521,7 @@ namespace LVGLSharp.Runtime.Windows
 
         public void ProcessEvents()
         {
-            DrainImeCommitQueue();
-            lv_timer_handler();
-
-            if (PeekMessage(out msg, IntPtr.Zero, 0, 0, 1))
-            {
-                if (msg.message == 0x0012)
-                {
-                    g_running = false;
-                    return;
-                }
-
-                TranslateMessage(ref msg);
-                DispatchMessage(ref msg);
-            }
+            ProcessEventsCore();
         }
 
         public void Stop()

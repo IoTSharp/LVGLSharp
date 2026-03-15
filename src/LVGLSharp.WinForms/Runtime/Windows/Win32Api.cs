@@ -94,6 +94,7 @@ namespace LVGLSharp.Runtime.Windows
         public const int WM_IME_STARTCOMPOSITION = 0x010D;
         public const int WM_IME_ENDCOMPOSITION = 0x010E;
         public const int WM_IME_COMPOSITION = 0x010F;
+        public const int GCS_COMPSTR = 0x0008;
         public const int GCS_RESULTSTR = 0x0800;
 
         [DllImport("imm32.dll")]

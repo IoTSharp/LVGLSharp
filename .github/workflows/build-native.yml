@@ -64,6 +64,13 @@ jobs:
         with:
           submodules: recursive
 
+      # ─── Copy lv_conf.h into the lvgl source tree ─────────────────────────
+      # LVGL's CMake looks for lv_conf.h inside CMAKE_SOURCE_DIR (libs/lvgl/).
+      # The file lives one level up at libs/lv_conf.h, so copy it in place.
+      - name: Copy lv_conf.h into lvgl source directory
+        shell: bash
+        run: cp libs/lv_conf.h libs/lvgl/lv_conf.h
+
       # ─── Linux: optional cross-compilation toolchain ───────────────────────
       - name: Install cross-compilation toolchain
         if: ${{ matrix.apt_packages != '' && runner.os == 'Linux' }}
@@ -79,7 +86,6 @@ jobs:
           cmake -S libs/lvgl -B libs/lvgl/build_shared \
             -G "${{ matrix.cmake_generator }}" \
             -A "${{ matrix.cmake_arch }}" \
-            -DLVGL_ROOT_DIR="${{ github.workspace }}/libs/lvgl" \
             -DCONFIG_LV_BUILD_EXAMPLES=OFF \
             -DCONFIG_LV_BUILD_DEMOS=OFF \
             -DCONFIG_LV_USE_THORVG_INTERNAL=OFF \

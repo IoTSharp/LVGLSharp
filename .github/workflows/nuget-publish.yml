@@ -1,0 +1,193 @@
+name: 打包并发布 NuGet 包
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "包版本号（如 9.3.0）"
+        required: true
+        default: "9.3.0"
+      publish_nuget:
+        description: "发布到 NuGet.org"
+        type: boolean
+        default: true
+      publish_github:
+        description: "发布到 GitHub Packages"
+        type: boolean
+        default: true
+
+env:
+  # 版本来源：优先使用 workflow_dispatch 输入，其次使用 release 标签，最后使用分支名。
+  # 注意：该值可能含有 'v' 前缀（如 v9.3.0），打包时会在 Normalise version 步骤中去除。
+  PACKAGE_VERSION: ${{ github.event.inputs.version || github.event.release.tag_name || github.ref_name }}
+
+jobs:
+  # ──────────────────────────────────────────────────────────────────────────
+  # 1. 为各平台构建原生库
+  # ──────────────────────────────────────────────────────────────────────────
+  build-native:
+    uses: ./.github/workflows/build-native.yml
+    permissions:
+      contents: read
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 2. 组装 LVGLSharp.Native NuGet 包及托管代码包
+  # ──────────────────────────────────────────────────────────────────────────
+  pack:
+    needs: build-native
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          submodules: false   # 仅托管代码，无需构建 C 库
+
+      - name: 规范化版本号（去除 'v' 前缀）
+        id: ver
+        run: |
+          VER="${{ env.PACKAGE_VERSION }}"
+          VER="${VER#v}"
+          echo "version=${VER}" >> "$GITHUB_OUTPUT"
+
+      # ── 下载所有原生库制品 ────────────────────────────────────────────────
+      - name: 下载所有原生库制品
+        uses: actions/download-artifact@v4
+        with:
+          pattern: native-*
+          path: native_artifacts
+
+      # ── 按 runtimes/{rid}/native/ 结构组织原生库 ──────────────────────────
+      - name: 整理原生库到 runtimes 目录结构
+        shell: bash
+        run: |
+          declare -A LIB_NAME=(
+            [win-x64]="lvgl.dll"
+            [win-x86]="lvgl.dll"
+            [win-arm64]="lvgl.dll"
+            [linux-x64]="liblvgl.so"
+            [linux-arm]="liblvgl.so"
+            [linux-arm64]="liblvgl.so"
+          )
+          missing=()
+          for rid in "${!LIB_NAME[@]}"; do
+            src_dir="native_artifacts/native-${rid}"
+            dst_dir="src/LVGLSharp.Native/runtimes/${rid}/native"
+            mkdir -p "$dst_dir"
+            lib="${LIB_NAME[$rid]}"
+            placed=false
+            if [ -f "${src_dir}/${lib}" ]; then
+              cp "${src_dir}/${lib}" "${dst_dir}/"
+              echo "已放置 ${lib} -> ${dst_dir}/"
+              placed=true
+            else
+              # 回退：查找制品目录中的第一个 .so 或 .dll
+              first=$(find "$src_dir" \( -name "*.dll" -o -name "*.so" \) | head -1)
+              if [ -n "$first" ]; then
+                cp "$first" "${dst_dir}/${lib}"
+                echo "已放置（回退）$(basename "$first") -> ${dst_dir}/${lib}"
+                placed=true
+              fi
+            fi
+            if [ "$placed" = "false" ]; then
+              echo "错误：在 ${src_dir} 中找不到 ${rid} 的原生库"
+              missing+=("$rid")
+            fi
+          done
+          if [ ${#missing[@]} -ne 0 ]; then
+            echo "以下 RID 缺少原生库：${missing[*]}"
+            exit 1
+          fi
+
+      # ── 打包 LVGLSharp.Native ─────────────────────────────────────────────
+      - name: 打包 LVGLSharp.Native
+        run: |
+          dotnet pack src/LVGLSharp.Native/LVGLSharp.Native.csproj \
+            -c Release \
+            -p:Version=${{ steps.ver.outputs.version }} \
+            --output nupkgs
+
+      # ── 注册本地 NuGet 源，供 Interop 打包时解析 LVGLSharp.Native 依赖 ────
+      # CI 环境中 $(CI)==true 会激活 LVGLSharp.Native 包引用，
+      # 此时该包尚未发布到 NuGet.org，需要指向本地 nupkgs/ 目录。
+      - name: 注册本地 NuGet 源
+        run: dotnet nuget add source "$(pwd)/nupkgs" --name local-packages
+
+      # ── 打包 LVGLSharp.Interop ────────────────────────────────────────────
+      - name: 打包 LVGLSharp.Interop
+        run: |
+          dotnet pack src/LVGLSharp.Interop/LVGLSharp.Interop.csproj \
+            -c Release \
+            -p:Version=${{ steps.ver.outputs.version }} \
+            --output nupkgs
+
+      # ── 打包 LVGLSharp.Forms ──────────────────────────────────────────────
+      - name: 打包 LVGLSharp.Forms
+        run: |
+          dotnet pack src/LVGLSharp.WinForms/LVGLSharp.Forms.csproj \
+            -c Release \
+            -p:Version=${{ steps.ver.outputs.version }} \
+            --output nupkgs
+
+      # ── 将打包好的 NuGet 包上传为制品 ────────────────────────────────────
+      - name: 上传 NuGet 包制品
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: nupkgs/*.nupkg
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 3. 发布
+  # ──────────────────────────────────────────────────────────────────────────
+  publish:
+    needs: pack
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    # 仅在真实发布时执行（手动触发且两个发布选项都禁用时跳过）
+    if: |
+      github.event_name == 'release' ||
+      github.event.inputs.publish_nuget == 'true' ||
+      github.event.inputs.publish_github == 'true'
+
+    steps:
+      - name: 下载 NuGet 包制品
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+          path: nupkgs
+
+      # ── 发布到 NuGet.org ──────────────────────────────────────────────────
+      - name: 发布到 NuGet.org
+        if: |
+          github.event_name == 'release' ||
+          github.event.inputs.publish_nuget == 'true'
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          dotnet nuget push nupkgs/*.nupkg \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key "$NUGET_API_KEY" \
+            --skip-duplicate
+
+      # ── 发布到 GitHub Packages ────────────────────────────────────────────
+      - name: 发布到 GitHub Packages
+        if: |
+          github.event_name == 'release' ||
+          github.event.inputs.publish_github == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet nuget add source \
+            "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --name github \
+            --username "${{ github.actor }}" \
+            --password "$GITHUB_TOKEN" \
+            --store-password-in-clear-text
+          dotnet nuget push nupkgs/*.nupkg \
+            --source github \
+            --skip-duplicate

@@ -11,6 +11,12 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
+		<PackageId>LVGLSharp.Forms</PackageId>
+		<Title>LVGLSharp.Forms — WinForms API over LVGL</Title>
+		<Description>A cross-platform WinForms API compatibility layer that renders UI through LVGL. Targets Windows and Linux (x64, arm, arm64) with NativeAOT support.</Description>
+	</PropertyGroup>
+
+	<PropertyGroup>
 		<DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
 		<PublishPlatform>Windows</PublishPlatform>
 	</PropertyGroup>

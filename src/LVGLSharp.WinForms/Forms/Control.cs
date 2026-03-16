@@ -1,4 +1,4 @@
-ï»¿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -16,7 +16,7 @@ namespace LVGLSharp.Forms
         private Rectangle _anchorReferenceBounds;
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Initializes a new instance of the System.Windows.Forms.Control class with default
         //     settings.
         public Control() : base()
@@ -32,11 +32,11 @@ namespace LVGLSharp.Forms
             Anchor = AnchorStyles.Top | AnchorStyles.Left;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Initializes a new instance of the System.Windows.Forms.Control class with specific
         //     text.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   text:
         //     The text displayed by the control.
         public Control(string? text) : this()
@@ -44,11 +44,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Initializes a new instance of the System.Windows.Forms.Control class as a child
         //     control, with specific text.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   parent:
         //     The System.Windows.Forms.Control to be the parent of the control.
         //
@@ -59,11 +59,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Initializes a new instance of the System.Windows.Forms.Control class with specific
         //     text, size, and location.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   text:
         //     The text displayed by the control.
         //
@@ -89,11 +89,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Initializes a new instance of the System.Windows.Forms.Control class as a child
         //     control, with specific text, size, and location.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   parent:
         //     The System.Windows.Forms.Control to be the parent of the control.
         //
@@ -123,84 +123,84 @@ namespace LVGLSharp.Forms
         }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the default font of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The default System.Drawing.Font of the control. The value returned will vary
         //     depending on the user's operating system the local culture setting of their system.
         //
         //
-        // å¼‚å¸¸:
+        // Òì³£:
         //   T:System.ArgumentException:
         //     The default font or the regional alternative fonts are not installed on the client
         //     computer.
         public static Font DefaultFont { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the default foreground color of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The default foreground System.Drawing.Color of the control. The default is System.Drawing.SystemColors.ControlText.
         public static Color DefaultForeColor { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets a value indicating whether to catch calls on the wrong thread that
         //     access a control's System.Windows.Forms.Control.Handle property when an application
         //     is being debugged.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if calls on the wrong thread are caught; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public static bool CheckForIllegalCrossThreadCalls { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the default background color of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The default background System.Drawing.Color of the control. The default is System.Drawing.SystemColors.Control.
         public static Color DefaultBackColor { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating which of the mouse buttons is in a pressed state.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A bitwise combination of the System.Windows.Forms.MouseButtons enumeration values.
         //     The default is System.Windows.Forms.MouseButtons.None.
         public static MouseButtons MouseButtons { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating which of the modifier keys (SHIFT, CTRL, and ALT) is
         //     in a pressed state.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A bitwise combination of the System.Windows.Forms.Keys values. The default is
         //     System.Windows.Forms.Keys.None.
         public static Keys ModifierKeys { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the position of the mouse cursor in screen coordinates.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Point that contains the coordinates of the mouse cursor relative
         //     to the upper-left corner of the screen.
         public static Point MousePosition { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets an object that represents a propagating IME mode.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     An object that represents a propagating IME mode.
         protected static ImeMode PropagatingImeMode { get; }
 #nullable disable
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the width of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The width of the control in pixels.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -214,10 +214,10 @@ namespace LVGLSharp.Forms
         }
 #nullable enable
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     This property is not relevant for this class.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The NativeWindow contained within the control.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -226,18 +226,18 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlWindowTargetDescr")]
         public IWindowTarget WindowTarget { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the size of a rectangular area into which the control can fit.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Size containing the height and width, in pixels.
         [Browsable(false)]
         public Size PreferredSize { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets padding within the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Windows.Forms.Padding representing the control's internal spacing characteristics.
         [Localizable(true)]
         [SRCategoryAttribute("CatLayout")]
@@ -252,11 +252,11 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets a value indicating whether to use the wait cursor for the current
         //     control and all child controls.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true to use the wait cursor for the current control and all child controls; otherwise,
         //     false. The default is false.
         [Browsable(true)]
@@ -266,11 +266,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlUseWaitCursorDescr")]
         public bool UseWaitCursor { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets a value indicating whether the control and all its child controls
         //     are displayed.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true to display the control and its child controls; otherwise, false. The default
         //     is true. When getting the value, true is returned only if the control is visible
         //     and the parent control, if it exists, is visible.
@@ -299,14 +299,14 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the Input Method Editor (IME) mode of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     One of the System.Windows.Forms.ImeMode values. The default is System.Windows.Forms.ImeMode.Inherit.
         //
         //
-        // å¼‚å¸¸:
+        // Òì³£:
         //   T:System.ComponentModel.InvalidEnumArgumentException:
         //     The assigned value is not one of the System.Windows.Forms.ImeMode enumeration
         //     values.
@@ -316,11 +316,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlIMEModeDescr")]
         public ImeMode ImeMode { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the control has a handle associated with it.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if a handle has been assigned to the control; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -328,10 +328,10 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlHandleCreatedDescr")]
         public bool IsHandleCreated => Handle!= nint.Zero;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the height of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The height of the control in pixels.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -344,11 +344,11 @@ namespace LVGLSharp.Forms
             set => Size = new Size(_size.Width, value);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the control contains one or more child controls.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control contains one or more child controls; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -356,10 +356,10 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlHasChildrenDescr")]
         public bool HasChildren { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the window handle that the control is bound to.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     An System.IntPtr that contains the window handle (HWND) of the control.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -367,10 +367,10 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlHandleDescr")]
         public nint Handle { get; internal set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the foreground color of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The foreground System.Drawing.Color of the control. The default is the value
         //     of the System.Windows.Forms.Control.DefaultForeColor property.
         [DispId(-513)]
@@ -393,10 +393,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the font of the text displayed by the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The System.Drawing.Font to apply to the text displayed by the control. The default
         //     is the value of the System.Windows.Forms.Control.DefaultFont property.
         [AmbientValue(null)]
@@ -415,12 +415,12 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the caller must call an invoke method when making
         //     method calls to the control because the caller is on a different thread than
         //     the one the control was created on.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control's System.Windows.Forms.Control.Handle was created on a different
         //     thread than the calling thread (indicating that you must make calls to the control
         //     through an invoke method); otherwise, false.
@@ -430,11 +430,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlInvokeRequiredDescr")]
         public bool InvokeRequired { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets a value indicating whether the control is visible to accessibility
         //     applications.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control is visible to accessibility applications; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -443,10 +443,10 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlIsAccessibleDescr")]
         public bool IsAccessible { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the text associated with this control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The text associated with this control.
         [Bindable(true)]
         [DispId(-517)]
@@ -464,12 +464,12 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the parent control that is not parented by another Windows Forms control.
         //     Typically, this is the outermost System.Windows.Forms.Form that the control is
         //     contained in.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The System.Windows.Forms.Control that represents the top-level control that contains
         //     the current control.
         [Browsable(false)]
@@ -479,11 +479,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlTopLevelControlDescr")]
         public Control? TopLevelControl { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the size that is the lower limit that System.Windows.Forms.Control.GetPreferredSize(System.Drawing.Size)
         //     can specify.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     An ordered pair of type System.Drawing.Size representing the width and height
         //     of a rectangle.
         [Localizable(true)]
@@ -491,18 +491,18 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlMinimumSizeDescr")]
         public virtual Size MinimumSize { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the name of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The name of the control. The default is an empty string ("").
         [Browsable(false)]
         public string Name { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the parent container of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Windows.Forms.Control that represents the parent or container control
         //     of the control.
         [Browsable(false)]
@@ -520,10 +520,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the product name of the assembly containing the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The product name of the assembly containing the control.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -531,10 +531,10 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlProductNameDescr")]
         public string ProductName { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the version of the assembly containing the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The file version of the assembly containing the control.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -542,11 +542,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlProductVersionDescr")]
         public string ProductVersion { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the control is currently re-creating its handle.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control is currently re-creating its handle; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -555,10 +555,10 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlRecreatingHandleDescr")]
         public bool RecreatingHandle { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the window region associated with the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The window System.Drawing.Region associated with the control.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -576,11 +576,11 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the coordinates of the upper-left corner of the control relative
         //     to the upper-left corner of its container.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The System.Drawing.Point that represents the upper-left corner of the control
         //     relative to the upper-left corner of its container.
         [Localizable(true)]
@@ -604,11 +604,11 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the distance, in pixels, between the left edge of the control and
         //     the left edge of its container's client area.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     An System.Int32 representing the distance, in pixels, between the left edge of
         //     the control and the left edge of its container's client area.
         [Browsable(false)]
@@ -622,11 +622,11 @@ namespace LVGLSharp.Forms
             set => Location = new Point(value, _location.Y);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the distance, in pixels, between the right edge of the control and the left
         //     edge of its container's client area.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     An System.Int32 representing the distance, in pixels, between the right edge
         //     of the control and the left edge of its container's client area.
         [Browsable(false)]
@@ -636,15 +636,15 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlRightDescr")]
         public int Right => _location.X + _size.Width;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets a value indicating whether control's elements are aligned to support
         //     locales using right-to-left fonts.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     One of the System.Windows.Forms.RightToLeft values. The default is System.Windows.Forms.RightToLeft.Inherit.
         //
         //
-        // å¼‚å¸¸:
+        // Òì³£:
         //   T:System.ComponentModel.InvalidEnumArgumentException:
         //     The assigned value is not one of the System.Windows.Forms.RightToLeft values.
         [AmbientValue(RightToLeft.Inherit)]
@@ -662,10 +662,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the control is mirrored.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control is mirrored; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -674,19 +674,19 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("IsMirroredDescr")]
         public bool IsMirrored { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the site of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The System.ComponentModel.ISite associated with the System.Windows.Forms.Control,
         //     if any.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public override ISite? Site { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the height and width of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The System.Drawing.Size that represents the height and width of the control in
         //     pixels.
         [Localizable(true)]
@@ -715,10 +715,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the tab order of the control within its container.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The index value of the control within the set of controls within its container.
         //     The controls in the container are included in the tab order.
         [Localizable(true)]
@@ -736,11 +736,11 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets a value indicating whether the user can give the focus to this control
         //     using the TAB key.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the user can give the focus to the control using the TAB key; otherwise,
         //     false. The default is true. Note: This property will always return true for an
         //     instance of the System.Windows.Forms.Form class.
@@ -759,10 +759,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the object that contains data about the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     An System.Object that contains data about the control. The default is null.
         [Bindable(true)]
         [DefaultValue(null)]
@@ -772,10 +772,10 @@ namespace LVGLSharp.Forms
         [TypeConverter(typeof(StringConverter))]
         public object? Tag { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the control has input focus.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control has focus; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -783,11 +783,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlFocusedDescr")]
         public virtual bool Focused { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the distance, in pixels, between the top edge of the control and
         //     the top edge of its container's client area.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     An System.Int32 representing the distance, in pixels, between the top edge of
         //     the control and the top edge of its container's client area.
         [Browsable(false)]
@@ -801,7 +801,7 @@ namespace LVGLSharp.Forms
             set => Location = new Point(_location.X, value);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Indicates if one of the Ancestors of this control is sited and that site in DesignMode.
         //     This property is read-only.
         [Browsable(false)]
@@ -809,11 +809,11 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public bool IsAncestorSiteInDesignMode { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets a value indicating whether the control can respond to user interaction.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control can respond to user interaction; otherwise, false. The default
         //     is true.
         [DispId(-514)]
@@ -842,10 +842,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the control has been disposed of.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control has been disposed of; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -853,15 +853,15 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlDisposedDescr")]
         public bool IsDisposed { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets which control borders are docked to its parent control and determines
         //     how a control is resized with its parent.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     One of the System.Windows.Forms.DockStyle values. The default is System.Windows.Forms.DockStyle.None.
         //
         //
-        // å¼‚å¸¸:
+        // Òì³£:
         //   T:System.ComponentModel.InvalidEnumArgumentException:
         //     The value assigned is not one of the System.Windows.Forms.DockStyle values.
         [DefaultValue(DockStyle.None)]
@@ -895,10 +895,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the control can receive focus.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control can receive focus; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -907,11 +907,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlCanFocusDescr")]
         public bool CanFocus { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the size and location of the control including its nonclient elements,
         //     in pixels, relative to the parent control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Rectangle in pixels relative to the parent control that represents
         //     the size and location of the control including its nonclient elements.
         [Browsable(false)]
@@ -921,11 +921,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlBoundsDescr")]
         public Rectangle Bounds { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the distance, in pixels, between the bottom edge of the control and the
         //     top edge of its container's client area.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     An System.Int32 representing the distance, in pixels, between the bottom edge
         //     of the control and the top edge of its container's client area.
         [Browsable(false)]
@@ -935,10 +935,10 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlBottomDescr")]
         public int Bottom => _location.Y + _size.Height;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the System.Windows.Forms.BindingContext for the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Windows.Forms.BindingContext for the control.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -955,17 +955,17 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the background image layout as defined in the System.Windows.Forms.ImageLayout
         //     enumeration.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     One of the values of System.Windows.Forms.ImageLayout (System.Windows.Forms.ImageLayout.Center
         //     , System.Windows.Forms.ImageLayout.None, System.Windows.Forms.ImageLayout.Stretch,
         //     System.Windows.Forms.ImageLayout.Tile, or System.Windows.Forms.ImageLayout.Zoom).
         //     System.Windows.Forms.ImageLayout.Tile is the default value.
         //
-        // å¼‚å¸¸:
+        // Òì³£:
         //   T:System.ComponentModel.InvalidEnumArgumentException:
         //     The specified enumeration value does not exist.
         [DefaultValue(ImageLayout.Tile)]
@@ -974,10 +974,10 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlBackgroundImageLayoutDescr")]
         public virtual ImageLayout BackgroundImageLayout { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the background image displayed in the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     An System.Drawing.Image that represents the image to display in the background
         //     of the control.
         [DefaultValue(null)]
@@ -986,10 +986,10 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlBackgroundImageDescr")]
         public virtual Image? BackgroundImage { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the background color for the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Color that represents the background color of the control. The
         //     default is the value of the System.Windows.Forms.Control.DefaultBackColor property.
         [DispId(-501)]
@@ -1012,7 +1012,7 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the data context for the purpose of data binding. This is an ambient
         //     property.
         [Bindable(true)]
@@ -1029,10 +1029,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the control can be selected.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control can be selected; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -1041,19 +1041,19 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlCanSelectDescr")]
         public bool CanSelect { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a cached instance of the control's layout engine.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The System.Windows.Forms.Layout.LayoutEngine for the control's contents.
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public virtual LayoutEngine LayoutEngine { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     This property is not relevant for this class.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if enabled; otherwise, false.
         [Browsable(false)]
         [DefaultValue(false)]
@@ -1074,11 +1074,11 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the edges of the container to which a control is bound and determines
         //     how a control is resized with its parent.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A bitwise combination of the System.Windows.Forms.AnchorStyles values. The default
         //     is Top and Left.
         [DefaultValue(AnchorStyles.Top | AnchorStyles.Left)]
@@ -1097,11 +1097,11 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets a value indicating whether the control can accept data that the
         //     user drags onto it.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if drag-and-drop operations are allowed in the control; otherwise, false.
         //     The default is false.
         [DefaultValue(false)]
@@ -1110,11 +1110,11 @@ namespace LVGLSharp.Forms
         public virtual bool AllowDrop { get; set; }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the name of the control used by accessibility client applications.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The name of the control used by accessibility client applications. The default
         //     is null.
         [DefaultValue(null)]
@@ -1123,11 +1123,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlAccessibleNameDescr")]
         public string? AccessibleName { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the description of the control used by accessibility client applications.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The description of the control used by accessibility client applications. The
         //     default is null.
         [DefaultValue(null)]
@@ -1136,11 +1136,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlAccessibleDescriptionDescr")]
         public string? AccessibleDescription { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the default action description of the control for use by accessibility
         //     client applications.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The default action description of the control for use by accessibility client
         //     applications.
         [Browsable(false)]
@@ -1151,11 +1151,11 @@ namespace LVGLSharp.Forms
         public string? AccessibleDefaultActionDescription { get; set; }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets where this control is scrolled to in System.Windows.Forms.ScrollableControl.ScrollControlIntoView(System.Windows.Forms.Control).
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Point specifying the scroll location. The default is the upper-left
         //     corner of the control.
         [Browsable(false)]
@@ -1163,10 +1163,10 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public virtual Point AutoScrollOffset { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets a value indicating whether the control has captured the mouse.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control has captured the mouse; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -1175,11 +1175,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlCaptureDescr")]
         public bool Capture { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets a value indicating whether the control causes validation to be performed
         //     on any controls that require validation when it receives focus.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control causes validation to be performed on any controls requiring
         //     validation when it receives focus; otherwise, false. The default is true.
         [DefaultValue(true)]
@@ -1196,10 +1196,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the space between controls.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Windows.Forms.Padding representing the space between controls.
         [Localizable(true)]
         [SRCategoryAttribute("CatLayout")]
@@ -1214,10 +1214,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the height and width of the client area of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Size that represents the dimensions of the client area of the
         //     control.
         [Browsable(false)]
@@ -1227,11 +1227,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlClientSizeDescr")]
         public Size ClientSize { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the name of the company or creator of the application containing the control.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The company name or creator of the application containing the control.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -1239,11 +1239,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlCompanyNameDescr")]
         public string CompanyName { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the base System.Windows.Forms.Control class is
         //     in the process of disposing.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the base System.Windows.Forms.Control class is in the process of disposing;
         //     otherwise, false.
         [Browsable(false)]
@@ -1252,11 +1252,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlDisposingDescr")]
         public bool Disposing { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the control, or one of its child controls, currently
         //     has the input focus.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control or one of its child controls currently has the input focus;
         //     otherwise, false.
         [Browsable(false)]
@@ -1265,11 +1265,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlContainsFocusDescr")]
         public bool ContainsFocus { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the System.Windows.Forms.ContextMenuStrip associated with this control.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The System.Windows.Forms.ContextMenuStrip for this control, or null if there
         //     is no System.Windows.Forms.ContextMenuStrip. The default is null.
         [DefaultValue(null)]
@@ -1288,10 +1288,10 @@ namespace LVGLSharp.Forms
 
         
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the collection of controls contained within the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Windows.Forms.Control.ControlCollection representing the collection
         //     of controls contained within the control.
         [Browsable(false)]
@@ -1299,10 +1299,10 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlControlsDescr")]
         public ControlCollection Controls { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the control has been created.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control has been created; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -1310,11 +1310,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlCreatedDescr")]
         public bool Created { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the size that is the upper limit that System.Windows.Forms.Control.GetPreferredSize(System.Drawing.Size)
         //     can specify.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     An ordered pair of type System.Drawing.Size representing the width and height
         //     of a rectangle.
         [AmbientValue(typeof(Size), "0, 0")]
@@ -1323,11 +1323,11 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlMaximumSizeDescr")]
         public virtual Size MaximumSize { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the cursor that is displayed when the mouse pointer is over the
         //     control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Windows.Forms.Cursor that represents the cursor to display when the
         //     mouse pointer is over the control.
         [AmbientValue(null)]
@@ -1344,10 +1344,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the data bindings for the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Windows.Forms.ControlBindingsCollection that contains the System.Windows.Forms.Binding
         //     objects for the control.
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
@@ -1357,10 +1357,10 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlBindingsDescr")]
         public ControlBindingsCollection DataBindings { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the rectangle that represents the client area of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Rectangle that represents the client area of the control.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -1369,10 +1369,10 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlClientRectangleDescr")]
         public Rectangle ClientRectangle { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the rectangle that represents the display area of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Rectangle that represents the display area of the control.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -1380,188 +1380,188 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlDisplayRectangleDescr")]
         public virtual Rectangle DisplayRectangle { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the DPI value for the display device where the control is currently being
         //     displayed.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The DPI value of the display device.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [EditorBrowsable(EditorBrowsableState.Always)]
         public int DeviceDpi { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the height of the font of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The height of the System.Drawing.Font of the control in pixels.
         protected int FontHeight { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the default size of the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The default System.Drawing.Size of the control.
         protected virtual Size DefaultSize { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets the default cursor for the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     An object of type System.Windows.Forms.Cursor representing the current default
         //     cursor.
         protected virtual Cursor DefaultCursor { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the length and height, in pixels, that is specified as the default minimum
         //     size of a control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Size representing the size of the control.
         protected virtual Size DefaultMinimumSize { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the length and height, in pixels, that is specified as the default maximum
         //     size of a control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Point.#ctor(System.Drawing.Size) representing the size of the
         //     control.
         protected virtual Size DefaultMaximumSize { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the space, in pixels, that is specified by default between controls.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Windows.Forms.Padding that represents the default space between controls.
         protected virtual Padding DefaultMargin { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the required creation parameters when the control handle is created.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Windows.Forms.CreateParams that contains the required creation parameters
         //     when the handle to the control is created.
         protected virtual CreateParams CreateParams { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Determines if events can be raised on the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control is hosted as an ActiveX control whose events are not frozen;
         //     otherwise, false.
         protected override bool CanRaiseEvents { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets the default internal spacing, in pixels, of the contents of a control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The default internal spacing of the contents of a control.
         protected virtual Padding DefaultPadding { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets a value indicating whether this control should redraw its surface
         //     using a secondary buffer to reduce or prevent flicker.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the surface of the control should be drawn using double buffering; otherwise,
         //     false.
         [SRCategoryAttribute("CatBehavior")]
         [SRDescriptionAttribute("ControlDoubleBufferedDescr")]
         protected virtual bool DoubleBuffered { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets or sets a value indicating whether the control redraws itself when resized.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control redraws itself when resized; otherwise, false.
         [SRDescriptionAttribute("ControlResizeRedrawDescr")]
         protected bool ResizeRedraw { get; set; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value that determines the scaling of child controls.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if child controls will be scaled when the System.Windows.Forms.Control.Scale(System.Single)
         //     method on this control is called; otherwise, false. The default is true.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual bool ScaleChildren { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the System.Windows.Forms.Control.ImeMode property
         //     can be set to an active value, to enable IME support.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true in all cases.
         protected virtual bool CanEnableIme { get; }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the user interface is in the appropriate state
         //     to show or hide keyboard accelerators.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the keyboard accelerators are visible; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected internal virtual bool ShowKeyboardCues { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Gets a value indicating whether the control should display focus rectangles.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control should display focus rectangles; otherwise, false.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected internal virtual bool ShowFocusCues { get; }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     This property is now obsolete.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control is rendered from right to left; otherwise, false. The default
         //     is false.
         [Obsolete("This property has been deprecated. Please use RightToLeft instead. https://go.microsoft.com/fwlink/?linkid=14202")]
         protected internal bool RenderRightToLeft { get; }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the system colors change.
         [SRCategoryAttribute("CatBehavior")]
         [SRDescriptionAttribute("ControlOnSystemColorsChangedDescr")]
         public event EventHandler? SystemColorsChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when a control should reposition its child controls.
         [SRCategoryAttribute("CatLayout")]
         [SRDescriptionAttribute("ControlOnLayoutDescr")]
         public event LayoutEventHandler? Layout;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when a key is released while the control has focus.
         [SRCategoryAttribute("CatKey")]
         [SRDescriptionAttribute("ControlOnKeyUpDescr")]
         public event KeyEventHandler? KeyUp;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when a character, space, or backspace key is pressed while the control
         //     has focus.
         [SRCategoryAttribute("CatKey")]
         [SRDescriptionAttribute("ControlOnKeyPressDescr")]
         public event KeyPressEventHandler? KeyPress;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when a key is pressed while the control has focus.
         [SRCategoryAttribute("CatKey")]
         [SRDescriptionAttribute("ControlOnKeyDownDescr")]
         public event KeyEventHandler? KeyDown;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control receives focus.
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -1569,13 +1569,13 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlOnGotFocusDescr")]
         public event EventHandler? GotFocus;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control is entered.
         [SRCategoryAttribute("CatFocus")]
         [SRDescriptionAttribute("ControlOnEnterDescr")]
         public event EventHandler? Enter;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control is redrawn.
         [SRCategoryAttribute("CatAppearance")]
         [SRDescriptionAttribute("ControlOnPaintDescr")]
@@ -1584,19 +1584,19 @@ namespace LVGLSharp.Forms
 #pragma warning restore CS0067
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the input focus leaves the control.
         [SRCategoryAttribute("CatFocus")]
         [SRDescriptionAttribute("ControlOnLeaveDescr")]
         public event EventHandler? Leave;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control's padding changes.
         [SRCategoryAttribute("CatLayout")]
         [SRDescriptionAttribute("ControlOnPaddingChangedDescr")]
         public event EventHandler? PaddingChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when a control's display requires redrawing.
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -1606,13 +1606,13 @@ namespace LVGLSharp.Forms
         public event InvalidateEventHandler? Invalidated;
 #pragma warning restore CS0067
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control is double-clicked.
         [SRCategoryAttribute("CatAction")]
         [SRDescriptionAttribute("ControlOnDoubleClickDescr")]
         public event EventHandler? DoubleClick;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control loses focus.
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -1620,38 +1620,38 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlOnLostFocusDescr")]
         public event EventHandler? LostFocus;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control loses mouse capture.
         [SRCategoryAttribute("CatAction")]
         [SRDescriptionAttribute("ControlOnMouseCaptureChangedDescr")]
         public event EventHandler? MouseCaptureChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control is double clicked by the mouse.
         [SRCategoryAttribute("CatAction")]
         [SRDescriptionAttribute("ControlOnMouseDoubleClickDescr")]
         public event MouseEventHandler? MouseDoubleClick;
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the mouse pointer is over the control and a mouse button is pressed.
         [SRCategoryAttribute("CatMouse")]
         [SRDescriptionAttribute("ControlOnMouseDownDescr")]
         public event MouseEventHandler? MouseDown;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the mouse pointer enters the control.
         [SRCategoryAttribute("CatMouse")]
         [SRDescriptionAttribute("ControlOnMouseEnterDescr")]
         public event EventHandler? MouseEnter;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the mouse pointer leaves the control.
         [SRCategoryAttribute("CatMouse")]
         [SRDescriptionAttribute("ControlOnMouseLeaveDescr")]
         public event EventHandler? MouseLeave;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the DPI setting for a control is changed programmatically before
         //     a DPI change event for its parent control or form has occurred.
         [SRCategoryAttribute("CatLayout")]
@@ -1660,19 +1660,19 @@ namespace LVGLSharp.Forms
         public event EventHandler? DpiChangedBeforeParent;
 #pragma warning restore CS0067
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the mouse pointer is moved over the control.
         [SRCategoryAttribute("CatMouse")]
         [SRDescriptionAttribute("ControlOnMouseMoveDescr")]
         public event MouseEventHandler? MouseMove;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the mouse pointer is over the control and a mouse button is released.
         [SRCategoryAttribute("CatMouse")]
         [SRDescriptionAttribute("ControlOnMouseUpDescr")]
         public event MouseEventHandler? MouseUp;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the mouse wheel moves while the control has focus.
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -1680,14 +1680,14 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlOnMouseWheelDescr")]
         public event MouseEventHandler? MouseWheel;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control is moved.
         [SRCategoryAttribute("CatLayout")]
         [SRDescriptionAttribute("ControlOnMoveDescr")]
         public event EventHandler? Move;
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control is resized.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [SRCategoryAttribute("CatLayout")]
@@ -1695,19 +1695,19 @@ namespace LVGLSharp.Forms
         public event EventHandler? Resize;
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control style changes.
         [SRCategoryAttribute("CatBehavior")]
         [SRDescriptionAttribute("ControlOnStyleChangedDescr")]
         public event EventHandler? StyleChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control is clicked by the mouse.
         [SRCategoryAttribute("CatAction")]
         [SRDescriptionAttribute("ControlOnMouseClickDescr")]
         public event MouseEventHandler? MouseClick;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control's handle is in the process of being destroyed.
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -1716,7 +1716,7 @@ namespace LVGLSharp.Forms
         public event EventHandler? HandleDestroyed;
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     This event is not relevant for this class.
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -1724,144 +1724,144 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlOnAutoSizeChangedDescr")]
         public event EventHandler? AutoSizeChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the value of the System.Windows.Forms.Control.BackColor property
         //     changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnBackColorChangedDescr")]
         public event EventHandler? BackColorChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the value of the System.Windows.Forms.Control.BackgroundImage property
         //     changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnBackgroundImageChangedDescr")]
         public event EventHandler? BackgroundImageChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the System.Windows.Forms.Control.BackgroundImageLayout property changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnBackgroundImageLayoutChangedDescr")]
         public event EventHandler? BackgroundImageLayoutChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the value of the System.Windows.Forms.BindingContext property changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnBindingContextChangedDescr")]
         public event EventHandler? BindingContextChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the value of the System.Windows.Forms.Control.CausesValidation property
         //     changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnCausesValidationChangedDescr")]
         public event EventHandler? CausesValidationChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the value of the System.Windows.Forms.Control.ClientSize property
         //     changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnClientSizeChangedDescr")]
         public event EventHandler? ClientSizeChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the value of the System.Windows.Forms.Control.ContextMenuStrip property
         //     changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlContextMenuStripChangedDescr")]
         public event EventHandler? ContextMenuStripChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the value of the System.Windows.Forms.Control.Cursor property changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnCursorChangedDescr")]
         public event EventHandler? CursorChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the value of the System.Windows.Forms.Control.Dock property changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnDockChangedDescr")]
         public event EventHandler? DockChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the System.Windows.Forms.Control.Enabled property value has changed.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnEnabledChangedDescr")]
         public event EventHandler? EnabledChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the System.Windows.Forms.Control.Font property value changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnFontChangedDescr")]
         public event EventHandler? FontChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the System.Windows.Forms.Control.ForeColor property value changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnForeColorChangedDescr")]
         public event EventHandler? ForeColorChanged;
         //
-        // æ‘˜è¦:
-        //     Occurs when the System.Windows.Forms.Control.Location property value has changed.
+        // ÕªÒª:
+        //     Occurs when the value of the System.Windows.Forms.Control.Location property value has changed.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnLocationChangedDescr")]
         public event EventHandler? LocationChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control's margin changes.
         [SRCategoryAttribute("CatLayout")]
         [SRDescriptionAttribute("ControlOnMarginChangedDescr")]
         public event EventHandler? MarginChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the value of the System.Windows.Forms.Control.Region property changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlRegionChangedDescr")]
         public event EventHandler? RegionChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the System.Windows.Forms.Control.RightToLeft property value changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnRightToLeftChangedDescr")]
         public event EventHandler? RightToLeftChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the System.Windows.Forms.Control.Size property value changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnSizeChangedDescr")]
         public event EventHandler? SizeChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the System.Windows.Forms.Control.TabIndex property value changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnTabIndexChangedDescr")]
         public event EventHandler? TabIndexChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the System.Windows.Forms.Control.TabStop property value changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnTabStopChangedDescr")]
         public event EventHandler? TabStopChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the System.Windows.Forms.Control.Text property value changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnTextChangedDescr")]
         public event EventHandler? TextChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the System.Windows.Forms.Control.Visible property value changes.
         [SRCategoryAttribute("CatPropertyChanged")]
         [SRDescriptionAttribute("ControlOnVisibleChangedDescr")]
         public event EventHandler? VisibleChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control is clicked.
         [SRCategoryAttribute("CatAction")]
         [SRDescriptionAttribute("ControlOnClickDescr")]
         public event EventHandler? Click;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when a new control is added to the System.Windows.Forms.Control.ControlCollection.
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -1869,7 +1869,7 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlOnControlAddedDescr")]
         public event ControlEventHandler? ControlAdded;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when a control is removed from the System.Windows.Forms.Control.ControlCollection.
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -1877,7 +1877,7 @@ namespace LVGLSharp.Forms
         [SRDescriptionAttribute("ControlOnControlRemovedDescr")]
         public event ControlEventHandler? ControlRemoved;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the value of the System.Windows.Forms.Control.DataContext property
         //     changes.
         [Browsable(true)]
@@ -1887,7 +1887,7 @@ namespace LVGLSharp.Forms
         public event EventHandler? DataContextChanged;
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when an object is dragged out of the control's bounds.
         [SRCategoryAttribute("CatDragDrop")]
         [SRDescriptionAttribute("ControlOnDragLeaveDescr")]
@@ -1895,37 +1895,37 @@ namespace LVGLSharp.Forms
         public event EventHandler? DragLeave;
 #pragma warning restore CS0067
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when a handle is created for the control.
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public event EventHandler? HandleCreated;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the DPI setting for a control is changed programmatically after the
         //     DPI of its parent control or form has changed.
 #pragma warning disable CS0067
         public event EventHandler? DpiChangedAfterParent;
 #pragma warning restore CS0067
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the mouse pointer rests on the control.
         public event EventHandler? MouseHover;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the System.Windows.Forms.Control.Parent property value changes.
         public event EventHandler? ParentChanged;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control is finished validating.
         public event EventHandler? Validated;
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the control is validating.
         public event CancelEventHandler? Validating;
 #nullable disable
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the value of the System.Windows.Forms.Control.ContextMenu property
         //     changes.
         [Browsable(false)]
@@ -1937,7 +1937,7 @@ namespace LVGLSharp.Forms
 #pragma warning restore CS0067
 #nullable enable
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Occurs when the System.Windows.Forms.Control.ImeMode property has changed.
 #pragma warning disable CS0067
         public event EventHandler ImeModeChanged;
@@ -1946,29 +1946,29 @@ namespace LVGLSharp.Forms
 
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Brings the control to the front of the z-order.
         public void BringToFront()
         {
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Retrieves a value indicating whether the specified control is a child of the
         //     control.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   ctl:
         //     The System.Windows.Forms.Control to evaluate.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the specified control is a child of the control; otherwise, false.
         public bool Contains([NotNullWhen(true)] Control? ctl)
         {
             return ctl is not null && Controls.Contains(ctl);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Forces the creation of the visible control, including the creation of the handle
         //     and any visible child controls.
         public void CreateControl()
@@ -1995,10 +1995,10 @@ namespace LVGLSharp.Forms
         }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Retrieves the form that the control is on.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     The System.Windows.Forms.Form that the control is on.
         public Form? FindForm()
         {
@@ -2013,10 +2013,10 @@ namespace LVGLSharp.Forms
             return null;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Sets input focus to the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the input focus request was successful; otherwise, false.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public bool Focus()
@@ -2026,7 +2026,7 @@ namespace LVGLSharp.Forms
 
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Forces the control to apply layout logic to all its child controls.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void PerformLayout()
@@ -2034,10 +2034,10 @@ namespace LVGLSharp.Forms
             PerformLayout(null, null);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Forces the control to apply layout logic to all its child controls.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   affectedControl:
         //     A System.Windows.Forms.Control that represents the most recently changed control.
         //
@@ -2071,15 +2071,15 @@ namespace LVGLSharp.Forms
             OnLayout(new LayoutEventArgs(affectedControl, affectedProperty));
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Computes the location of the specified screen point into client coordinates.
         //
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   p:
         //     The screen coordinate System.Drawing.Point to convert.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Point that represents the converted System.Drawing.Point, p,
         //     in client coordinates.
         public Point PointToClient(Point p)
@@ -2087,15 +2087,15 @@ namespace LVGLSharp.Forms
             return p;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Computes the location of the specified client point into screen coordinates.
         //
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   p:
         //     The client coordinate System.Drawing.Point to convert.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Point that represents the converted System.Drawing.Point, p,
         //     in screen coordinates.
         public Point PointToScreen(Point p)
@@ -2103,15 +2103,15 @@ namespace LVGLSharp.Forms
             return p;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Preprocesses keyboard or input messages within the message loop before they are
         //     dispatched.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   msg:
         //     A System.Windows.Forms.Message that represents the message to process.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     One of the System.Windows.Forms.PreProcessControlState values, depending on whether
         //     System.Windows.Forms.Control.PreProcessMessage(System.Windows.Forms.Message@)
         //     is true or false and whether System.Windows.Forms.Control.IsInputKey(System.Windows.Forms.Keys)
@@ -2122,32 +2122,32 @@ namespace LVGLSharp.Forms
             return default;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Preprocesses keyboard or input messages within the message loop before they are
         //     dispatched.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   msg:
         //     A System.Windows.Forms.Message, passed by reference, that represents the message
         //     to process. The possible values are WM_KEYDOWN, WM_SYSKEYDOWN, WM_CHAR, and WM_SYSCHAR.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the message was processed by the control; otherwise, false.
         public virtual bool PreProcessMessage(ref Message msg)
         {
             return true;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Computes the size and location of the specified screen rectangle in client coordinates.
         //
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   r:
         //     The screen coordinate System.Drawing.Rectangle to convert.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Rectangle that represents the converted System.Drawing.Rectangle,
         //     r, in client coordinates.
         public Rectangle RectangleToClient(Rectangle r)
@@ -2155,15 +2155,15 @@ namespace LVGLSharp.Forms
             return default(Rectangle);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Computes the size and location of the specified client rectangle in screen coordinates.
         //
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   r:
         //     The client coordinate System.Drawing.Rectangle to convert.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Rectangle that represents the converted System.Drawing.Rectangle,
         //     p, in screen coordinates.
         public Rectangle RectangleToScreen(Rectangle r)
@@ -2171,7 +2171,7 @@ namespace LVGLSharp.Forms
             return default(Rectangle);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Forces the control to invalidate its client area and immediately redraw itself
         //     and any child controls.
         public virtual void Refresh()
@@ -2179,7 +2179,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Resets the System.Windows.Forms.Control.BackColor property to its default value.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void ResetBackColor()
@@ -2187,7 +2187,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Causes a control bound to the System.Windows.Forms.BindingSource to reread all
         //     the items in the list and refresh their displayed values.
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -2196,7 +2196,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Resets the System.Windows.Forms.Control.Cursor property to its default value.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void ResetCursor()
@@ -2204,7 +2204,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Resets the System.Windows.Forms.Control.Font property to its default value.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void ResetFont()
@@ -2212,7 +2212,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Resets the System.Windows.Forms.Control.ForeColor property to its default value.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void ResetForeColor()
@@ -2220,7 +2220,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Resets the System.Windows.Forms.Control.ImeMode property to its default value.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void ResetImeMode()
@@ -2228,7 +2228,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Resets the System.Windows.Forms.Control.RightToLeft property to its default value.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void ResetRightToLeft()
@@ -2236,7 +2236,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Resets the System.Windows.Forms.Control.Text property to its default value (System.String.Empty).
         public virtual void ResetText()
         {
@@ -2244,11 +2244,11 @@ namespace LVGLSharp.Forms
             OnTextChanged(EventArgs.Empty);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Resumes usual layout logic, optionally forcing an immediate layout of pending
         //     layout requests.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   performLayout:
         //     true to execute pending layout requests; otherwise, false.
         public void ResumeLayout(bool performLayout)
@@ -2269,7 +2269,7 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Resumes usual layout logic.
         public void ResumeLayout()
         {
@@ -2277,10 +2277,10 @@ namespace LVGLSharp.Forms
         }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Scales the control and all child controls by the specified scaling factor.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   factor:
         //     A System.Drawing.SizeF containing the horizontal and vertical scaling factors.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2290,17 +2290,17 @@ namespace LVGLSharp.Forms
         }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Activates the control.
         public void Select()
         {
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Activates the next control.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   ctl:
         //     The System.Windows.Forms.Control at which to start the search.
         //
@@ -2320,24 +2320,24 @@ namespace LVGLSharp.Forms
         //     true to continue searching from the first control in the tab order after the
         //     last control has been reached; otherwise, false.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if a control was activated; otherwise, false.
         public bool SelectNextControl(Control? ctl, bool forward, bool tabStopOnly, bool nested, bool wrap)
         {
             return default(bool);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Sends the control to the back of the z-order.
         public void SendToBack()
         {
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Sets the bounds of the control to the specified location and size.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   x:
         //     The new System.Windows.Forms.Control.Left property value of the control.
         //
@@ -2354,11 +2354,11 @@ namespace LVGLSharp.Forms
             SetBounds(x, y, width, height, BoundsSpecified.All);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Sets the specified bounds of the control to the specified location and size.
         //
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   x:
         //     The new System.Windows.Forms.Control.Left property value of the control.
         //
@@ -2394,21 +2394,21 @@ namespace LVGLSharp.Forms
             SetBoundsCore(x, y, width, height, specified);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Displays the control to the user.
         public void Show()
         {
             SetVisibleCore(true);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Temporarily suspends the layout logic for the control.
         public void SuspendLayout()
         {
             _layoutSuspendCount++;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Causes the control to redraw the invalidated regions within its client area.
         public void Update()
         {
@@ -2416,10 +2416,10 @@ namespace LVGLSharp.Forms
         }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Creates a new instance of the control collection for the control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A new instance of System.Windows.Forms.Control.ControlCollection assigned to
         //     the control.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2428,10 +2428,10 @@ namespace LVGLSharp.Forms
             return new ControlCollection(this);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Creates a handle for the control.
         //
-        // å¼‚å¸¸:
+        // Òì³£:
         //   T:System.ObjectDisposedException:
         //     The object is in a disposed state.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2440,10 +2440,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Sends the specified message to the default window procedure.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   m:
         //     The Windows System.Windows.Forms.Message to process.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2452,7 +2452,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Destroys the handle associated with the control.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void DestroyHandle()
@@ -2466,11 +2466,11 @@ namespace LVGLSharp.Forms
             OnHandleDestroyed(EventArgs.Empty);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Releases the unmanaged resources used by the System.Windows.Forms.Control and
         //     its child controls and optionally releases the managed resources.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   disposing:
         //     true to release both managed and unmanaged resources; false to release only unmanaged
         //     resources.
@@ -2486,21 +2486,21 @@ namespace LVGLSharp.Forms
         }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Retrieves a value indicating how a control will behave when its System.Windows.Forms.Control.AutoSize
         //     property is enabled.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     One of the System.Windows.Forms.AutoSizeMode values.
         protected AutoSizeMode GetAutoSizeMode()
         {
             return AutoSizeMode.None;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Retrieves the bounds within which the control is scaled.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   bounds:
         //     A System.Drawing.Rectangle that specifies the area for which to retrieve the
         //     display bounds.
@@ -2512,7 +2512,7 @@ namespace LVGLSharp.Forms
         //     One of the values of System.Windows.Forms.BoundsSpecified that specifies the
         //     bounds of the control to use when defining its size and position.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     A System.Drawing.Rectangle representing the bounds within which the control is
         //     scaled.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2521,31 +2521,31 @@ namespace LVGLSharp.Forms
             return bounds;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Retrieves the value of the specified control style bit for the control.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   flag:
         //     The System.Windows.Forms.ControlStyles bit to return the value from.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the specified control style bit is set to true; otherwise, false.
         protected bool GetStyle(ControlStyles flag)
         {
             return default;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Determines if the control is a top-level control.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the control is a top-level control; otherwise, false.
         protected bool GetTopLevel()
         {
             return default;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Called after the control has been added to another container.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void InitLayout()
@@ -2553,11 +2553,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.GotFocus event for the specified control.
         //
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   toInvoke:
         //     The System.Windows.Forms.Control to assign the event to.
         //
@@ -2569,11 +2569,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.LostFocus event for the specified control.
         //
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   toInvoke:
         //     The System.Windows.Forms.Control to assign the event to.
         //
@@ -2585,11 +2585,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Click event for the specified control.
         //
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   toInvoke:
         //     The System.Windows.Forms.Control to assign the System.Windows.Forms.Control.Click
         //     event to.
@@ -2602,11 +2602,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Paint event for the specified control.
         //
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   c:
         //     The System.Windows.Forms.Control to assign the System.Windows.Forms.Control.Paint
         //     event to.
@@ -2618,10 +2618,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the PaintBackground event for the specified control.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   c:
         //     The System.Windows.Forms.Control to assign the System.Windows.Forms.Control.Paint
         //     event to.
@@ -2633,15 +2633,15 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Determines if a character is an input character that the control recognizes.
         //
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   charCode:
         //     The character to test.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the character should be sent directly to the control and not preprocessed;
         //     otherwise, false.
         protected virtual bool IsInputChar(char charCode)
@@ -2649,26 +2649,26 @@ namespace LVGLSharp.Forms
             return true;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Determines whether the specified key is a regular input key or a special key
         //     that requires preprocessing.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   keyData:
         //     One of the System.Windows.Forms.Keys values.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the specified key is a regular input key; otherwise, false.
         protected virtual bool IsInputKey(Keys keyData)
         {
             return false;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Invalidated event with a specified region
         //     of the control to invalidate.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   invalidatedArea:
         //     A System.Drawing.Rectangle representing the area to invalidate.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2677,73 +2677,73 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.AutoSizeChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         protected virtual void OnAutoSizeChanged(EventArgs e) { AutoSizeChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.BackColorChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnBackColorChanged(EventArgs e) { BackColorChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.BackgroundImageChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnBackgroundImageChanged(EventArgs e) { BackgroundImageChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.BackgroundImageLayoutChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnBackgroundImageLayoutChanged(EventArgs e) { BackgroundImageLayoutChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.BindingContextChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnBindingContextChanged(EventArgs e) { BindingContextChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.CausesValidationChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnCausesValidationChanged(EventArgs e) { CausesValidationChanged?.Invoke(this, e); }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Click event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnClick(EventArgs e) { Click?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.ClientSizeChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2758,19 +2758,19 @@ namespace LVGLSharp.Forms
         }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.ContextMenuStripChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnContextMenuStripChanged(EventArgs e) { ContextMenuStripChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.ControlAdded event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.Windows.Forms.ControlEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2779,10 +2779,10 @@ namespace LVGLSharp.Forms
             ControlAdded?.Invoke(this, e);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.ControlRemoved event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.Windows.Forms.ControlEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2791,7 +2791,7 @@ namespace LVGLSharp.Forms
             ControlRemoved?.Invoke(this, e);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.CreateControl method.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnCreateControl()
@@ -2799,80 +2799,80 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.CursorChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnCursorChanged(EventArgs e) { CursorChanged?.Invoke(this, e); }
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnDataContextChanged(EventArgs e) { DataContextChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.DockChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnDockChanged(EventArgs e) { DockChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.DoubleClick event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnDoubleClick(EventArgs e) { DoubleClick?.Invoke(this, e); }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.EnabledChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnEnabledChanged(EventArgs e) { EnabledChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.FontChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnFontChanged(EventArgs e) { FontChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.ForeColorChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnForeColorChanged(EventArgs e) { ForeColorChanged?.Invoke(this, e); }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.GotFocus event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnGotFocus(EventArgs e) { GotFocus?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.HandleCreated event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2881,10 +2881,10 @@ namespace LVGLSharp.Forms
             HandleCreated?.Invoke(this, e);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.HandleDestroyed event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2893,10 +2893,10 @@ namespace LVGLSharp.Forms
             HandleDestroyed?.Invoke(this, e);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.HelpRequested event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   hevent:
         //     A System.Windows.Forms.HelpEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2905,46 +2905,46 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.ImeModeChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         protected virtual void OnImeModeChanged(EventArgs e) { ImeModeChanged?.Invoke(this, e); }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.KeyDown event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.Windows.Forms.KeyEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnKeyDown(KeyEventArgs e) { KeyDown?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.KeyPress event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.Windows.Forms.KeyPressEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnKeyPress(KeyPressEventArgs e) { KeyPress?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.KeyUp event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.Windows.Forms.KeyEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnKeyUp(KeyEventArgs e) { KeyUp?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Layout event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   levent:
         //     A System.Windows.Forms.LayoutEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2953,10 +2953,10 @@ namespace LVGLSharp.Forms
             Layout?.Invoke(this, levent);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.LocationChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -2965,117 +2965,117 @@ namespace LVGLSharp.Forms
             LocationChanged?.Invoke(this, e);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.LostFocus event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnLostFocus(EventArgs e) { LostFocus?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.MarginChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.EventArgs that contains the event data.
         protected virtual void OnMarginChanged(EventArgs e) { MarginChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.MouseCaptureChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnMouseCaptureChanged(EventArgs e) { MouseCaptureChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.MouseClick event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.Windows.Forms.MouseEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnMouseClick(MouseEventArgs e) { MouseClick?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.MouseDoubleClick event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.Windows.Forms.MouseEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnMouseDoubleClick(MouseEventArgs e) { MouseDoubleClick?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.MouseDown event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.Windows.Forms.MouseEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnMouseDown(MouseEventArgs e) { MouseDown?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.MouseEnter event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnMouseEnter(EventArgs e) { MouseEnter?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.MouseHover event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnMouseHover(EventArgs e) { MouseHover?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.MouseLeave event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnMouseLeave(EventArgs e) { MouseLeave?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.MouseMove event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.Windows.Forms.MouseEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnMouseMove(MouseEventArgs e) { MouseMove?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.MouseUp event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.Windows.Forms.MouseEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnMouseUp(MouseEventArgs e) { MouseUp?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.MouseWheel event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.Windows.Forms.MouseEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnMouseWheel(MouseEventArgs e) { MouseWheel?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Move event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3084,10 +3084,10 @@ namespace LVGLSharp.Forms
             Move?.Invoke(this, e);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Notifies the control of Windows messages.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   m:
         //     A System.Windows.Forms.Message that represents the Windows message.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3096,18 +3096,18 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.PaddingChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.EventArgs that contains the event data.
         protected virtual void OnPaddingChanged(EventArgs e) { PaddingChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Paint event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.Windows.Forms.PaintEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3116,10 +3116,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Paints the background of the control.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   pevent:
         //     A System.Windows.Forms.PaintEventArgs that contains information about the control
         //     to paint.
@@ -3129,11 +3129,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.BackColorChanged event when the System.Windows.Forms.Control.BackColor
         //     property value of the control's container changes.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3142,12 +3142,12 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.BackgroundImageChanged event when the
         //     System.Windows.Forms.Control.BackgroundImage property value of the control's
         //     container changes.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3156,12 +3156,12 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.BindingContextChanged event when the
         //     System.Windows.Forms.Control.BindingContext property value of the control's container
         //     changes.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3170,10 +3170,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.ParentChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3182,10 +3182,10 @@ namespace LVGLSharp.Forms
             ParentChanged?.Invoke(this, e);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.CursorChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3194,7 +3194,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnParentDataContextChanged(EventArgs e)
@@ -3202,11 +3202,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.EnabledChanged event when the System.Windows.Forms.Control.Enabled
         //     property value of the control's container changes.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3215,11 +3215,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.FontChanged event when the System.Windows.Forms.Control.Font
         //     property value of the control's container changes.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3228,11 +3228,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.ForeColorChanged event when the System.Windows.Forms.Control.ForeColor
         //     property value of the control's container changes.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3241,11 +3241,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.RightToLeftChanged event when the System.Windows.Forms.Control.RightToLeft
         //     property value of the control's container changes.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3254,11 +3254,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.VisibleChanged event when the System.Windows.Forms.Control.Visible
         //     property value of the control's container changes.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3267,10 +3267,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.PreviewKeyDown event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.Windows.Forms.PreviewKeyDownEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3279,14 +3279,14 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Paint event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.Windows.Forms.PaintEventArgs that contains the event data.
         //
-        // å¼‚å¸¸:
+        // Òì³£:
         //   T:System.ArgumentNullException:
         //     The e parameter is null.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3296,19 +3296,19 @@ namespace LVGLSharp.Forms
         }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.RegionChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnRegionChanged(EventArgs e) { RegionChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Resize event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3317,19 +3317,19 @@ namespace LVGLSharp.Forms
             Resize?.Invoke(this, e);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.RightToLeftChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnRightToLeftChanged(EventArgs e) { RightToLeftChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.SizeChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3343,46 +3343,46 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.StyleChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnStyleChanged(EventArgs e) { StyleChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.SystemColorsChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnSystemColorsChanged(EventArgs e) { SystemColorsChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.TabIndexChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnTabIndexChanged(EventArgs e) { TabIndexChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.TabStopChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnTabStopChanged(EventArgs e) { TabStopChanged?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.TextChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3391,28 +3391,28 @@ namespace LVGLSharp.Forms
             TextChanged?.Invoke(this, e);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Validated event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnValidated(EventArgs e) { Validated?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Validating event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     A System.ComponentModel.CancelEventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnValidating(CancelEventArgs e) { Validating?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.VisibleChanged event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3421,10 +3421,10 @@ namespace LVGLSharp.Forms
             VisibleChanged?.Invoke(this, e);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Processes a command key.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   msg:
         //     A System.Windows.Forms.Message, passed by reference, that represents the window
         //     message to process.
@@ -3433,66 +3433,66 @@ namespace LVGLSharp.Forms
         //     One of the System.Windows.Forms.Keys values that represents the key to process.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the character was processed by the control; otherwise, false.
         protected virtual bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             return false;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Processes a dialog character.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   charCode:
         //     The character to process.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the character was processed by the control; otherwise, false.
         protected virtual bool ProcessDialogChar(char charCode)
         {
             return true;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Processes a dialog key.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   keyData:
         //     One of the System.Windows.Forms.Keys values that represents the key to process.
         //
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the key was processed by the control; otherwise, false.
         protected virtual bool ProcessDialogKey(Keys keyData)
         {
             return true;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Processes a key message and generates the appropriate control events.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   m:
         //     A System.Windows.Forms.Message, passed by reference, that represents the window
         //     message to process.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the message was processed by the control; otherwise, false.
         protected virtual bool ProcessKeyEventArgs(ref Message m)
         {
             return false;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Previews a keyboard message.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   m:
         //     A System.Windows.Forms.Message, passed by reference, that represents the window
         //     message to process.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the message was processed by the control; otherwise, false.
         protected virtual bool ProcessKeyPreview(ref Message m)
         {
@@ -3500,10 +3500,10 @@ namespace LVGLSharp.Forms
         }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the appropriate key event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   key:
         //     The event to raise.
         //
@@ -3515,10 +3515,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the appropriate mouse event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   key:
         //     The event to raise.
         //
@@ -3530,10 +3530,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the appropriate paint event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   key:
         //     The event to raise.
         //
@@ -3545,7 +3545,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Forces the re-creation of the handle for the control.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected void RecreateHandle()
@@ -3553,10 +3553,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Provides constants for rescaling the control when a DPI change occurs.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   deviceDpiOld:
         //     The DPI value prior to the change.
         //
@@ -3569,7 +3569,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Resets the control to handle the System.Windows.Forms.Control.MouseLeave event.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected void ResetMouseEventArgs()
@@ -3578,10 +3578,10 @@ namespace LVGLSharp.Forms
         }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Scales a control's location, size, padding and margin.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   factor:
         //     The factor by which the height and width of the control will be scaled.
         //
@@ -3594,10 +3594,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     This method is not relevant for this class.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   dx:
         //     The horizontal scaling factor.
         //
@@ -3609,11 +3609,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Activates a child control. Optionally specifies the direction in the tab order
         //     to select the control from.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   directed:
         //     true to specify the direction of the control to select; otherwise, false.
         //
@@ -3624,11 +3624,11 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Sets a value indicating how a control will behave when its System.Windows.Forms.Control.AutoSize
         //     property is enabled.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   mode:
         //     One of the System.Windows.Forms.AutoSizeMode values.
         protected void SetAutoSizeMode(AutoSizeMode mode)
@@ -3636,10 +3636,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Performs the work of setting the specified bounds of this control.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   x:
         //     The new System.Windows.Forms.Control.Left property value of the control.
         //
@@ -3668,10 +3668,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Sets the size of the client area of the control.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   x:
         //     The client area width, in pixels.
         //
@@ -3683,11 +3683,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Sets a specified System.Windows.Forms.ControlStyles flag to either true or false.
         //
-        //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   flag:
         //     The System.Windows.Forms.ControlStyles bit to set.
         //
@@ -3699,14 +3698,14 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Sets the control as the top-level control.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   value:
         //     true to set the control as the top-level control; otherwise, false.
         //
-        // å¼‚å¸¸:
+        // Òì³£:
         //   T:System.InvalidOperationException:
         //     The value parameter is set to true and the control is an ActiveX control.
         //
@@ -3718,10 +3717,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Sets the control to the specified visible state.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   value:
         //     true to make the control visible; otherwise, false.
         protected virtual unsafe void SetVisibleCore(bool value)
@@ -3750,11 +3749,11 @@ namespace LVGLSharp.Forms
         }
        
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Updates the bounds of the control with the specified size, location, and client
         //     size.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   x:
         //     The System.Drawing.Point.X coordinate of the control.
         //
@@ -3806,10 +3805,10 @@ namespace LVGLSharp.Forms
             }
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Updates the bounds of the control with the specified size and location.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   x:
         //     The System.Drawing.Point.X coordinate of the control.
         //
@@ -3827,7 +3826,7 @@ namespace LVGLSharp.Forms
             UpdateBounds(x, y, width, height, width, height);
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Forces the assigned styles to be reapplied to the control.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected void UpdateStyles()
@@ -3835,7 +3834,7 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Updates the control in its parent's z-order.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected void UpdateZOrder()
@@ -3843,10 +3842,10 @@ namespace LVGLSharp.Forms
 
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Processes Windows messages.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   m:
         //     The Windows System.Windows.Forms.Message to process.
         protected virtual void WndProc(ref Message m)
@@ -3855,47 +3854,47 @@ namespace LVGLSharp.Forms
         }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Enter event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected internal virtual void OnEnter(EventArgs e) { Enter?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Raises the System.Windows.Forms.Control.Leave event.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected internal virtual void OnLeave(EventArgs e) { Leave?.Invoke(this, e); }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Processes a keyboard message.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   m:
         //     A System.Windows.Forms.Message, passed by reference, that represents the window
         //     message to process.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the message was processed by the control; otherwise, false.
         protected internal virtual bool ProcessKeyMessage(ref Message m)
         {
             return false;
         }
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Processes a mnemonic character.
         //
-        // å‚æ•°:
+        // ²ÎÊı:
         //   charCode:
         //     The character to process.
         //
-        // è¿”å›ç»“æœ:
+        // ·µ»Ø½á¹û:
         //     true if the character was processed as a mnemonic by the control; otherwise,
         //     false.
         protected internal virtual bool ProcessMnemonic(char charCode)
@@ -3904,7 +3903,7 @@ namespace LVGLSharp.Forms
         }
 
         //
-        // æ‘˜è¦:
+        // ÕªÒª:
         //     Updates the bounds of the control with the current size and location.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected internal void UpdateBounds()
@@ -3983,7 +3982,7 @@ namespace LVGLSharp.Forms
         }
 
         /// <summary>
-        /// Static LVGL event callback â€” routes events to the owning <see cref="Control"/>'s
+        /// Static LVGL event callback ¡ª routes events to the owning <see cref="Control"/>'s
         /// <see cref="DispatchLvglEvent"/> method via a stored <see cref="GCHandle"/>.
         /// </summary>
         [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
@@ -4023,11 +4022,11 @@ namespace LVGLSharp.Forms
                     OnGotFocus(EventArgs.Empty);
                     break;
                 case LV_EVENT_DEFOCUSED:
-                    // Object has lost keyboard focus â€” fire LostFocus
+                    // Object has lost keyboard focus ¡ª fire LostFocus
                     OnLostFocus(EventArgs.Empty);
                     break;
                 case LV_EVENT_LEAVE:
-                    // Group navigation moved away from this object â€” fire Leave
+                    // Group navigation moved away from this object ¡ª fire Leave
                     OnLeave(EventArgs.Empty);
                     break;
                 case LV_EVENT_KEY:
@@ -4071,7 +4070,7 @@ namespace LVGLSharp.Forms
         protected static int LvPct(int percent) => percent | (1 << 29); // bit 29 = LV_COORD_TYPE_SPEC
 
         /// <summary>Converts a C# string to a null-terminated UTF-8 byte array for LVGL.</summary>
-        protected static byte[] ToUtf8(string? text)
+        internal static byte[] ToUtf8(string? text)
         {
             if (string.IsNullOrEmpty(text)) return new byte[] { 0 };
             var bytes = System.Text.Encoding.UTF8.GetBytes(text);

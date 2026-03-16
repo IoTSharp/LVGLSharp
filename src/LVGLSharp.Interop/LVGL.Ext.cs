@@ -271,5 +271,24 @@ namespace LVGLSharp.Interop
             LV_SCALE_MODE_ROUND_OUTER = 0x10U,
             LV_SCALE_MODE_LAST,
         }
+
+        /// <summary>
+        /// 检查一个对象是否是另一个对象的子对象或后代
+        /// </summary>
+        /// <param name="child">要检查的子对象</param>
+        /// <param name="parent">父对象</param>
+        /// <returns>如果 child 是 parent 的后代则返回 true，否则返回 false</returns>
+        public static bool lv_obj_is_child_of([NativeTypeName("lv_obj_t *")] lv_obj_t* child, [NativeTypeName("lv_obj_t *")] lv_obj_t* parent)
+        {
+            if (child == null || parent == null) return false;
+            
+            lv_obj_t* current = child;
+            while (current != null)
+            {
+                if (current == parent) return true;
+                current = lv_obj_get_parent(current);
+            }
+            return false;
+        }
     }
 }

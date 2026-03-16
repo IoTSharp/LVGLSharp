@@ -28,8 +28,14 @@ namespace LVGLSharp.Runtime.Windows
         static uint g_bufSize = 1024 * 1024 * 4;
         static bool g_running = true;
         static int startTick;
-        static int mouseX = 0, mouseY = 0;
+        static short mouseX = 0, mouseY = 0;
         static bool mousePressed = false;
+        static uint mouseButton = 0; // 0=无, 1=左键, 2=右键
+        static short mouseWheelDelta = 0;
+
+        // 公开当前鼠标按钮状态供其他组件使用
+        public static uint CurrentMouseButton => mouseButton;
+
         static byte[] bgraBuf;
         static byte[] _timeBuf = new byte[32];
         static readonly object renderLock = new object();
@@ -37,7 +43,6 @@ namespace LVGLSharp.Runtime.Windows
         static lv_indev_state_t last_key_state_processed = LV_INDEV_STATE_REL;
         static bool ime_composing = false;
         static int pending_ime_char_skips = 0;
-        static volatile int mouseWheelDelta = 0;
         static ConcurrentQueue<uint> key_queue = new ConcurrentQueue<uint>();
 
         public static lv_obj_t* root { get; set; }
@@ -116,6 +121,7 @@ namespace LVGLSharp.Runtime.Windows
             data->point.x = mouseX;
             data->point.y = mouseY;
             data->state = mousePressed ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+            data->btn_id = mouseButton; // 传递按钮 ID
             data->enc_diff = (short)mouseWheelDelta;
             mouseWheelDelta = 0;
         }
@@ -340,12 +346,26 @@ namespace LVGLSharp.Runtime.Windows
                     break;
                 case 0x0201: // WM_LBUTTONDOWN
                     mousePressed = true;
+                    mouseButton = 1; // 左键
                     mouseX = (short)(lParam.ToInt32() & 0xFFFF);
                     mouseY = (short)((lParam.ToInt32() >> 16) & 0xFFFF);
                     ResetTextInputFocus(mouseX, mouseY);
                     break;
                 case 0x0202: // WM_LBUTTONUP
                     mousePressed = false;
+                    mouseButton = 0; // 释放
+                    mouseX = (short)(lParam.ToInt32() & 0xFFFF);
+                    mouseY = (short)((lParam.ToInt32() >> 16) & 0xFFFF);
+                    break;
+                case 0x0204: // WM_RBUTTONDOWN
+                    mousePressed = true;
+                    mouseButton = 2; // 右键
+                    mouseX = (short)(lParam.ToInt32() & 0xFFFF);
+                    mouseY = (short)((lParam.ToInt32() >> 16) & 0xFFFF);
+                    break;
+                case 0x0205: // WM_RBUTTONUP
+                    mousePressed = false;
+                    mouseButton = 0; // 释放
                     mouseX = (short)(lParam.ToInt32() & 0xFFFF);
                     mouseY = (short)((lParam.ToInt32() >> 16) & 0xFFFF);
                     break;
@@ -405,7 +425,7 @@ namespace LVGLSharp.Runtime.Windows
                 case WM_MOUSEWHEEL:
                     {
                         int delta = (short)((wParam.ToUInt64() >> 16) & 0xFFFF);
-                        mouseWheelDelta += delta / WHEEL_DELTA;
+                        mouseWheelDelta += (short)(delta / WHEEL_DELTA);
                         break;
                     }
             }

@@ -74,16 +74,52 @@ namespace LVGLSharp.Forms
         XButton1 = 0x800000,
         XButton2 = 0x1000000
     }
+    [Flags]
     public enum Keys
     {
         None = 0,
-        // Keep minimal set; extend as needed
+        
+        // 修饰键掩码
+        Modifiers = unchecked((int)0xFFFF0000),
+        
+        // 修饰键
+        Shift = 0x00010000,
+        Control = 0x00020000,
+        Alt = 0x00040000,
+        
+        // 字母键
+        A = 0x41,
+        C = 0x43,
+        V = 0x56,
+        X = 0x58,
+        Y = 0x59,
+        Z = 0x5A,
+        
+        // 功能键
         Back = 8,
         Tab = 9,
         Enter = 13,
         Escape = 27,
         Space = 32,
-        Delete = 46
+        Delete = 46,
+        
+        // 方向键
+        Left = 0x25,
+        Up = 0x26,
+        Right = 0x27,
+        Down = 0x28,
+        
+        // 数字键
+        D0 = 0x30,
+        D1 = 0x31,
+        D2 = 0x32,
+        D3 = 0x33,
+        D4 = 0x34,
+        D5 = 0x35,
+        D6 = 0x36,
+        D7 = 0x37,
+        D8 = 0x38,
+        D9 = 0x39,
     }
     public enum ImeMode
     {
@@ -215,3 +251,18 @@ namespace LVGLSharp.Forms
         ForcedBoth
     }
 }
+
+    public enum ComboBoxStyle
+    {
+        Simple = 0,
+        DropDown = 1,
+        DropDownList = 2
+    }
+
+    public enum CheckState
+    {
+        Unchecked = 0,
+        Checked = 1,
+        Indeterminate = 2
+    }
+

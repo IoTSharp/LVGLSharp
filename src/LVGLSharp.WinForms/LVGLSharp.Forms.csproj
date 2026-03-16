@@ -104,9 +104,6 @@
 	  <Compile Update="Forms\TableLayoutPanel.cs">
 	    <SubType>Component</SubType>
 	  </Compile>
-	  <Compile Update="Forms\TextBox.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
 	  <Compile Update="Forms\TrackBar.cs">
 	    <SubType>Component</SubType>
 	  </Compile>

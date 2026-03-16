@@ -160,6 +160,18 @@ namespace LVGLSharp.Forms
             _screenFocusHandle = focusHandle;
             lv_obj_add_event_cb(screen, &ScreenFocusCallback, lv_event_code_t.LV_EVENT_FOCUSED, 
                 (void*)GCHandle.ToIntPtr(focusHandle));
+
+            // 添加按键监听器（ESC键关闭菜单）
+            var keyHandle = GCHandle.Alloc(this);
+            _eventHandles.Add(keyHandle);
+            lv_obj_add_event_cb(screen, &ScreenKeyCallback, lv_event_code_t.LV_EVENT_KEY, 
+                (void*)GCHandle.ToIntPtr(keyHandle));
+
+            // 添加按下事件监听器（任何地方按下都检查）
+            var pressHandle = GCHandle.Alloc(this);
+            _eventHandles.Add(pressHandle);
+            lv_obj_add_event_cb(screen, &ScreenPressCallback, lv_event_code_t.LV_EVENT_PRESSED, 
+                (void*)GCHandle.ToIntPtr(pressHandle));
         }
 
         [UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -256,12 +268,105 @@ namespace LVGLSharp.Forms
             }
         }
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        private static void ScreenKeyCallback(lv_event_t* e)
+        {
+            try
+            {
+                var userData = lv_event_get_user_data(e);
+                if (userData == null) return;
+
+                var handle = GCHandle.FromIntPtr((nint)userData);
+                var menu = (ContextMenuStrip)handle.Target!;
+
+                // 检查是否按下 ESC 键
+                uint key = lv_event_get_key(e);
+                if (key == 27) // ESC key
+                {
+                    menu.Close();
+                }
+            }
+            catch
+            {
+                // 忽略异常
+            }
+        }
+
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        private static void ScreenPressCallback(lv_event_t* e)
+        {
+            try
+            {
+                var userData = lv_event_get_user_data(e);
+                if (userData == null) return;
+
+                var handle = GCHandle.FromIntPtr((nint)userData);
+                var menu = (ContextMenuStrip)handle.Target!;
+
+                // 检查按下的目标是否在菜单外
+                var target = lv_event_get_target_obj(e);
+                if (target != menu.menuObj && !lv_obj_is_child_of(target, menu.menuObj))
+                {
+                    menu.Close();
+                }
+            }
+            catch
+            {
+                // 忽略异常
+            }
+        }
+
         public void Close()
         {
             if (menuObj != null)
             {
+                var screen = lv_screen_active();
+                
                 // 移除屏幕点击事件
                 if (_screenClickHandle.IsAllocated)
                 {
-                    var screen = lv_screen_active();
-                    if
+                    if (screen != null)
+                    {
+                        lv_obj_remove_event_cb_with_user_data(screen, &ScreenClickCallback, 
+                            (void*)GCHandle.ToIntPtr(_screenClickHandle));
+                    }
+                    _screenClickHandle.Free();
+                }
+
+                // 移除焦点变化事件
+                if (_screenFocusHandle.IsAllocated)
+                {
+                    if (screen != null)
+                    {
+                        lv_obj_remove_event_cb_with_user_data(screen, &ScreenFocusCallback, 
+                            (void*)GCHandle.ToIntPtr(_screenFocusHandle));
+                    }
+                    _screenFocusHandle.Free();
+                }
+
+                // 释放所有事件句柄（包括菜单项、按键等）
+                foreach (var handle in _eventHandles)
+                {
+                    if (handle.IsAllocated)
+                    {
+                        handle.Free();
+                    }
+                }
+                _eventHandles.Clear();
+
+                // 删除菜单对象
+                lv_obj_delete(menuObj);
+                menuObj = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!disposed)
+            {
+                Close();
+                disposed = true;
+            }
+        }
+    }
+}

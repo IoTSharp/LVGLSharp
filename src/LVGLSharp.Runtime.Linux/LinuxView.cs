@@ -52,6 +52,7 @@ namespace LVGLSharp.Runtime.Linux
 
         public void Init()
         {
+            LvglNativeLibraryResolver.EnsureRegistered();
             startTick = Environment.TickCount;
             lv_init();
             lv_tick_set_cb(&my_tick);

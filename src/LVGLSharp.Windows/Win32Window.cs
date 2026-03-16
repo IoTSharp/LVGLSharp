@@ -433,6 +433,7 @@ namespace LVGLSharp.Runtime.Windows
 
         public void Init()
         {
+            LvglNativeLibraryResolver.EnsureRegistered();
             startTick = Environment.TickCount;
 
             wndProcDelegate = MyWndProc;

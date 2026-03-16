@@ -11,7 +11,7 @@
 </PropertyGroup>
 
 <ItemGroup>
-<PackageReference Include="LVGLSharp.Native" Version="0.0.3" />
+<PackageReference Include="LVGLSharp.Native" Version="0.0.3" GeneratePathProperty="true" />
 <PackageReference Include="System.IO.Ports" Version="10.0.5" />
 </ItemGroup>
  
@@ -20,6 +20,15 @@
 <ProjectReference Include="..\..\LVGLSharp.Core\LVGLSharp.Core.csproj" />
     <ProjectReference Include="..\..\LVGLSharp.Windows\LVGLSharp.Runtime.Windows.csproj" />
     <ProjectReference Include="..\..\LVGLSharp.Runtime.Linux\LVGLSharp.Runtime.Linux.csproj" />
+</ItemGroup>
+
+<ItemGroup Condition="'$(PkgLVGLSharp_Native)' != ''">
+  <Content Include="$(PkgLVGLSharp_Native)\runtimes\**\*">
+    <Link>runtimes\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    <Visible>false</Visible>
+  </Content>
 </ItemGroup>
 
 </Project>

@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <LVGLSharpNativePackageRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</LVGLSharpNativePackageRoot>
+    <LVGLSharpNativeRuntimesPath>$(LVGLSharpNativePackageRoot)runtimes\</LVGLSharpNativeRuntimesPath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('$(LVGLSharpNativeRuntimesPath)')">
+    <Content Include="$(LVGLSharpNativeRuntimesPath)**\*">
+      <Link>runtimes\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <TargetPath>runtimes\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Visible>false</Visible>
+      <Pack>false</Pack>
+    </Content>
+  </ItemGroup>
+</Project>

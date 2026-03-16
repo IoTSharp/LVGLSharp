@@ -124,6 +124,111 @@ jobs:
           fi
           ls -la native_output/
 
+      - name: 校验导出符号（Linux）
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          lib="native_output/liblvgl.so"
+          if [ ! -f "$lib" ]; then
+            echo "错误：未找到 $lib"
+            exit 1
+          fi
+
+          expected_symbols=(
+            lv_init
+            lv_timer_handler
+            lv_linux_fbdev_create
+            lv_linux_fbdev_set_file
+            lv_evdev_create
+          )
+
+          missing=()
+          for symbol in "${expected_symbols[@]}"; do
+            if ! nm -D "$lib" | grep -w "$symbol" >/dev/null; then
+              missing+=("$symbol")
+            fi
+          done
+
+          if [ ${#missing[@]} -ne 0 ]; then
+            echo "错误：$lib 缺少以下导出符号：${missing[*]}"
+            echo "===== nm -D $lib ====="
+            nm -D "$lib" || true
+            exit 1
+          fi
+
+          echo "导出符号校验通过：${expected_symbols[*]}"
+
+      - name: 校验导出符号（Windows）
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $lib = Join-Path $PWD 'native_output\lvgl.dll'
+          if (-not (Test-Path $lib)) {
+            throw "未找到 $lib"
+          }
+
+          $dumpbin = (Get-Command dumpbin.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1)
+          if (-not $dumpbin) {
+            $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+            if (Test-Path $vswhere) {
+              $installationPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath | Select-Object -First 1
+              if ($installationPath) {
+                $candidate = Get-ChildItem -Path (Join-Path $installationPath 'VC\Tools\MSVC') -Filter dumpbin.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName -First 1
+                if ($candidate) {
+                  $dumpbin = $candidate
+                }
+              }
+            }
+          }
+
+          if (-not $dumpbin) {
+            throw '未找到 dumpbin.exe，无法校验 Windows 导出符号。'
+          }
+
+          $exports = & $dumpbin /exports $lib 2>&1
+          $expectedSymbols = @(
+            'lv_init',
+            'lv_timer_handler',
+            'lv_display_create',
+            'lv_indev_create'
+          )
+
+          $missing = @()
+          foreach ($symbol in $expectedSymbols) {
+            if (-not ($exports | Select-String -SimpleMatch $symbol)) {
+              $missing += $symbol
+            }
+          }
+
+          if ($missing.Count -gt 0) {
+            Write-Host "错误：$lib 缺少以下导出符号：$($missing -join ', ')"
+            Write-Host "===== dumpbin /exports $lib ====="
+            $exports | ForEach-Object { Write-Host $_ }
+            throw 'Windows 导出符号校验失败。'
+          }
+
+          Write-Host "导出符号校验通过：$($expectedSymbols -join ', ')"
+
+      - name: 生成 sha256
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem -Path native_output -File | Where-Object { $_.Extension -in '.dll', '.so' }
+          if (-not $files) {
+            throw 'native_output 中没有可生成校验值的原生库文件。'
+          }
+
+          foreach ($file in $files) {
+            $hash = (Get-FileHash -Path $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            $shaFile = "$($file.FullName).sha256"
+            Set-Content -Path $shaFile -Value "$hash  $($file.Name)" -NoNewline
+            Write-Host "已生成 $shaFile"
+          }
+
+          Get-ChildItem -Path native_output -Filter '*.sha256' | ForEach-Object {
+            Write-Host "===== $($_.Name) ====="
+            Get-Content $_.FullName | ForEach-Object { Write-Host $_ }
+          }
+
       - name: 上传原生库制品
         uses: actions/upload-artifact@v4
         with:

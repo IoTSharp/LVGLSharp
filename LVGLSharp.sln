@@ -22,6 +22,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{34EF8BC5-CA73-4729-8C30-9D6541AAC6BB}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE.txt = LICENSE.txt
+		.github\workflows\nuget-publish.yml = .github\workflows\nuget-publish.yml
 		README.md = README.md
 		README_en.md = README_en.md
 	EndProjectSection

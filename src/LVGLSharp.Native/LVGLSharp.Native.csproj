@@ -19,7 +19,9 @@
   <!-- Include every file under runtimes/ so dotnet automatically picks the
        correct binary for the current runtime identifier at restore time. -->
   <ItemGroup>
-    <None Include="runtimes/**/*" Pack="true" PackagePath="runtimes/" />
+    <None Include="runtimes\**\*" Pack="true" PackagePath="runtimes/" />
+    <None Include="buildTransitive\LVGLSharp.Native.targets" Pack="true" PackagePath="buildTransitive/LVGLSharp.Native.targets" />
+    <None Include="buildTransitive\LVGLSharp.Native.targets" Pack="true" PackagePath="build/LVGLSharp.Native.targets" />
   </ItemGroup>
 
 </Project>

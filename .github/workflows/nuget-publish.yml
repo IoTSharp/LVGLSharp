@@ -61,6 +61,12 @@ jobs:
           pattern: native-*
           path: native_artifacts
 
+      - name: 清理占位 runtimes 目录
+        shell: bash
+        run: |
+          rm -rf src/LVGLSharp.Native/runtimes
+          mkdir -p src/LVGLSharp.Native/runtimes
+
       # ── 按 runtimes/{rid}/native/ 结构组织原生库 ──────────────────────────
       - name: 整理原生库到 runtimes 目录结构
         shell: bash
@@ -102,6 +108,8 @@ jobs:
             echo "以下 RID 缺少原生库：${missing[*]}"
             exit 1
           fi
+          echo "当前将用于打包的原生库："
+          find src/LVGLSharp.Native/runtimes -type f | sort
 
       # ── 打包 LVGLSharp.Native ─────────────────────────────────────────────
       - name: 打包 LVGLSharp.Native

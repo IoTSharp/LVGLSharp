@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVGLSharp.Native", "src\LVG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureBoxDemo", "src\Demos\PictureBoxDemo\PictureBoxDemo.csproj", "{F243F821-433D-713A-7637-8A06BF6B5DC5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVGLSharp.Analyzers", "src\LVGLSharp.Analyzers\LVGLSharp.Analyzers.csproj", "{C61A88A7-BF41-6130-E711-D80E32E5E733}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{F243F821-433D-713A-7637-8A06BF6B5DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F243F821-433D-713A-7637-8A06BF6B5DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F243F821-433D-713A-7637-8A06BF6B5DC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C61A88A7-BF41-6130-E711-D80E32E5E733}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C61A88A7-BF41-6130-E711-D80E32E5E733}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C61A88A7-BF41-6130-E711-D80E32E5E733}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C61A88A7-BF41-6130-E711-D80E32E5E733}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

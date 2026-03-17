@@ -22,6 +22,9 @@
 		<ProjectReference Include="..\..\LVGLSharp.Core\LVGLSharp.Core.csproj" />
 		<ProjectReference Include="..\..\LVGLSharp.Windows\LVGLSharp.Runtime.Windows.csproj" />
 		<ProjectReference Include="..\..\LVGLSharp.Runtime.Linux\LVGLSharp.Runtime.Linux.csproj" />
+		<ProjectReference Include="..\..\LVGLSharp.Analyzers\LVGLSharp.Analyzers.csproj"
+						  OutputItemType="Analyzer"
+						  ReferenceOutputAssembly="false" />
 	</ItemGroup>
 
 </Project>

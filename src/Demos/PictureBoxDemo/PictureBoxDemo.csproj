@@ -21,6 +21,10 @@
 		<Using Include="LVGLSharp.Darwing" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\..\LVGLSharp.Analyzers\LVGLSharp.Analyzers.csproj"
+						  OutputItemType="Analyzer"
+						  ReferenceOutputAssembly="false" />
+
 		<Content Include="lvgl.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>

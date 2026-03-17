@@ -1,17 +1,21 @@
 using LVGLSharp.Interop;
 using LVGLSharp.Darwing;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace LVGLSharp.Forms
 {
     /// <summary>Displays an image using the LVGL image widget.</summary>
     public class PictureBox : Control, ISupportInitialize
     {
+        private const uint LvImageHeaderMagic = 0x19;
+
         private bool _initializing;
         private Image? _image;
         private string? _imageLocation;
         private PictureBoxSizeMode _sizeMode = PictureBoxSizeMode.Normal;
         private nint _lvglImagePtr = nint.Zero;
+        private bool _ownsImage;
 
         /// <summary>
         /// Gets or sets the image that is displayed in the PictureBox.
@@ -25,7 +29,9 @@ namespace LVGLSharp.Forms
             {
                 if (_image != value)
                 {
+                    ReleaseOwnedImage();
                     _image = value;
+                    _ownsImage = false;
                     if (!_initializing)
                     {
                         UpdateImage();
@@ -141,18 +147,51 @@ namespace LVGLSharp.Forms
             if (_lvglObjectHandle == nint.Zero)
                 return;
 
-            // TODO: Convert Image to LVGL image format
-            // This is a placeholder implementation
-            // In a real implementation, you would need to:
-            // 1. Convert the Image to a format LVGL understands
-            // 2. Store the image data in memory
-            // 3. Pass the pointer to lv_image_set_src
-            
-            // For now, just clear if image is null
-            if (_image == null && _lvglImagePtr != nint.Zero)
+            if (_image == null)
             {
-                lv_image_set_src((lv_obj_t*)_lvglObjectHandle, (void*)nint.Zero);
-                _lvglImagePtr = nint.Zero;
+                ClearLvglImage();
+                return;
+            }
+
+            var imageBytes = _image.ToLvglArgb8888Bytes();
+            nuint descriptorSize = (nuint)sizeof(lv_image_dsc_t);
+            nuint totalSize = descriptorSize + (nuint)imageBytes.Length;
+            byte* buffer = (byte*)NativeMemory.Alloc(totalSize);
+
+            try
+            {
+                var descriptor = (lv_image_dsc_t*)buffer;
+                byte* data = buffer + descriptorSize;
+
+                fixed (byte* source = imageBytes)
+                {
+                    Buffer.MemoryCopy(source, data, imageBytes.Length, imageBytes.Length);
+                }
+
+                *descriptor = new lv_image_dsc_t
+                {
+                    header = new lv_image_header_t
+                    {
+                        magic = LvImageHeaderMagic,
+                        cf = (uint)LV_COLOR_FORMAT_ARGB8888,
+                        flags = 0,
+                        w = (uint)_image.Width,
+                        h = (uint)_image.Height,
+                        stride = (uint)(_image.Width * 4),
+                    },
+                    data_size = (uint)imageBytes.Length,
+                    data = data,
+                };
+
+                ClearLvglImage();
+                lv_image_set_src((lv_obj_t*)_lvglObjectHandle, descriptor);
+                _lvglImagePtr = (nint)buffer;
+                ApplyAutoSize();
+            }
+            catch
+            {
+                NativeMemory.Free(buffer);
+                throw;
             }
         }
 
@@ -163,17 +202,15 @@ namespace LVGLSharp.Forms
 
             ArgumentNullException.ThrowIfNull(path);
 
-            // TODO: Implement actual image loading from file path
-            // This requires:
-            // 1. Reading the image file
-            // 2. Converting it to LVGL format (lv_image_dsc_t)
-            // 3. Storing the image data
-            // 4. Passing it to LVGL
-            
-            // For now, try to use LVGL's file system if path looks like an LVGL path
+            // Use LVGL's file system directly when the path targets an LVGL-mounted drive.
             if (path.StartsWith("A:", StringComparison.Ordinal) || 
                 path.StartsWith("S:", StringComparison.Ordinal))
             {
+                ReleaseOwnedImage();
+                _image = null;
+                _ownsImage = false;
+                ClearLvglImage();
+
                 // LVGL internal file system path
                 var pathBytes = System.Text.Encoding.UTF8.GetBytes(path);
                 fixed (byte* pathPtr = pathBytes)
@@ -183,11 +220,45 @@ namespace LVGLSharp.Forms
             }
             else
             {
-                // Regular file path - needs implementation
-                throw new NotImplementedException(
-                    "Loading images from regular file paths is not yet implemented. " +
-                    "Please use LVGL file system paths (A:, S:) or set the Image property directly.");
+                // Regular file paths are loaded into `LVGLSharp.Darwing.Image` and then converted to an LVGL image descriptor.
+                ReleaseOwnedImage();
+                _image = Image.Load(path);
+                _ownsImage = true;
+                UpdateImage();
             }
+        }
+
+        private unsafe void ClearLvglImage()
+        {
+            if (_lvglObjectHandle != nint.Zero)
+            {
+                lv_image_set_src((lv_obj_t*)_lvglObjectHandle, (void*)nint.Zero);
+            }
+
+            if (_lvglImagePtr != nint.Zero)
+            {
+                NativeMemory.Free((void*)_lvglImagePtr);
+                _lvglImagePtr = nint.Zero;
+            }
+        }
+
+        private void ReleaseOwnedImage()
+        {
+            if (_ownsImage)
+            {
+                _image?.Dispose();
+                _ownsImage = false;
+            }
+        }
+
+        private void ApplyAutoSize()
+        {
+            if (_sizeMode != PictureBoxSizeMode.AutoSize || _image is null)
+            {
+                return;
+            }
+
+            Size = new Size(_image.Width, _image.Height);
         }
 
         private unsafe void UpdateSizeMode()
@@ -211,8 +282,8 @@ namespace LVGLSharp.Forms
                     break;
 
                 case PictureBoxSizeMode.AutoSize:
-                    // Resize control to fit image
-                    // TODO: Get image dimensions and resize control
+                    // Resize control to fit image when the dimensions are available locally.
+                    ApplyAutoSize();
                     lv_image_set_inner_align(obj, LV_IMAGE_ALIGN_TOP_LEFT);
                     lv_image_set_scale(obj, 256);
                     break;
@@ -272,12 +343,9 @@ namespace LVGLSharp.Forms
         {
             if (disposing)
             {
+                ReleaseOwnedImage();
                 _image = null;
-                if (_lvglImagePtr != nint.Zero)
-                {
-                    // TODO: Free LVGL image data if allocated
-                    _lvglImagePtr = nint.Zero;
-                }
+                ClearLvglImage();
             }
             base.Dispose(disposing);
         }

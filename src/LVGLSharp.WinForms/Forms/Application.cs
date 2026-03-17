@@ -1,4 +1,5 @@
 using LVGLSharp;
+using LVGLSharp.Drawing;
 using System;
 using System.Collections.Generic;
 
@@ -31,7 +32,12 @@ namespace LVGLSharp.Forms
         /// </summary>
         public static void UseWindowsRuntime()
         {
-            PlatformRuntimeRegistration.RegisterWindowsRuntime();
+            if (WindowHostFactory.IsRegistered && Image.IsFactoryRegistered && RuntimeInputState.IsRegistered)
+            {
+                return;
+            }
+
+            throw new NotSupportedException("`Application.UseWindowsRuntime()` is not AOT-safe. Reference `LVGLSharp.Runtime.Windows`, then call `Application.UseRuntime(...)` and `Image.RegisterFactory(...)` explicitly.");
         }
 
         /// <summary>
@@ -39,7 +45,12 @@ namespace LVGLSharp.Forms
         /// </summary>
         public static void UseLinuxRuntime()
         {
-            PlatformRuntimeRegistration.RegisterLinuxRuntime();
+            if (WindowHostFactory.IsRegistered && Image.IsFactoryRegistered && RuntimeInputState.IsRegistered)
+            {
+                return;
+            }
+
+            throw new NotSupportedException("`Application.UseLinuxRuntime()` is not AOT-safe. Reference `LVGLSharp.Runtime.Linux`, then call `Application.UseRuntime(...)` and `Image.RegisterFactory(...)` explicitly.");
         }
 
         public static void Run(Form main)

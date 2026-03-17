@@ -1,3 +1,4 @@
+using LVGLSharp.Drawing;
 using System.Runtime.InteropServices;
 
 namespace LVGLSharp.Runtime.Windows;
@@ -5,7 +6,7 @@ namespace LVGLSharp.Runtime.Windows;
 /// <summary>
 /// Represents a Windows-backed image source used by LVGLSharp.
 /// </summary>
-public sealed class WindowsImageSource : IDisposable
+public sealed class WindowsImageSource : IImageSource
 {
     private System.Drawing.Image? _image;
 

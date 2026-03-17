@@ -1,3 +1,4 @@
+using LVGLSharp.Drawing;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Runtime.InteropServices;
 using ImageSharp = SixLabors.ImageSharp.Image;
@@ -8,7 +9,7 @@ namespace LVGLSharp.Runtime.Linux;
 /// <summary>
 /// Represents a Linux-backed image source used by LVGLSharp.
 /// </summary>
-public sealed class LinuxImageSource : IDisposable
+public sealed class LinuxImageSource : IImageSource
 {
     private ImageSharpImage? _image;
 

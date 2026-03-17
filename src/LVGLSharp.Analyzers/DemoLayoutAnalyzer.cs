@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace LVGLSharp.Analyzers;
 
 /// <summary>
-/// Enforces the demo layout pattern that LVGL currently renders reliably.
+/// Enforces the LVGLSharp layout pattern that LVGL currently renders reliably.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class DemoLayoutAnalyzer : DiagnosticAnalyzer

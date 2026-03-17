@@ -13,21 +13,21 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DirectChildRuleTitle" xml:space="preserve">
-    <value>Demo layouts should use WinFormsDemo-style containers</value>
+    <value>LVGLSharp layouts should use FlowLayoutPanel row containers</value>
   </data>
   <data name="DirectChildRuleMessage" xml:space="preserve">
-    <value>Add a FlowLayoutPanel to the demo TableLayoutPanel instead of '{0}'</value>
+    <value>Add a FlowLayoutPanel row container to the main TableLayoutPanel instead of '{0}'</value>
   </data>
   <data name="DirectChildRuleDescription" xml:space="preserve">
-    <value>Demo layouts should add one FlowLayoutPanel per main table row and place the actual controls inside that flow container.</value>
+    <value>LVGLSharp layouts should add one FlowLayoutPanel per main table row and place the actual controls inside that flow container.</value>
   </data>
   <data name="AbsoluteRowRuleTitle" xml:space="preserve">
-    <value>Demo layouts should use absolute table row heights</value>
+    <value>LVGLSharp layouts should use absolute table row heights</value>
   </data>
   <data name="AbsoluteRowRuleMessage" xml:space="preserve">
-    <value>Use an absolute RowStyle height instead of SizeType.Percent in demo layouts</value>
+    <value>Use an absolute RowStyle height instead of SizeType.Percent in LVGLSharp layouts</value>
   </data>
   <data name="AbsoluteRowRuleDescription" xml:space="preserve">
-    <value>WinFormsDemo-style layout uses fixed row heights for the outer demo TableLayoutPanel to keep LVGL controls visible.</value>
+    <value>LVGLSharp layout uses fixed row heights for the outer main TableLayoutPanel to keep LVGL controls visible.</value>
   </data>
 </root>

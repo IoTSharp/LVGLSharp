@@ -54,7 +54,26 @@ Application.SetCompatibleTextRenderingDefault(false);
 Application.Run(new frmMain());
 ```
 
-### 3. 在 Linux 上运行
+### 3. `LVGLSharp 布局`
+
+`LVGLSharp 布局` 是本仓库推荐的界面组织方式，用于让 LVGL 后端在不同平台上获得更稳定、一致的控件排布效果。
+
+其核心约束如下：
+
+- 外层使用一个 `TableLayoutPanel` 只做纵向分区。
+- 每一行放一个 `FlowLayoutPanel`，由该行的 `FlowLayoutPanel` 承载实际业务控件。
+- 主 `TableLayoutPanel` 使用固定绝对行高，不使用百分比行高。
+- 不要把 `Button`、`TextBox`、`ComboBox` 等业务控件直接挂到主 `TableLayoutPanel` 上。
+
+它与 WinForms 中常见布局方式的区别在于：
+
+- 在传统 WinForms 中，控件通常可以直接放进 `TableLayoutPanel` 单元格，设计器也经常使用百分比行高或列宽。
+- 在 `LVGLSharp 布局` 中，主 `TableLayoutPanel` 只负责分区，不直接承载业务控件；实际控件应放入每行的 `FlowLayoutPanel`。
+- 在传统 WinForms 中，布局更依赖设计器自动生成的网格参数；而在 `LVGLSharp 布局` 中，强调可预测的固定行高与行内容器，以降低不同平台和不同字体度量下的排布偏差。
+
+如果你的窗体在 Windows 设计器中看起来正常，但迁移到 LVGL 运行时后出现控件重叠、裁剪或行高不稳定，优先检查是否遵循了 `LVGLSharp 布局`。
+
+### 4. 在 Linux 上运行
 
 使用 NativeAOT 发布：
 

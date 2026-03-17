@@ -34,6 +34,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureBoxDemo", "src\Demos
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVGLSharp.Analyzers", "src\LVGLSharp.Analyzers\LVGLSharp.Analyzers.csproj", "{C61A88A7-BF41-6130-E711-D80E32E5E733}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Share", "Share", "{6C3E5B5C-150A-464A-99C0-193095D42EE2}"
+	ProjectSection(SolutionItems) = preProject
+		src\Share\lvgl.png = src\Share\lvgl.png
+		src\Share\lvgl128x128.png = src\Share\lvgl128x128.png
+		src\Share\lvgl64x64.png = src\Share\lvgl64x64.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -6,7 +6,7 @@ using ImageSharpImage = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFor
 namespace LVGLSharp.Runtime.Linux;
 
 /// <summary>
-/// Represents a Linux-backed image source used by `LVGLSharp.Forms`.
+/// Represents a Linux-backed image source used by LVGLSharp.
 /// </summary>
 public sealed class LinuxImageSource : IDisposable
 {

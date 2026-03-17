@@ -8,6 +8,7 @@
     <RepositoryUrl>https://github.com/IoTSharp/LVGLSharp.Forms</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>lvgl128x128.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>lvgl;embedded;ui;winforms;cross-platform</PackageTags>
     <!-- Default version; overridden by CI via -p:Version=... -->
@@ -17,5 +18,9 @@
   <!-- Include the repo-level README in every NuGet package. -->
   <ItemGroup Condition="'$(IsPackable)' != 'false' And Exists('$(MSBuildThisFileDirectory)README.md')">
     <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsPackable)' != 'false' And Exists('$(MSBuildThisFileDirectory)src/Share/lvgl128x128.png')">
+    <None Include="$(MSBuildThisFileDirectory)src/Share/lvgl128x128.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 </Project>

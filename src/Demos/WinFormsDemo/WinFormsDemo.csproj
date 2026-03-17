@@ -22,40 +22,21 @@
 		<ProjectReference Include="..\..\LVGLSharp.WinForms\LVGLSharp.Forms.csproj" />
      <ProjectReference Include="..\..\LVGLSharp.Windows\LVGLSharp.Runtime.Windows.csproj" />
 		<ProjectReference Include="..\..\LVGLSharp.Runtime.Linux\LVGLSharp.Runtime.Linux.csproj" />
-        <Compile Include="..\DemoRuntimeConfiguration.cs"
-				 Link="DemoRuntimeConfiguration.cs" />
+        <Compile Include="..\DemoRuntimeConfiguration.cs" Link="DemoRuntimeConfiguration.cs" />
 		<Using Include="LVGLSharp.Forms" />
        <Using Include="LVGLSharp.Drawing" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\LVGLSharp.Analyzers\LVGLSharp.Analyzers.csproj"
-						OutputItemType="Analyzer"
-						ReferenceOutputAssembly="false" />
+	  <ProjectReference Include="..\..\LVGLSharp.Analyzers\LVGLSharp.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
-	<ItemGroup>
-	  <None Remove="lvgl.png" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Content Include="lvgl.png">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
+ 
 	<ItemGroup>
 	  <PackageReference Include="System.Drawing.Common" Version="10.0.5" />
 	  <PackageReference Include="System.Resources.Extensions" Version="10.0.5" />
 	</ItemGroup>
+ 
 	<ItemGroup>
-	  <Compile Update="Properties\Resources.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Resources.resx</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-	<ItemGroup>
-	  <EmbeddedResource Update="Properties\Resources.resx">
-	    <Generator>ResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
+	  <Folder Include="Properties\" />
 	</ItemGroup>
 
 </Project>

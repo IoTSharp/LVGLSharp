@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace LVGLSharp.Runtime.Windows;
 
 /// <summary>
-/// Represents a Windows-backed image source used by `LVGLSharp.Forms`.
+/// Represents a Windows-backed image source used by LVGLSharp.
 /// </summary>
 public sealed class WindowsImageSource : IDisposable
 {

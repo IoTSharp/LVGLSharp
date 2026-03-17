@@ -1,14 +1,15 @@
 name: 打包并发布 NuGet 包
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
     inputs:
       version:
-        description: "包版本号（如 9.3.0）"
+        description: "包版本号（如 9.3.0.4 或 v9.3.0.4）"
         required: true
-        default: "9.3.0"
+        default: "9.3.0.4"
       publish_nuget:
         description: "发布到 NuGet.org"
         type: boolean
@@ -19,15 +20,54 @@ on:
         default: true
 
 env:
-  # 版本来源：优先使用 workflow_dispatch 输入，其次使用 release 标签，最后使用分支名。
-  # 注意：该值可能含有 'v' 前缀（如 v9.3.0），打包时会在 Normalise version 步骤中去除。
-  PACKAGE_VERSION: ${{ github.event.inputs.version || github.event.release.tag_name || github.ref_name }}
+  # 版本来源：优先使用 workflow_dispatch 输入，其次使用 tag 名称。
+  # 注意：tag/输入值可能含有 'v' 前缀（如 v9.3.0.4），会在 prepare 步骤中去除。
+  PACKAGE_VERSION: ${{ github.event.inputs.version || github.ref_name }}
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      package_version: ${{ steps.ver.outputs.version }}
+      release_tag: ${{ steps.ver.outputs.tag }}
+
+    steps:
+      - name: 规范化并校验版本号
+        id: ver
+        shell: bash
+        run: |
+          RAW_TAG=""
+          RAW_VERSION="${{ env.PACKAGE_VERSION }}"
+
+          if [ -z "$RAW_VERSION" ]; then
+            echo "错误：未提供版本号。"
+            exit 1
+          fi
+
+          VERSION="${RAW_VERSION#v}"
+          if [[ ! "$VERSION" =~ ^[0-9]+(\.[0-9]+){2,3}$ ]]; then
+            echo "错误：版本号 '$RAW_VERSION' 不符合要求，应为 v9.3.0.4 / 9.3.0.4 / v9.3.0 / 9.3.0。"
+            exit 1
+          fi
+
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            RAW_TAG="${GITHUB_REF_NAME}"
+          fi
+
+          if [ -z "$RAW_TAG" ]; then
+            RAW_TAG="v$VERSION"
+          fi
+
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${RAW_TAG}" >> "$GITHUB_OUTPUT"
+          echo "使用版本号：${VERSION}"
+          echo "发布标签：${RAW_TAG}"
+
   # ──────────────────────────────────────────────────────────────────────────
   # 1. 为各平台构建原生库
   # ──────────────────────────────────────────────────────────────────────────
   build-native:
+    needs: prepare
     uses: ./.github/workflows/build-native.yml
     permissions:
       contents: read
@@ -36,7 +76,7 @@ jobs:
   # 2. 组装原生包、共享托管包、平台运行时包与 Forms 包
   # ──────────────────────────────────────────────────────────────────────────
   pack:
-    needs: build-native
+    needs: [prepare, build-native]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -46,13 +86,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: false   # 仅托管代码，无需构建 C 库
-
-      - name: 规范化版本号（去除 'v' 前缀）
-        id: ver
-        run: |
-          VER="${{ env.PACKAGE_VERSION }}"
-          VER="${VER#v}"
-          echo "version=${VER}" >> "$GITHUB_OUTPUT"
 
       # ── 下载所有原生库制品 ────────────────────────────────────────────────
       - name: 下载所有原生库制品
@@ -116,7 +149,7 @@ jobs:
         run: |
           dotnet pack src/LVGLSharp.Native/LVGLSharp.Native.csproj \
             -c Release \
-            -p:Version=${{ steps.ver.outputs.version }} \
+            -p:Version=${{ needs.prepare.outputs.package_version }} \
             --output nupkgs
 
       # ── 注册本地 NuGet 源，供依赖 LVGLSharp.Native 的包在 CI 中解析本地产物 ───
@@ -130,7 +163,7 @@ jobs:
         run: |
           dotnet pack src/LVGLSharp.Interop/LVGLSharp.Interop.csproj \
             -c Release \
-            -p:Version=${{ steps.ver.outputs.version }} \
+            -p:Version=${{ needs.prepare.outputs.package_version }} \
             --output nupkgs
 
       # ── 打包 LVGLSharp.Core（Forms 与平台运行时共享依赖） ─────────────────
@@ -138,7 +171,7 @@ jobs:
         run: |
           dotnet pack src/LVGLSharp.Core/LVGLSharp.Core.csproj \
             -c Release \
-            -p:Version=${{ steps.ver.outputs.version }} \
+            -p:Version=${{ needs.prepare.outputs.package_version }} \
             --output nupkgs
 
       # ── 打包 LVGLSharp.Runtime.Windows（Windows 平台运行时） ───────────────
@@ -146,7 +179,7 @@ jobs:
         run: |
           dotnet pack src/LVGLSharp.Windows/LVGLSharp.Runtime.Windows.csproj \
             -c Release \
-            -p:Version=${{ steps.ver.outputs.version }} \
+            -p:Version=${{ needs.prepare.outputs.package_version }} \
             --output nupkgs
 
       # ── 打包 LVGLSharp.Runtime.Linux（Linux 平台运行时） ──────────────────
@@ -154,7 +187,7 @@ jobs:
         run: |
           dotnet pack src/LVGLSharp.Runtime.Linux/LVGLSharp.Runtime.Linux.csproj \
             -c Release \
-            -p:Version=${{ steps.ver.outputs.version }} \
+            -p:Version=${{ needs.prepare.outputs.package_version }} \
             --output nupkgs
 
       # ── 打包 LVGLSharp.Forms（平台无关；由运行时包自动注册宿主） ──────────
@@ -162,7 +195,7 @@ jobs:
         run: |
           dotnet pack src/LVGLSharp.WinForms/LVGLSharp.Forms.csproj \
             -c Release \
-            -p:Version=${{ steps.ver.outputs.version }} \
+            -p:Version=${{ needs.prepare.outputs.package_version }} \
             --output nupkgs
 
       # ── 将打包好的 NuGet 包上传为制品 ────────────────────────────────────
@@ -176,13 +209,14 @@ jobs:
   # 3. 发布
   # ──────────────────────────────────────────────────────────────────────────
   publish:
-    needs: pack
+    needs: [prepare, pack]
     runs-on: ubuntu-latest
     permissions:
+      contents: write
       packages: write
-    # 仅在真实发布时执行（手动触发且两个发布选项都禁用时跳过）
+    # 仅在 tag 发布或手动触发需要发布时执行
     if: |
-      github.event_name == 'release' ||
+      startsWith(github.ref, 'refs/tags/') ||
       github.event.inputs.publish_nuget == 'true' ||
       github.event.inputs.publish_github == 'true'
 
@@ -193,10 +227,24 @@ jobs:
           name: nuget-packages
           path: nupkgs
 
+      - name: 发布到 GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" nupkgs/*.nupkg --clobber
+          else
+            gh release create "$RELEASE_TAG" nupkgs/*.nupkg \
+              --title "$RELEASE_TAG" \
+              --generate-notes
+          fi
+
       # ── 发布到 NuGet.org ──────────────────────────────────────────────────
       - name: 发布到 NuGet.org
         if: |
-          github.event_name == 'release' ||
+          startsWith(github.ref, 'refs/tags/') ||
           github.event.inputs.publish_nuget == 'true'
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
@@ -210,7 +258,7 @@ jobs:
       # ── 发布到 GitHub Packages ────────────────────────────────────────────
       - name: 发布到 GitHub Packages
         if: |
-          github.event_name == 'release' ||
+          startsWith(github.ref, 'refs/tags/') ||
           github.event.inputs.publish_github == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

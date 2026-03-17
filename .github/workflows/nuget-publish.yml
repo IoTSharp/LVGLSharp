@@ -33,7 +33,7 @@ jobs:
       contents: read
 
   # ──────────────────────────────────────────────────────────────────────────
-  # 2. 组装 LVGLSharp.Native NuGet 包及托管代码包
+  # 2. 组装原生包、共享托管包、平台运行时包与 Forms 包
   # ──────────────────────────────────────────────────────────────────────────
   pack:
     needs: build-native
@@ -119,13 +119,13 @@ jobs:
             -p:Version=${{ steps.ver.outputs.version }} \
             --output nupkgs
 
-      # ── 注册本地 NuGet 源，供 Interop 打包时解析 LVGLSharp.Native 依赖 ────
+      # ── 注册本地 NuGet 源，供依赖 LVGLSharp.Native 的包在 CI 中解析本地产物 ───
       # CI 环境中 $(CI)==true 会激活 LVGLSharp.Native 包引用，
       # 此时该包尚未发布到 NuGet.org，需要指向本地 nupkgs/ 目录。
       - name: 注册本地 NuGet 源
         run: dotnet nuget add source "$(pwd)/nupkgs" --name local-packages
 
-      # ── 打包 LVGLSharp.Interop ────────────────────────────────────────────
+      # ── 打包 LVGLSharp.Interop（依赖 LVGLSharp.Native） ───────────────────
       - name: 打包 LVGLSharp.Interop
         run: |
           dotnet pack src/LVGLSharp.Interop/LVGLSharp.Interop.csproj \
@@ -133,7 +133,31 @@ jobs:
             -p:Version=${{ steps.ver.outputs.version }} \
             --output nupkgs
 
-      # ── 打包 LVGLSharp.Forms ──────────────────────────────────────────────
+      # ── 打包 LVGLSharp.Core（Forms 与平台运行时共享依赖） ─────────────────
+      - name: 打包 LVGLSharp.Core
+        run: |
+          dotnet pack src/LVGLSharp.Core/LVGLSharp.Core.csproj \
+            -c Release \
+            -p:Version=${{ steps.ver.outputs.version }} \
+            --output nupkgs
+
+      # ── 打包 LVGLSharp.Runtime.Windows（Windows 平台运行时） ───────────────
+      - name: 打包 LVGLSharp.Runtime.Windows
+        run: |
+          dotnet pack src/LVGLSharp.Windows/LVGLSharp.Runtime.Windows.csproj \
+            -c Release \
+            -p:Version=${{ steps.ver.outputs.version }} \
+            --output nupkgs
+
+      # ── 打包 LVGLSharp.Runtime.Linux（Linux 平台运行时） ──────────────────
+      - name: 打包 LVGLSharp.Runtime.Linux
+        run: |
+          dotnet pack src/LVGLSharp.Runtime.Linux/LVGLSharp.Runtime.Linux.csproj \
+            -c Release \
+            -p:Version=${{ steps.ver.outputs.version }} \
+            --output nupkgs
+
+      # ── 打包 LVGLSharp.Forms（平台无关；由运行时包自动注册宿主） ──────────
       - name: 打包 LVGLSharp.Forms
         run: |
           dotnet pack src/LVGLSharp.WinForms/LVGLSharp.Forms.csproj \

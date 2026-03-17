@@ -20,6 +20,16 @@
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
 		<ProjectReference Include="..\..\LVGLSharp.WinForms\LVGLSharp.Forms.csproj" />
+     <ProjectReference Include="..\..\LVGLSharp.Windows\LVGLSharp.Runtime.Windows.csproj" />
+		<ProjectReference Include="..\..\LVGLSharp.Runtime.Linux\LVGLSharp.Runtime.Linux.csproj" />
+        <Compile Include="..\DemoRuntimeConfiguration.cs"
+				 Link="DemoRuntimeConfiguration.cs" />
+     <Compile Include="..\..\LVGLSharp.Windows\buildTransitive\LVGLSharp.Runtime.Windows.ApplicationExtensions.g.cs"
+				 Link="Generated\LVGLSharp.Runtime.Windows.ApplicationExtensions.g.cs"
+				 Visible="false" />
+		<Compile Include="..\..\LVGLSharp.Runtime.Linux\buildTransitive\LVGLSharp.Runtime.Linux.ApplicationExtensions.g.cs"
+				 Link="Generated\LVGLSharp.Runtime.Linux.ApplicationExtensions.g.cs"
+				 Visible="false" />
 		<Using Include="LVGLSharp.Forms" />
 		<Using Include="LVGLSharp.Darwing" />
 	</ItemGroup>

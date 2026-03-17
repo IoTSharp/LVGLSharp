@@ -8,13 +8,34 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<PackageId>LVGLSharp.Runtime.Linux</PackageId>
+		<Title>LVGLSharp Linux Runtime</Title>
+		<Description>Linux host runtime for LVGLSharp.Forms.</Description>
+        <DefaultItemExcludes>$(DefaultItemExcludes);buildTransitive\**\*.cs</DefaultItemExcludes>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\LVGLSharp.Core\LVGLSharp.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Include="buildTransitive\LVGLSharp.Runtime.Linux.targets"
+			  Pack="true"
+			  PackagePath="buildTransitive\"
+			  Visible="false" />
+		<None Include="buildTransitive\LVGLSharp.Runtime.Linux.ApplicationExtensions.g.cs"
+			  Pack="true"
+			  PackagePath="buildTransitive\"
+			  Visible="false" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Update="NotoSansSC-Regular.ttf">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+       <Pack>true</Pack>
+		<PackagePath>contentFiles/any/any/</PackagePath>
+		<PackageCopyToOutput>true</PackageCopyToOutput>
 	  </None>
 	</ItemGroup>
 

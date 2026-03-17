@@ -291,7 +291,7 @@ namespace LVGLSharp.Forms
             if (gcHandle.IsAllocated && gcHandle.Target is TextBox textBox)
             {
                 // 检查是否是右键点击 (btn_id == 2)
-                uint mouseButton = LVGLSharp.Runtime.Windows.Win32Window.CurrentMouseButton;
+                uint mouseButton = GetCurrentMouseButton();
                 
                 if (mouseButton == 2 && textBox.ContextMenuStrip != null)
                 {
@@ -311,6 +311,11 @@ namespace LVGLSharp.Forms
                     }
                 }
             }
+        }
+
+        private static uint GetCurrentMouseButton()
+        {
+            return RuntimeInputState.GetCurrentMouseButton();
         }
 
         private unsafe void AddKeyEventCallback()

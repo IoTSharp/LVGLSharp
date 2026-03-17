@@ -8,8 +8,26 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<PackageId>LVGLSharp.Runtime.Windows</PackageId>
+		<Title>LVGLSharp Windows Runtime</Title>
+		<Description>Windows host runtime for LVGLSharp.Forms.</Description>
+        <DefaultItemExcludes>$(DefaultItemExcludes);buildTransitive\**\*.cs</DefaultItemExcludes>
+	</PropertyGroup>
+
 	<ItemGroup>
 	  <ProjectReference Include="..\LVGLSharp.Core\LVGLSharp.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="buildTransitive\LVGLSharp.Runtime.Windows.targets"
+			  Pack="true"
+			  PackagePath="buildTransitive\"
+			  Visible="false" />
+		<None Include="buildTransitive\LVGLSharp.Runtime.Windows.ApplicationExtensions.g.cs"
+			  Pack="true"
+			  PackagePath="buildTransitive\"
+			  Visible="false" />
 	</ItemGroup>
 
 </Project>

@@ -1,3 +1,4 @@
+using LVGLSharp;
 using System;
 using System.Collections.Generic;
 
@@ -13,6 +14,17 @@ namespace LVGLSharp.Forms
         private static Form? _mainForm;
 
         public static FormCollection OpenForms { get; } = new FormCollection(_openForms);
+
+        /// <summary>
+        /// Registers the platform runtime used by <see cref="Run(Form)"/>.
+        /// </summary>
+        public static void UseRuntime(Func<string, int, int, IWindow> windowFactory, Func<uint>? currentMouseButtonProvider = null)
+        {
+            ArgumentNullException.ThrowIfNull(windowFactory);
+
+            WindowHostFactory.Register(windowFactory);
+            RuntimeInputState.RegisterCurrentMouseButtonProvider(currentMouseButtonProvider);
+        }
 
         public static void Run(Form main)
         {

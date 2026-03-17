@@ -16,39 +16,12 @@
 		<Description>A cross-platform WinForms API compatibility layer that renders UI through LVGL. Targets Windows and Linux (x64, arm, arm64) with NativeAOT support.</Description>
 	</PropertyGroup>
 
-	<PropertyGroup>
-		<DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
-		<PublishPlatform>Windows</PublishPlatform>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(RuntimeIdentifier)' == 'linux-arm' Or '$(RuntimeIdentifier)' == 'linux-arm64' Or '$(RuntimeIdentifier)' == 'linux-x64'">
-		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
-		<PublishPlatform>Linux</PublishPlatform>
-	</PropertyGroup>
-
-	 
-	 
-	<ItemGroup>
-		<DirectPInvoke Include="lvgl" />
-		<NativeLibrary Condition="'$(PublishPlatform)' == 'Windows'" Include="lvgl.lib" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Windows_NT'">
-		<None Update="lvgl.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(PublishPlatform)' == 'Windows'">
-		<Compile Remove="Runtime\Linux\**" />
-		<EmbeddedResource Remove="Runtime\Linux\**" />
-		<None Remove="Runtime\Linux\**" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(PublishPlatform)' == 'Linux'">
+   <ItemGroup>
 		<Compile Remove="Runtime\Windows\**" />
-		<EmbeddedResource Remove="Runtime\Windows\**" />
-		<None Remove="Runtime\Windows\**" />
+		<Compile Remove="Runtime\Linux\**" />
+      <Compile Remove="Runtime\Core\IWindow.cs" />
+		<Compile Remove="Runtime\Core\LvglHostDefaults.cs" />
+		<Compile Remove="Runtime\Core\SixLaborsFontManager.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -59,7 +32,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
+          <ProjectReference Include="..\LVGLSharp.Core\LVGLSharp.Core.csproj" />
 		<ProjectReference Include="..\LVGLSharp.Interop\LVGLSharp.Interop.csproj" />
+        <ProjectReference Include="..\LVGLSharp.Analyzers\LVGLSharp.Analyzers.csproj"
+						  OutputItemType="Analyzer"
+						  ReferenceOutputAssembly="false"
+						  PrivateAssets="all" />
+        <None Include="..\LVGLSharp.Analyzers\bin\$(Configuration)\netstandard2.0\LVGLSharp.Analyzers.dll"
+			  Pack="true"
+			  PackagePath="analyzers/dotnet/cs/"
+			  Visible="false" />
+        <None Include="buildTransitive\LVGLSharp.Forms.targets"
+			  Pack="true"
+			  PackagePath="buildTransitive\"
+			  Visible="false" />
 	</ItemGroup>
 
 	<ItemGroup>

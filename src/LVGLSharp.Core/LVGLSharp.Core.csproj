@@ -8,6 +8,12 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<PackageId>LVGLSharp.Core</PackageId>
+		<Title>LVGLSharp Core Runtime Abstractions</Title>
+		<Description>Shared LVGLSharp runtime abstractions and font helpers used by the Forms and platform runtime packages.</Description>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="SixLabors.Fonts" Version="2.1.3" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />

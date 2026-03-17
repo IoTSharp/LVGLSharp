@@ -31,7 +31,10 @@
 
 | 包名 | 说明 |
 |------|------|
-| `LVGLSharp.Forms` | WinForms API 兼容层（核心包） |
+| `LVGLSharp.Forms` | WinForms API 兼容层 |
+| `LVGLSharp.Core` | 运行时共享抽象与公共字体/宿主辅助能力 |
+| `LVGLSharp.Runtime.Windows` | Windows 平台运行时；引用后自动注册 Windows 宿主 |
+| `LVGLSharp.Runtime.Linux` | Linux 平台运行时；引用后自动注册 Linux 宿主 |
 | `LVGLSharp.Interop` | LVGL P/Invoke 绑定（自动生成） |
 | `LVGLSharp.Native` | 各平台 LVGL 原生库（win-x86 / win-x64 / win-arm64、linux-arm 等） |
 
@@ -41,9 +44,19 @@
 
 ### 1. 创建项目
 
- 推荐按仓库中的示例采用多目标框架的方式：使用 Visual Studio 创建 Windows Forms 应用程序（.NET），以 `net10.0-windows` 目标启用设计器（`UseWindowsForms=true`），再增加一个纯 `net10.0` 目标用于跨平台运行并在该目标下引用 `LVGLSharp.Forms`。可参考示例工程的配置：[`src/Demos/WinFormsDemo/WinFormsDemo.csproj`](./src/Demos/WinFormsDemo/WinFormsDemo.csproj)。
+ 推荐按仓库中的示例采用多目标框架的方式：使用 Visual Studio 创建 Windows Forms 应用程序（.NET），以 `net10.0-windows` 目标启用设计器（`UseWindowsForms=true`），再增加一个纯 `net10.0` 目标用于跨平台运行。
+
+ 在跨平台运行目标下：
+
+ - 始终引用 `LVGLSharp.Forms`
+ - Windows 项目再引用 `LVGLSharp.Runtime.Windows`
+ - Linux 项目再引用 `LVGLSharp.Runtime.Linux`
+
+ 对应平台运行时包被引用后，会自动完成宿主注册；如果没有引用任何平台运行时包，编译期会收到提示。可参考示例工程的配置：[`src/Demos/WinFormsDemo/WinFormsDemo.csproj`](./src/Demos/WinFormsDemo/WinFormsDemo.csproj)。
 
 ### 2. 入口程序
+
+ 引用了对应平台运行时包后，入口程序无需手动注册运行时：
 
 ```csharp
 using LVGLSharp.Forms;
@@ -90,10 +103,12 @@ src/
 ├── LVGLSharp.WinForms/     # WinForms API 兼容层（核心）
 │   ├── Forms/              # 控件实现（Control、Form、Button 等）
 │   ├── Darwing/            # 跨平台绘图类型（Size、Point、Color 等）
-│   └── Runtime/            # 平台运行时（Windows / Linux）
+│   └── Runtime/            # 公共运行时注册入口与共享胶水代码
+├── LVGLSharp.Core/         # 公共核心库
+├── LVGLSharp.Windows/      # Windows 平台运行时
+├── LVGLSharp.Runtime.Linux/# Linux 平台运行时
 ├── LVGLSharp.Interop/      # LVGL P/Invoke 自动生成绑定
 ├── LVGLSharp.Native/       # 各平台原生库
-├── LVGLSharp.Core/         # 公共核心库
 └── Demos/
     └── WinFormsDemo/       # 演示项目
 libs/

@@ -30,4 +30,13 @@
   <data name="AbsoluteRowRuleDescription" xml:space="preserve">
     <value>LVGLSharp layout uses fixed row heights for the outer main TableLayoutPanel to keep LVGL controls visible.</value>
   </data>
+  <data name="MissingRuntimeRuleTitle" xml:space="preserve">
+    <value>LVGLSharp.Forms requires a platform runtime package</value>
+  </data>
+  <data name="MissingRuntimeRuleMessage" xml:space="preserve">
+    <value>Add a reference to LVGLSharp.Runtime.Windows or LVGLSharp.Runtime.Linux so LVGLSharp.Forms can register a runtime automatically.</value>
+  </data>
+  <data name="MissingRuntimeRuleDescription" xml:space="preserve">
+    <value>LVGLSharp.Forms needs a platform runtime package reference to provide the host window implementation and automatic runtime registration.</value>
+  </data>
 </root>

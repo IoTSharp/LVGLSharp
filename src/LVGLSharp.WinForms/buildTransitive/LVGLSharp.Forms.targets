@@ -1,0 +1,8 @@
+<Project>
+  <Target Name="LVGLSharpValidateRuntimePackageReference" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <_LVGLSharpRuntimeReference Include="@(ReferencePath)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows' Or '%(FileName)' == 'LVGLSharp.Runtime.Linux'" />
+    </ItemGroup>
+    <Warning Condition="'@(_LVGLSharpRuntimeReference)' == ''" Text="LVGLSharp.Forms requires a platform runtime reference. Add LVGLSharp.Runtime.Windows or LVGLSharp.Runtime.Linux so the runtime can auto-register." />
+  </Target>
+</Project>

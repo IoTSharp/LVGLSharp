@@ -30,6 +30,7 @@ namespace LVGLSharp.Runtime.Windows
         static int startTick;
         static int mouseX = 0, mouseY = 0;
         static bool mousePressed = false;
+        static uint mouseButton = 0;
         static byte[] bgraBuf;
         static byte[] _timeBuf = new byte[32];
         static readonly object renderLock = new object();
@@ -43,6 +44,7 @@ namespace LVGLSharp.Runtime.Windows
         public static lv_obj_t* root { get; set; }
         public static lv_group_t* key_inputGroup { get; set; }
         public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCb { get; set; } = &HandleSendTextAreaFocusCb;
+        public static uint CurrentMouseButton => mouseButton;
         public lv_obj_t* Root => root;
         public lv_group_t* KeyInputGroup => key_inputGroup;
         public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCb;
@@ -116,6 +118,7 @@ namespace LVGLSharp.Runtime.Windows
             data->point.x = mouseX;
             data->point.y = mouseY;
             data->state = mousePressed ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+            data->btn_id = mouseButton;
             data->enc_diff = (short)mouseWheelDelta;
             mouseWheelDelta = 0;
         }
@@ -340,12 +343,26 @@ namespace LVGLSharp.Runtime.Windows
                     break;
                 case 0x0201: // WM_LBUTTONDOWN
                     mousePressed = true;
+                    mouseButton = 1;
                     mouseX = (short)(lParam.ToInt32() & 0xFFFF);
                     mouseY = (short)((lParam.ToInt32() >> 16) & 0xFFFF);
                     ResetTextInputFocus(mouseX, mouseY);
                     break;
                 case 0x0202: // WM_LBUTTONUP
                     mousePressed = false;
+                    mouseButton = 0;
+                    mouseX = (short)(lParam.ToInt32() & 0xFFFF);
+                    mouseY = (short)((lParam.ToInt32() >> 16) & 0xFFFF);
+                    break;
+                case 0x0204: // WM_RBUTTONDOWN
+                    mousePressed = true;
+                    mouseButton = 2;
+                    mouseX = (short)(lParam.ToInt32() & 0xFFFF);
+                    mouseY = (short)((lParam.ToInt32() >> 16) & 0xFFFF);
+                    break;
+                case 0x0205: // WM_RBUTTONUP
+                    mousePressed = false;
+                    mouseButton = 0;
                     mouseX = (short)(lParam.ToInt32() & 0xFFFF);
                     mouseY = (short)((lParam.ToInt32() >> 16) & 0xFFFF);
                     break;

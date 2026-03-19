@@ -17,7 +17,7 @@ internal static class DemoRuntimeConfiguration
 
         if (OperatingSystem.IsLinux())
         {
-            Application.UseRuntime(static (title, width, height) => new LinuxView());
+            Application.UseRuntime(static (title, width, height) => new X11View(title, width, height));
             Image.RegisterFactory(static path => new LinuxImageSource(path));
             return;
         }

@@ -11,8 +11,8 @@ usage() {
     cat <<'EOF'
 Usage: ./build-linux-demos.sh [options] [demo...]
 
-Builds the Linux X11 native dependencies and publishes the demo apps as
-self-contained Native AOT single-file executables.
+Builds the Linux LVGL shared library and publishes the demo apps as
+self-contained single-file executables.
 
 Options:
   --clean                 Remove previous build/publish output first.
@@ -105,14 +105,10 @@ LVGL_SOURCE_DIR="$ROOT_DIR/libs/lvgl"
 LVGL_BUILD_DIR="$ROOT_DIR/libs/build/lvgl-x11"
 LVGL_LIB_DIR="$LVGL_BUILD_DIR/lib"
 LVGL_SONAME_PATH="$LVGL_LIB_DIR/liblvgl.so.9"
-HOST_SOURCE_DIR="$ROOT_DIR/libs/lvgl_host_x11"
-HOST_BUILD_DIR="$HOST_SOURCE_DIR/build"
-HOST_LIB_PATH="$HOST_BUILD_DIR/liblvgl_host_x11.so"
-FONT_PATH="$ROOT_DIR/src/LVGLSharp.Runtime.Linux/NotoSansSC-Regular.ttf"
 DIST_DIR="$ROOT_DIR/dist/$RID"
 
 if ((CLEAN)); then
-    rm -rf "$DIST_DIR" "$LVGL_BUILD_DIR" "$HOST_BUILD_DIR"
+    rm -rf "$DIST_DIR" "$LVGL_BUILD_DIR"
 fi
 
 mkdir -p "$DIST_DIR"
@@ -123,14 +119,6 @@ cmake -S "$LVGL_SOURCE_DIR" -B "$LVGL_BUILD_DIR"     -DCMAKE_BUILD_TYPE="$CONFIG
 cmake --build "$LVGL_BUILD_DIR" -j"$JOBS"
 
 [[ -f "$LVGL_SONAME_PATH" ]] || fail "missing built LVGL shared library: $LVGL_SONAME_PATH"
-
-printf '==> Building lvgl_host_x11
-'
-cmake -S "$HOST_SOURCE_DIR" -B "$HOST_BUILD_DIR"     -DCMAKE_BUILD_TYPE="$CONFIGURATION"     -DLVGL_BUNDLED_DIR="$LVGL_SOURCE_DIR"     -DLVGL_BUNDLED_LIB="$LVGL_SONAME_PATH"
-cmake --build "$HOST_BUILD_DIR" -j"$JOBS"
-
-[[ -f "$HOST_LIB_PATH" ]] || fail "missing built X11 host library: $HOST_LIB_PATH"
-[[ -f "$FONT_PATH" ]] || fail "missing Linux runtime font: $FONT_PATH"
 
 publish_demo() {
     local demo_name="$1"
@@ -148,10 +136,8 @@ publish_demo() {
 
     [[ -f "$executable_path" ]] || fail "missing published executable: $executable_path"
 
-    cp -Lf "$HOST_LIB_PATH" "$publish_dir/liblvgl_host_x11.so"
     cp -Lf "$LVGL_SONAME_PATH" "$publish_dir/liblvgl.so.9"
     ln -sfn liblvgl.so.9 "$publish_dir/liblvgl.so"
-    cp -f "$FONT_PATH" "$publish_dir/NotoSansSC-Regular.ttf"
 
     rm -f "$publish_dir"/*.pdb "$publish_dir"/*.dbg
     chmod +x "$executable_path"

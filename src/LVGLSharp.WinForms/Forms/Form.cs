@@ -68,6 +68,11 @@ namespace LVGLSharp.Forms
 
             CreateChildrenLvglObjects();
             OnLoad(EventArgs.Empty);
+
+            if (root != null)
+            {
+                lv_obj_invalidate(root);
+            }
         }
 
         public new void Show()
@@ -141,7 +146,6 @@ namespace LVGLSharp.Forms
         public AutoScaleMode AutoScaleMode { get; set; }
     }
 }
-
 
 
 

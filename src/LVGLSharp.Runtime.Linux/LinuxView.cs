@@ -28,15 +28,10 @@ public unsafe class LinuxView : IWindow
             _ => LinuxViewMode.X11,
         };
 
-        if (_mode == LinuxViewMode.X11 && !string.IsNullOrWhiteSpace(detectedDisplay))
-        {
-            Environment.SetEnvironmentVariable("DISPLAY", detectedDisplay);
-        }
-
         _inner = _mode switch
         {
             LinuxViewMode.FrameBuffer => new FrameBufferView(fbdev, indev, dpi),
-            LinuxViewMode.X11 => new X11View(title, width, height, dpi),
+            LinuxViewMode.X11 => new X11View(title, width, height, dpi, detectedDisplay),
             _ => throw new InvalidOperationException($"Unsupported Linux view mode: {_mode}"),
         };
     }
@@ -72,25 +67,22 @@ public unsafe class LinuxView : IWindow
 
     private static string? DetectX11Display()
     {
-        var display = Environment.GetEnvironmentVariable("DISPLAY");
-        if (!string.IsNullOrWhiteSpace(display))
-        {
-            return display;
-        }
-
         const string x11SocketDir = "/tmp/.X11-unix";
-        if (!Directory.Exists(x11SocketDir))
+        if (Directory.Exists(x11SocketDir))
         {
-            return null;
+            var displayEntry = Directory.EnumerateFiles(x11SocketDir, "X*")
+                .Select(Path.GetFileName)
+                .Select(static name => name is { Length: > 1 } value ? value[1..] : string.Empty)
+                .Where(static value => value.Length > 0)
+                .OrderBy(static value => value, StringComparer.Ordinal)
+                .FirstOrDefault();
+
+            if (!string.IsNullOrWhiteSpace(displayEntry))
+            {
+                return $":{displayEntry}";
+            }
         }
 
-        var displayEntry = Directory.EnumerateFiles(x11SocketDir, "X*")
-            .Select(Path.GetFileName)
-            .Where(static name => !string.IsNullOrWhiteSpace(name) && name!.Length > 1)
-            .Select(static name => name![1..])
-            .OrderBy(static value => value, StringComparer.Ordinal)
-            .FirstOrDefault();
-
-        return displayEntry is null ? null : $":{displayEntry}";
+        return null;
     }
 }

@@ -23,11 +23,6 @@
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <None Include="..\..\libs\lvgl_host_x11\build\liblvgl_host_x11.so" Link="liblvgl_host_x11.so">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="buildTransitive\" />

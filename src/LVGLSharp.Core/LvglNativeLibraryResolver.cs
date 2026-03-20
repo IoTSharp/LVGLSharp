@@ -107,8 +107,8 @@ namespace LVGLSharp
 
             if (OperatingSystem.IsLinux())
             {
-                // Prefer the versioned SONAME so we reuse the exact same LVGL image
-                // already pulled in by liblvgl_host_x11.so and avoid double-loading.
+                // Prefer the versioned SONAME so Linux builds use the published LVGL
+                // shared library consistently before falling back to the unversioned name.
                 yield return "liblvgl.so.9";
                 yield return "liblvgl.so";
                 yield break;

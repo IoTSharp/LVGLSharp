@@ -66,11 +66,11 @@ namespace LVGLSharp.Runtime.Linux
 
             _fallbackFont = lv_obj_get_style_text_font(root, LV_PART_MAIN);
 
-            var systemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
-            if (!string.IsNullOrWhiteSpace(systemFontPath))
+            var systemFontFamily = LinuxSystemFontResolver.TryResolveFontFamily();
+            if (systemFontFamily is { } resolvedSystemFontFamily)
             {
                 _fontManager = new SixLaborsFontManager(
-                    systemFontPath,
+                    resolvedSystemFontFamily,
                     12,
                     _dpi,
                     _fallbackFont,

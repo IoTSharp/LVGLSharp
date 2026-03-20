@@ -2,6 +2,12 @@
 
 这是一个演示 `LVGLSharp.Forms.PictureBox` 控件功能的示例程序。
 
+## 运行效果
+
+下面的截图展示了 `PictureBoxDemo` 在 Linux 运行时中的界面效果：
+
+![PictureBoxDemo 运行效果](./assets/runtime-effect.png)
+
 ## 功能展示
 
 ### 图像加载
@@ -65,6 +71,8 @@ dotnet run --framework net10.0
 
 ```
 PictureBoxDemo/
+├── assets/
+│   └── runtime-effect.png      # 运行效果截图
 ├── PictureBoxDemo.csproj      # 项目文件
 ├── Program.cs                  # 程序入口
 ├── frmPictureBoxDemo.cs        # 主窗体逻辑

@@ -51,7 +51,7 @@ unsafe class Program
         }
         else
         {
-            return new X11View("SerialPort", 700, 360);
+            return new LinuxView("SerialPort", 700, 360);
         }
     }
 

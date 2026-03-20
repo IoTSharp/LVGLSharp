@@ -1,113 +1,96 @@
 using LVGLSharp;
 using LVGLSharp.Interop;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LVGLSharp.Runtime.Linux
+namespace LVGLSharp.Runtime.Linux;
+
+public unsafe class LinuxView : IWindow
 {
-    public unsafe class LinuxView : IWindow
+    private enum LinuxViewMode
     {
-        static lv_display_t* g_display;
-        static lv_indev_t* g_indev;
-        static uint g_bufSize;
-        static bool g_running = true;
-        static lv_obj_t* label;
-        static byte[] _timeBuf = new byte[32];
-        static int startTick;
+        X11,
+        FrameBuffer,
+    }
 
-        public static lv_obj_t* root { get; set; }
-        public static lv_group_t* key_inputGroup { get; set; } = null;
-        public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCb { get; set; } = null;
+    private readonly IWindow _inner;
+    private readonly LinuxViewMode _mode;
 
-        public lv_obj_t* Root => root;
-        public lv_group_t* KeyInputGroup => key_inputGroup;
-        public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCb;
-
-        private lv_font_t* _fallbackFont;
-        private lv_style_t* _defaultFontStyle;
-        private SixLaborsFontManager _fontManager;
-
-        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-        static unsafe uint my_tick()
+    public LinuxView(string title = "LVGLSharp Linux", int width = 800, int height = 600, float dpi = 96f,
+        string fbdev = "/dev/fb0", string indev = "/dev/input/event0")
+    {
+        var detectedDisplay = DetectX11Display();
+        _mode = detectedDisplay switch
         {
-            return (uint)(Environment.TickCount - startTick);
+            not null => LinuxViewMode.X11,
+            _ when File.Exists(fbdev) => LinuxViewMode.FrameBuffer,
+            _ => LinuxViewMode.X11,
+        };
+
+        if (_mode == LinuxViewMode.X11 && !string.IsNullOrWhiteSpace(detectedDisplay))
+        {
+            Environment.SetEnvironmentVariable("DISPLAY", detectedDisplay);
         }
 
-        private string _fbdev;
-        private string _indev;
-        private float _dpi;
-
-        public LinuxView(string fbdev = "/dev/fb0", string indev = "/dev/input/event0", float dpi = 72f)
+        _inner = _mode switch
         {
-            _fbdev = fbdev;
-            _indev = indev;
-            _dpi = dpi;
+            LinuxViewMode.FrameBuffer => new FrameBufferView(fbdev, indev, dpi),
+            LinuxViewMode.X11 => new X11View(title, width, height, dpi),
+            _ => throw new InvalidOperationException($"Unsupported Linux view mode: {_mode}"),
+        };
+    }
+
+    public lv_obj_t* Root => _inner.Root;
+    public lv_group_t* KeyInputGroup => _inner.KeyInputGroup;
+    public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => _inner.SendTextAreaFocusCallback;
+
+    public void Init()
+    {
+        _inner.Init();
+    }
+
+    public void ProcessEvents()
+    {
+        _inner.ProcessEvents();
+    }
+
+    public void StartLoop(Action handle)
+    {
+        _inner.StartLoop(handle);
+    }
+
+    public void Stop()
+    {
+        _inner.Stop();
+    }
+
+    public void AttachTextInput(lv_obj_t* textArea)
+    {
+        _inner.AttachTextInput(textArea);
+    }
+
+    private static string? DetectX11Display()
+    {
+        var display = Environment.GetEnvironmentVariable("DISPLAY");
+        if (!string.IsNullOrWhiteSpace(display))
+        {
+            return display;
         }
 
-        public void Init()
+        const string x11SocketDir = "/tmp/.X11-unix";
+        if (!Directory.Exists(x11SocketDir))
         {
-            LvglNativeLibraryResolver.EnsureRegistered();
-            startTick = Environment.TickCount;
-            lv_init();
-            lv_tick_set_cb(&my_tick);
-
-            g_display = lv_linux_fbdev_create();
-            fixed (byte* ptr = Encoding.ASCII.GetBytes($"{_fbdev}\0"))
-                lv_linux_fbdev_set_file(g_display, ptr);
-
-            fixed (byte* ptr = Encoding.ASCII.GetBytes($"{_indev}\0"))
-                g_indev = lv_evdev_create(lv_indev_type_t.LV_INDEV_TYPE_POINTER, ptr);
-
-            root = lv_scr_act();
-
-            _fallbackFont = lv_obj_get_style_text_font(root, LV_PART_MAIN);
-
-            _fontManager = new SixLaborsFontManager(
-                "NotoSansSC-Regular.ttf",
-                12,
-                _dpi,
-                _fallbackFont,
-                LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
-
-            _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(root, _fontManager.GetLvFontPtr());
+            return null;
         }
 
-        public void AttachTextInput(lv_obj_t* textArea)
-        {
-            if (textArea == null)
-            {
-                return;
-            }
+        var displayEntry = Directory.EnumerateFiles(x11SocketDir, "X*")
+            .Select(Path.GetFileName)
+            .Where(static name => !string.IsNullOrWhiteSpace(name) && name!.Length > 1)
+            .Select(static name => name![1..])
+            .OrderBy(static value => value, StringComparer.Ordinal)
+            .FirstOrDefault();
 
-            lv_obj_t* keyboard = lv_keyboard_create(lv_scr_act());
-            lv_obj_set_size(keyboard, 670, 200);
-            lv_keyboard_set_textarea(keyboard, textArea);
-        }
-
-        public void StartLoop(Action handle)
-        {
-            while (g_running)
-            {
-                ProcessEvents();
-                handle?.Invoke();
-                Thread.Sleep(5);
-            }
-        }
-
-        public void ProcessEvents()
-        {
-            lv_timer_handler();
-        }
-
-        public void Stop()
-        {
-            g_running = false;
-        }
+        return displayEntry is null ? null : $":{displayEntry}";
     }
 }

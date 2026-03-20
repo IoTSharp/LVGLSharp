@@ -288,29 +288,31 @@ namespace LVGLSharp.Forms
         {
             void* userData = lv_event_get_user_data(e);
             if (userData == null) return;
-            
+
             var gcHandle = GCHandle.FromIntPtr(new IntPtr(userData));
             if (gcHandle.IsAllocated && gcHandle.Target is TextBox textBox)
             {
-                // 检查是否是右键点击 (btn_id == 2)
+                lv_obj_t* target = lv_event_get_target_obj(e);
+                if (target == null)
+                {
+                    return;
+                }
+
+                // Pointer presses do not automatically update the keypad focus group on X11.
+                // Focus the textarea explicitly so subsequent key events are delivered here.
+                if (Form.key_inputGroup != null)
+                {
+                    lv_group_focus_obj(target);
+                }
+
                 uint mouseButton = GetCurrentMouseButton();
-                
                 if (mouseButton == 2 && textBox.ContextMenuStrip != null)
                 {
-                    // 右键点击，显示上下文菜单
-                    lv_obj_t* target = lv_event_get_target_obj(e);
-                    if (target != null)
-                    {
-                        // 更新菜单项状态
-                        textBox.UpdateContextMenuItemStates();
-                        
-                        // 获取控件的绝对位置
-                        int x = lv_obj_get_x(target);
-                        int y = lv_obj_get_y(target);
-                        
-                        // 显示在控件位置
-                        textBox.ContextMenuStrip.Show(textBox, x, y);
-                    }
+                    textBox.UpdateContextMenuItemStates();
+
+                    int x = lv_obj_get_x(target);
+                    int y = lv_obj_get_y(target);
+                    textBox.ContextMenuStrip.Show(textBox, x, y);
                 }
             }
         }

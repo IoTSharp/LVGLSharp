@@ -24,12 +24,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="NotoSansSC-Regular.ttf">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-       <Pack>true</Pack>
-		<PackagePath>contentFiles/any/any/</PackagePath>
-		<PackageCopyToOutput>true</PackageCopyToOutput>
-	  </None>
 	  <None Include="..\..\libs\lvgl_host_x11\build\liblvgl_host_x11.so" Link="liblvgl_host_x11.so">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>

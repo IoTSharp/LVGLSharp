@@ -17,6 +17,7 @@ public unsafe partial class X11View : IWindow
     }
 
     private const string HostLib = "lvgl_host_x11";
+    private const string DefaultDisplay = ":1";
 
     [LibraryImport(HostLib, EntryPoint = "lvgl_host_x11_init", StringMarshalling = StringMarshalling.Utf8)]
     private static partial int lvgl_host_x11_init(ref LvglHostX11 host, int width, int height, string title);
@@ -32,6 +33,12 @@ public unsafe partial class X11View : IWindow
 
     [LibraryImport(HostLib, EntryPoint = "lvgl_host_x11_is_running")]
     private static partial int lvgl_host_x11_is_running(ref LvglHostX11 host);
+
+    [LibraryImport(HostLib, EntryPoint = "lvgl_host_x11_set_keyboard_group")]
+    private static partial void lvgl_host_x11_set_keyboard_group(ref LvglHostX11 host, lv_group_t* group);
+
+    [LibraryImport("libc", EntryPoint = "setenv", StringMarshalling = StringMarshalling.Utf8)]
+    private static partial int setenv(string name, string value, int overwrite);
 
     private readonly string _title;
     private readonly int _width;
@@ -59,6 +66,22 @@ public unsafe partial class X11View : IWindow
     public lv_group_t* KeyInputGroup => key_inputGroup;
     public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCb;
 
+    private static void EnsureDisplayEnvironment()
+    {
+        if (!OperatingSystem.IsLinux())
+        {
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("DISPLAY")))
+        {
+            return;
+        }
+
+        Environment.SetEnvironmentVariable("DISPLAY", DefaultDisplay);
+        setenv("DISPLAY", DefaultDisplay, 1);
+    }
+
     public void Init()
     {
         if (_initialized)
@@ -66,26 +89,32 @@ public unsafe partial class X11View : IWindow
             return;
         }
 
+        EnsureDisplayEnvironment();
         LvglNativeLibraryResolver.EnsureRegistered();
 
         var rc = lvgl_host_x11_init(ref _host, _width, _height, _title);
         if (rc != 0)
         {
-            throw new InvalidOperationException("初始化 X11 host 失败，请检查 DISPLAY/X11 环境是否可用。");
+            throw new InvalidOperationException($"初始化 X11 host 失败，请检查 DISPLAY/X11 环境是否可用。当前 DISPLAY={Environment.GetEnvironmentVariable("DISPLAY") ?? "<null>"}");
         }
 
         root = lv_scr_act();
         key_inputGroup = lv_group_create();
+        lvgl_host_x11_set_keyboard_group(ref _host, key_inputGroup);
         _fallbackFont = lv_obj_get_style_text_font(root, LV_PART_MAIN);
 
-        _fontManager = new SixLaborsFontManager(
-            "NotoSansSC-Regular.ttf",
-            12,
-            _dpi,
-            _fallbackFont,
-            LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
+        var systemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
+        if (!string.IsNullOrWhiteSpace(systemFontPath))
+        {
+            _fontManager = new SixLaborsFontManager(
+                systemFontPath,
+                12,
+                _dpi,
+                _fallbackFont,
+                LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
 
-        _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(root, _fontManager.GetLvFontPtr());
+            _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(root, _fontManager.GetLvFontPtr());
+        }
         SendTextAreaFocusCb = null;
         _initialized = true;
     }

@@ -81,7 +81,7 @@ namespace WinFormsDemo
             port_label.Name = "port_label";
             port_label.Size = new Size(100, 50);
             port_label.TabIndex = 0;
-            port_label.Text = "¥Æø⁄";
+            port_label.Text = "‰∏≤Âè£";
             port_label.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // port_dropdown
@@ -103,7 +103,7 @@ namespace WinFormsDemo
             ref_btn.Name = "ref_btn";
             ref_btn.Size = new Size(111, 46);
             ref_btn.TabIndex = 1;
-            ref_btn.Text = "À¢–¬¥Æø⁄";
+            ref_btn.Text = "Âà∑Êñ∞‰∏≤Âè£";
             ref_btn.UseVisualStyleBackColor = true;
             // 
             // baud_label
@@ -112,7 +112,7 @@ namespace WinFormsDemo
             baud_label.Name = "baud_label";
             baud_label.Size = new Size(100, 49);
             baud_label.TabIndex = 3;
-            baud_label.Text = "≤®Ãÿ¬ ";
+            baud_label.Text = "Ê≥¢ÁâπÁéá";
             baud_label.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // baud_dropdown
@@ -130,7 +130,7 @@ namespace WinFormsDemo
             open_btn.Name = "open_btn";
             open_btn.Size = new Size(75, 49);
             open_btn.TabIndex = 5;
-            open_btn.Text = "¥Úø™¥Æø⁄";
+            open_btn.Text = "ÊâìÂºÄ‰∏≤Âè£";
             open_btn.UseVisualStyleBackColor = true;
             // 
             // tpMain
@@ -172,7 +172,7 @@ namespace WinFormsDemo
             textBox1.Location = new Point(3, 3);
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
-            textBox1.PlaceholderText = " ‰»Îµƒ ˝æ›";
+            textBox1.PlaceholderText = "ËæìÂÖ•ÁöÑÊï∞ÊçÆ";
             textBox1.Size = new Size(570, 50);
             textBox1.TabIndex = 0;
             // 
@@ -182,7 +182,7 @@ namespace WinFormsDemo
             send_btn.Name = "send_btn";
             send_btn.Size = new Size(106, 50);
             send_btn.TabIndex = 2;
-            send_btn.Text = "∑¢ÀÕ";
+            send_btn.Text = "ÂèëÈÄÅ";
             send_btn.UseVisualStyleBackColor = true;
             send_btn.Click += send_btn_Click;
             // 
@@ -272,7 +272,7 @@ namespace WinFormsDemo
             recv_textarea.Name = "recv_textarea";
             recv_textarea.Size = new Size(504, 183);
             recv_textarea.TabIndex = 0;
-            recv_textarea.Text = "Ω” ’µƒ ˝æ›...";
+            recv_textarea.Text = "Êé•Êî∂ÁöÑÊï∞ÊçÆ...";
             // 
             // button1
             // 
@@ -289,7 +289,7 @@ namespace WinFormsDemo
             clear_btn.Name = "clear_btn";
             clear_btn.Size = new Size(75, 41);
             clear_btn.TabIndex = 2;
-            clear_btn.Text = "«Âø’";
+            clear_btn.Text = "Ê∏ÖÁ©∫";
             clear_btn.UseVisualStyleBackColor = true;
             clear_btn.Click += button1_Click;
             // 
@@ -299,7 +299,7 @@ namespace WinFormsDemo
             hex_switch.Name = "hex_switch";
             hex_switch.Size = new Size(91, 41);
             hex_switch.TabIndex = 3;
-            hex_switch.Text = "HEXƒ£ Ω";
+            hex_switch.Text = "HEXÊ®°Âºè";
             hex_switch.UseVisualStyleBackColor = true;
             // 
             // frmMain

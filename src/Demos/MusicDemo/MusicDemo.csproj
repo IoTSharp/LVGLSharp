@@ -6,23 +6,26 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<PublishAot>true</PublishAot>
+       <UseLVGLSharpForms>true</UseLVGLSharpForms>
 		<InvariantGlobalization>true</InvariantGlobalization>
 	</PropertyGroup>
 
-	<ItemGroup>
+ <ItemGroup Condition="'$(UseLVGLSharpForms)' == 'true'">
 		<ProjectReference Include="..\..\LVGLSharp.WinForms\LVGLSharp.Forms.csproj" />
 		<ProjectReference Include="..\..\LVGLSharp.Windows\LVGLSharp.Runtime.Windows.csproj" />
 		<ProjectReference Include="..\..\LVGLSharp.Runtime.Linux\LVGLSharp.Runtime.Linux.csproj" />
 		<ProjectReference Include="..\..\LVGLSharp.Analyzers\LVGLSharp.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 		<Compile Include="..\DemoRuntimeConfiguration.cs" Link="DemoRuntimeConfiguration.cs" />
+        <Using Include="LVGLSharp.Forms" />
+		<Using Include="LVGLSharp.Drawing" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+		<PackageReference Include="LVGLSharp.Native" Version="9.3.0.5" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Using Include="LVGLSharp.Drawing" />
-		<Using Include="LVGLSharp.Forms" />
+ <ItemGroup Condition="'$(UseLVGLSharpForms)' != 'true'">
+		<ProjectReference Include="..\..\LVGLSharp.Analyzers\LVGLSharp.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
 </Project>

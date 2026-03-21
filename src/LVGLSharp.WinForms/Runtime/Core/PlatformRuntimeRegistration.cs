@@ -11,7 +11,7 @@ namespace LVGLSharp
                 return;
             }
 
-            throw new InvalidOperationException("No LVGLSharp runtime has been configured. Reference the matching runtime assembly and call its registration method before running the application or loading images.");
+            throw new InvalidOperationException("No LVGLSharp runtime has been configured. Reference the matching runtime assembly, then call `Application.UseRuntime(...)` and `Image.RegisterFactory(...)` before running the application or loading images.");
         }
     }
 }

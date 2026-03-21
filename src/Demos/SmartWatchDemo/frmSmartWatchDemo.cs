@@ -1821,7 +1821,7 @@ public sealed class frmSmartWatchDemo : Form
 #endif
     }
 
-    protected override void OnMessageLoopIteration()
+    protected   void OnMessageLoopIteration()
     {
         base.OnMessageLoopIteration();
 

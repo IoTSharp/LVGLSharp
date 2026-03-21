@@ -8,6 +8,7 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
 		<PublishAot>true</PublishAot>
+        <UseLVGLSharpForms>true</UseLVGLSharpForms>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
 		<UseWindowsForms>true</UseWindowsForms>
@@ -20,13 +21,13 @@
         <Compile Include="PictureBoxExtensions.cs" />
 		<Using Include="System.Windows.Forms" />
 	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+   <ItemGroup Condition="'$(UseLVGLSharpForms)' == 'true'">
 		<ProjectReference Include="..\..\LVGLSharp.WinForms\LVGLSharp.Forms.csproj" />
      <ProjectReference Include="..\..\LVGLSharp.Windows\LVGLSharp.Runtime.Windows.csproj" />
 		<ProjectReference Include="..\..\LVGLSharp.Runtime.Linux\LVGLSharp.Runtime.Linux.csproj" />
         <Compile Include="..\DemoRuntimeConfiguration.cs" Link="DemoRuntimeConfiguration.cs" />
-		<Using Include="LVGLSharp.Forms" />
-       <Using Include="LVGLSharp.Drawing" />
+        <Using Include="LVGLSharp.Forms" />
+		<Using Include="LVGLSharp.Drawing" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\LVGLSharp.Analyzers\LVGLSharp.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

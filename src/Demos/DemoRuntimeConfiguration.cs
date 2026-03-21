@@ -4,6 +4,7 @@ using LVGLSharp.Forms;
 using LVGLSharp.Runtime.Linux;
 using LVGLSharp.Runtime.Windows;
 
+
 internal static class DemoRuntimeConfiguration
 {
     internal static void Configure()
@@ -30,4 +31,6 @@ internal static class DemoRuntimeConfiguration
 
         throw new PlatformNotSupportedException();
     }
+
+
 }

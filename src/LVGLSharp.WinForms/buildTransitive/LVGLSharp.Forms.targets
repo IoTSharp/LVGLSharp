@@ -1,8 +1,12 @@
 <Project>
+  <Target Name="LVGLSharpValidateFormsSelection" BeforeTargets="CoreCompile" Condition="'$(UseWindowsForms)' == 'true' And '$(UseLVGLSharpForms)' == 'true'">
+    <Error Text="`UseWindowsForms` and `UseLVGLSharpForms` cannot both be `true` for the same target." />
+  </Target>
+
   <Target Name="LVGLSharpValidateRuntimePackageReference" BeforeTargets="CoreCompile">
     <ItemGroup>
       <_LVGLSharpRuntimeReference Include="@(ReferencePath)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows' Or '%(FileName)' == 'LVGLSharp.Runtime.Linux'" />
     </ItemGroup>
-    <Warning Condition="'@(_LVGLSharpRuntimeReference)' == ''" Text="LVGLSharp.Forms requires a platform runtime reference. Add LVGLSharp.Runtime.Windows or LVGLSharp.Runtime.Linux so the runtime can auto-register." />
+    <Warning Condition="'@(_LVGLSharpRuntimeReference)' == ''" Text="LVGLSharp.Forms requires a platform runtime reference. Add LVGLSharp.Runtime.Windows or LVGLSharp.Runtime.Linux and register the runtime explicitly before running the application or loading images." />
   </Target>
 </Project>

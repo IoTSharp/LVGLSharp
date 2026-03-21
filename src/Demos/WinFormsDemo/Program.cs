@@ -14,9 +14,9 @@ namespace WinFormsDemo
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-#if !WINDOWS
             DemoRuntimeConfiguration.Configure();
-#endif
+
+
 
             Application.Run(new frmMain());
         }

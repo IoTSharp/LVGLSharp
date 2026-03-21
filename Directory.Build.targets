@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup Condition="'$(UseLVGLSharpForms)' == 'true'">
+    <DefineConstants>$(DefineConstants);LVGLSHARP_FORMS</DefineConstants>
+  </PropertyGroup>
+</Project>

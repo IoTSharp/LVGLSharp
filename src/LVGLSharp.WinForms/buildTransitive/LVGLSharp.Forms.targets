@@ -1,4 +1,8 @@
 <Project>
+  <PropertyGroup Condition="'$(UseLVGLSharpForms)' == 'true'">
+    <DefineConstants>$(DefineConstants);LVGLSHARP_FORMS</DefineConstants>
+  </PropertyGroup>
+
   <Target Name="LVGLSharpValidateFormsSelection" BeforeTargets="CoreCompile" Condition="'$(UseWindowsForms)' == 'true' And '$(UseLVGLSharpForms)' == 'true'">
     <Error Text="`UseWindowsForms` and `UseLVGLSharpForms` cannot both be `true` for the same target." />
   </Target>

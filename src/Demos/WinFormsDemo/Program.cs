@@ -14,7 +14,7 @@ namespace WinFormsDemo
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-#if !WINDOWS
+#if LVGLSHARP_FORMS
             DemoRuntimeConfiguration.Configure();
 #endif
 

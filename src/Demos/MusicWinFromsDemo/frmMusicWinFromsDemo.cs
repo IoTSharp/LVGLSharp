@@ -4,10 +4,10 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-#if WINDOWS
-using DrawingColor = System.Drawing.Color;
-#else
+#if LVGLSHARP_FORMS
 using DrawingColor = LVGLSharp.Drawing.Color;
+#else
+using DrawingColor = System.Drawing.Color;
 #endif
 
 namespace MusicWinFromsDemo;
@@ -732,10 +732,10 @@ public sealed class frmMusicWinFromsDemo : Form
 
     private static DrawingColor Rgb(byte r, byte g, byte b)
     {
-#if WINDOWS
-        return DrawingColor.FromArgb(r, g, b);
-#else
+#if LVGLSHARP_FORMS
         return new DrawingColor(r, g, b);
+#else
+        return DrawingColor.FromArgb(r, g, b);
 #endif
     }
 }

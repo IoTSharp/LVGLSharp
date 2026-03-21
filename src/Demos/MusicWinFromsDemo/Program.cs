@@ -9,7 +9,7 @@ namespace MusicWinFromsDemo
         {
             ApplicationConfiguration.Initialize();
 
-#if !WINDOWS
+#if LVGLSHARP_FORMS
             DemoRuntimeConfiguration.Configure();
 #endif
 

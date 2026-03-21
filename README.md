@@ -50,8 +50,8 @@
 |------|------|
 | `LVGLSharp.Forms` | WinForms API 兼容层 |
 | `LVGLSharp.Core` | 运行时共享抽象与公共字体/宿主辅助能力 |
-| `LVGLSharp.Runtime.Windows` | Windows 平台运行时；引用后自动注册 Windows 宿主 |
-| `LVGLSharp.Runtime.Linux` | Linux 平台运行时；引用后自动注册 Linux 宿主 |
+| `LVGLSharp.Runtime.Windows` | Windows 平台运行时 |
+| `LVGLSharp.Runtime.Linux` | Linux 平台运行时 |
 | `LVGLSharp.Interop` | LVGL P/Invoke 绑定（自动生成） |
 | `LVGLSharp.Native` | 各平台 LVGL 原生库（win-x86 / win-x64 / win-arm64、linux-arm 等） |
 
@@ -61,28 +61,56 @@
 
 ### 1. 创建项目
 
- 推荐按仓库中的示例采用多目标框架的方式：使用 Visual Studio 创建 Windows Forms 应用程序（.NET），以 `net10.0-windows` 目标启用设计器（`UseWindowsForms=true`），再增加一个纯 `net10.0` 目标用于跨平台运行。
+ 推荐按仓库中的示例采用多目标框架方式：
 
- 在跨平台运行目标下：
+- `net10.0-windows` 目标使用 `UseWindowsForms=true`，只走标准 WinForms 路径
+- `net10.0` 目标使用 `UseLVGLSharpForms=true`，走 `LVGLSharp.Forms` 路径
 
- - 始终引用 `LVGLSharp.Forms`
- - Windows 项目再引用 `LVGLSharp.Runtime.Windows`
- - Linux 项目再引用 `LVGLSharp.Runtime.Linux`
+是否使用 WinForms 还是 `LVGLSharp.Forms`，只由 `UseWindowsForms` 与 `UseLVGLSharpForms` 决定，不通过 `WINDOWS` 这类 OS 符号判断。
 
- 对应平台运行时包被引用后，会自动完成宿主注册；如果没有引用任何平台运行时包，编译期会收到提示。可参考示例工程的配置：[`src/Demos/WinFormsDemo/WinFormsDemo.csproj`](./src/Demos/WinFormsDemo/WinFormsDemo.csproj)。
+典型工程文件配置如下：
+
+```xml
+<PropertyGroup>
+  <TargetFrameworks>net10.0-windows;net10.0</TargetFrameworks>
+</PropertyGroup>
+
+<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
+  <UseWindowsForms>true</UseWindowsForms>
+</PropertyGroup>
+
+<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+  <UseLVGLSharpForms>true</UseLVGLSharpForms>
+  <PublishAot>true</PublishAot>
+</PropertyGroup>
+```
+
+在 `UseLVGLSharpForms=true` 的目标下：
+
+- 引用 `LVGLSharp.Forms`
+- 引用 `LVGLSharp.Runtime.Windows`
+- 引用 `LVGLSharp.Runtime.Linux`
+- 在入口程序中显式调用 `Application.UseRuntime(...)` 与 `Image.RegisterFactory(...)` 的封装配置（仓库示例使用 `DemoRuntimeConfiguration.Configure()`）
+
+可参考示例工程：[`src/Demos/PictureBoxDemo/PictureBoxDemo.csproj`](./src/Demos/PictureBoxDemo/PictureBoxDemo.csproj)。
 
 ### 2. 入口程序
 
- 引用了对应平台运行时包后，入口程序无需手动注册运行时：
+ `UseWindowsForms=true` 的目标无需任何 `LVGLSharp` 运行时注册。
+
+ `UseLVGLSharpForms=true` 的目标需要在 `Application.Run(...)` 之前注册运行时。推荐像示例工程一样封装到一个共享辅助类中：
 
 ```csharp
-using LVGLSharp.Forms;
+ApplicationConfiguration.Initialize();
 
-Application.SetHighDpiMode(HighDpiMode.SystemAware);
-Application.EnableVisualStyles();
-Application.SetCompatibleTextRenderingDefault(false);
+#if LVGLSHARP_FORMS
+DemoRuntimeConfiguration.Configure();
+#endif
+
 Application.Run(new frmMain());
 ```
+
+`DemoRuntimeConfiguration.Configure()` 内部会在 `UseLVGLSharpForms` 路径下根据当前运行平台（Windows 或 Linux）选择对应的 `LVGL` 宿主与图片加载实现。
 
 ### 3. `LVGLSharp 布局`
 
@@ -109,6 +137,18 @@ Application.Run(new frmMain());
 
 ```bash
 dotnet publish -r linux-arm64 -c Release
+```
+
+Windows 目标发布示例：
+
+```powershell
+dotnet publish -f net10.0-windows -r win-x64 -c Release
+```
+
+Linux / `LVGLSharp.Forms` 目标发布示例：
+
+```bash
+dotnet publish -f net10.0 -r linux-x64 -c Release
 ```
 
 ---

@@ -5,10 +5,10 @@ using System.Linq;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Processing;
 
-#if WINDOWS
-using DrawingColor = System.Drawing.Color;
-#else
+#if LVGLSHARP_FORMS
 using DrawingColor = LVGLSharp.Drawing.Color;
+#else
+using DrawingColor = System.Drawing.Color;
 #endif
 
 using RenderColor = SixLabors.ImageSharp.Color;
@@ -188,7 +188,7 @@ public sealed class frmSmartWatchDemo : Form
     private long _lastDynamicUpdateStamp = -1;
     private long _lastWarmupTick = -1;
 
-#if WINDOWS
+#if !LVGLSHARP_FORMS
     private readonly System.Windows.Forms.Timer _updateTimer = new() { Interval = 33 };
 #endif
 
@@ -197,7 +197,7 @@ public sealed class frmSmartWatchDemo : Form
         Directory.CreateDirectory(_generatedAssetDirectory);
         InitializeComponent();
 
-#if WINDOWS
+#if !LVGLSHARP_FORMS
         _updateTimer.Tick += UpdateTimer_Tick;
         _updateTimer.Start();
 #endif
@@ -207,7 +207,7 @@ public sealed class frmSmartWatchDemo : Form
     {
         if (disposing)
         {
-#if WINDOWS
+#if !LVGLSHARP_FORMS
             _updateTimer.Stop();
             _updateTimer.Tick -= UpdateTimer_Tick;
             _updateTimer.Dispose();
@@ -899,7 +899,7 @@ public sealed class frmSmartWatchDemo : Form
     {
         ArgumentNullException.ThrowIfNull(panel);
 
-#if !WINDOWS
+#if LVGLSHARP_FORMS
         panel.EnableLvglInputEvents = false;
 #endif
     }
@@ -918,7 +918,7 @@ public sealed class frmSmartWatchDemo : Form
         UpdateDynamicContent();
     }
 
-#if WINDOWS
+#if !LVGLSHARP_FORMS
     private void UpdateTimer_Tick(object? sender, EventArgs e)
     {
         TickDynamicContent();
@@ -1576,15 +1576,15 @@ public sealed class frmSmartWatchDemo : Form
 
     private static bool TryGetMousePosition(EventArgs e, out int x, out int y)
     {
-#if WINDOWS
-        if (e is System.Windows.Forms.MouseEventArgs mouseEvent)
+#if LVGLSHARP_FORMS
+        if (e is MouseEventArgs mouseEvent)
         {
             x = mouseEvent.X;
             y = mouseEvent.Y;
             return true;
         }
 #else
-        if (e is MouseEventArgs mouseEvent)
+        if (e is System.Windows.Forms.MouseEventArgs mouseEvent)
         {
             x = mouseEvent.X;
             y = mouseEvent.Y;
@@ -1857,19 +1857,19 @@ public sealed class frmSmartWatchDemo : Form
 
     private static DrawingColor Rgb(byte r, byte g, byte b)
     {
-#if WINDOWS
-        return DrawingColor.FromArgb(r, g, b);
-#else
+#if LVGLSHARP_FORMS
         return new DrawingColor(r, g, b);
+#else
+        return DrawingColor.FromArgb(r, g, b);
 #endif
     }
 
     private static DrawingColor RgbStatic(byte r, byte g, byte b)
     {
-#if WINDOWS
-        return DrawingColor.FromArgb(r, g, b);
-#else
+#if LVGLSHARP_FORMS
         return new DrawingColor(r, g, b);
+#else
+        return DrawingColor.FromArgb(r, g, b);
 #endif
     }
 

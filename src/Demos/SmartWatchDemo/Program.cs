@@ -9,7 +9,7 @@ internal static class Program
     {
         ApplicationConfiguration.Initialize();
 
-#if !WINDOWS
+#if LVGLSHARP_FORMS
         DemoRuntimeConfiguration.Configure();
 #endif
 

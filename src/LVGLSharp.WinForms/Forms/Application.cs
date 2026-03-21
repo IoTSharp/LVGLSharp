@@ -19,22 +19,32 @@ namespace LVGLSharp.Forms
         /// <summary>
         /// Registers the platform runtime used by <see cref="Run(Form)"/>.
         /// </summary>
-        public static void UseRuntime(Func<string, int, int, IWindow> windowFactory, Func<uint>? currentMouseButtonProvider = null)
+        public static void UseRuntime(
+            Func<string, int, int, IWindow> windowFactory,
+            Func<uint>? currentMouseButtonProvider = null,
+            Func<(int X, int Y)>? currentMousePositionProvider = null)
         {
             ArgumentNullException.ThrowIfNull(windowFactory);
 
-            UseRuntime(options => windowFactory(options.Title, options.Width, options.Height), currentMouseButtonProvider);
+            UseRuntime(
+                options => windowFactory(options.Title, options.Width, options.Height),
+                currentMouseButtonProvider,
+                currentMousePositionProvider);
         }
 
         /// <summary>
         /// Registers the platform runtime used by <see cref="Run(Form)"/>.
         /// </summary>
-        public static void UseRuntime(Func<WindowCreateOptions, IWindow> windowFactory, Func<uint>? currentMouseButtonProvider = null)
+        public static void UseRuntime(
+            Func<WindowCreateOptions, IWindow> windowFactory,
+            Func<uint>? currentMouseButtonProvider = null,
+            Func<(int X, int Y)>? currentMousePositionProvider = null)
         {
             ArgumentNullException.ThrowIfNull(windowFactory);
 
             WindowHostFactory.Register(windowFactory);
             RuntimeInputState.RegisterCurrentMouseButtonProvider(currentMouseButtonProvider);
+            RuntimeInputState.RegisterCurrentMousePositionProvider(currentMousePositionProvider);
         }
 
         /// <summary>

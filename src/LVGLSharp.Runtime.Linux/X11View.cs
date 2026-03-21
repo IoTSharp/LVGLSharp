@@ -353,6 +353,7 @@ public unsafe partial class X11View : IWindow
     private int _mouseX;
     private int _mouseY;
     private bool _mousePressed;
+    private uint _mouseButton;
     private uint _lastKey;
     private bool _keyPressed;
     private short _wheelDiff;
@@ -377,6 +378,8 @@ public unsafe partial class X11View : IWindow
     public static lv_obj_t* root { get; private set; }
     public static lv_group_t* key_inputGroup { get; private set; }
     public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCb { get; private set; }
+    public static (int X, int Y) CurrentMousePosition => s_activeView is null ? (0, 0) : (s_activeView._mouseX, s_activeView._mouseY);
+    public static uint CurrentMouseButton => s_activeView?._mouseButton ?? 0U;
 
     public lv_obj_t* Root => root;
     public lv_group_t* KeyInputGroup => key_inputGroup;
@@ -445,11 +448,11 @@ public unsafe partial class X11View : IWindow
             lv_indev_set_group(_keyboardIndev, key_inputGroup);
             _fallbackFont = lv_obj_get_style_text_font(root, LV_PART_MAIN);
 
-            var systemFontFamily = LinuxSystemFontResolver.TryResolveFontFamily();
-            if (systemFontFamily is { } resolvedSystemFontFamily)
+            var systemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
+            if (!string.IsNullOrWhiteSpace(systemFontPath))
             {
                 _fontManager = new SixLaborsFontManager(
-                    resolvedSystemFontFamily,
+                    systemFontPath,
                     12,
                     _dpi,
                     _fallbackFont,
@@ -767,6 +770,19 @@ public unsafe partial class X11View : IWindow
                     if (ev.xbutton.button == Button1)
                     {
                         _mousePressed = true;
+                        _mouseButton = 1;
+                        _mouseX = ev.xbutton.x;
+                        _mouseY = ev.xbutton.y;
+                    }
+                    else if (ev.xbutton.button == 3)
+                    {
+                        _mouseButton = 2;
+                        _mouseX = ev.xbutton.x;
+                        _mouseY = ev.xbutton.y;
+                    }
+                    else if (ev.xbutton.button == 2)
+                    {
+                        _mouseButton = 4;
                         _mouseX = ev.xbutton.x;
                         _mouseY = ev.xbutton.y;
                     }
@@ -783,6 +799,13 @@ public unsafe partial class X11View : IWindow
                     if (ev.xbutton.button == Button1)
                     {
                         _mousePressed = false;
+                        _mouseButton = 0;
+                        _mouseX = ev.xbutton.x;
+                        _mouseY = ev.xbutton.y;
+                    }
+                    else if (ev.xbutton.button is 2 or 3)
+                    {
+                        _mouseButton = 0;
                         _mouseX = ev.xbutton.x;
                         _mouseY = ev.xbutton.y;
                     }

@@ -106,7 +106,6 @@ public unsafe sealed class frmMusicDemo : Form
     {
         Text = "LVGL Music Demo";
         ClientSize = new LVGLSharp.Drawing.Size(DemoWidth, DemoHeight);
-        FormBorderStyle = FormBorderStyle.None;
         Load += OnMusicDemoLoad;
     }
 
@@ -121,13 +120,8 @@ public unsafe sealed class frmMusicDemo : Form
         s_activeDemo = this;
         _root = (lv_obj_t*)Handle;
         _fallbackFont = lv_obj_get_style_text_font(_root, LV_PART_MAIN);
-
         ConfigureRoot();
-        CreateFonts();
-        GenerateCoverDescriptors();
         CreateScene();
-        LoadTrack(0, startPlayback: false, resetProgress: true, animateCover: false);
-        StartUiTimer();
     }
 
     private void ConfigureRoot()
@@ -153,10 +147,12 @@ public unsafe sealed class frmMusicDemo : Form
             return;
         }
 
-        _titleFont = RegisterFontManager(new SixLaborsFontManager(family!, 20, 96f, _fallbackFont));
-        _bodyFont = RegisterFontManager(new SixLaborsFontManager(family!, 13, 96f, _fallbackFont));
-        _smallFont = RegisterFontManager(new SixLaborsFontManager(family!, 11, 96f, _fallbackFont));
-        _iconFont = RegisterFontManager(new SixLaborsFontManager(family!, 16, 96f, _fallbackFont));
+        FontFamily resolvedFamily = (FontFamily)family;
+
+        _titleFont = RegisterFontManager(new SixLaborsFontManager(new SixLabors.Fonts.Font(resolvedFamily, 20f), dpi: 96f, fallback: _fallbackFont));
+        _bodyFont = RegisterFontManager(new SixLaborsFontManager(new SixLabors.Fonts.Font(resolvedFamily, 13f), dpi: 96f, fallback: _fallbackFont));
+        _smallFont = RegisterFontManager(new SixLaborsFontManager(new SixLabors.Fonts.Font(resolvedFamily, 11f), dpi: 96f, fallback: _fallbackFont));
+        _iconFont = RegisterFontManager(new SixLaborsFontManager(new SixLabors.Fonts.Font(resolvedFamily, 16f), dpi: 96f, fallback: _fallbackFont));
     }
 
     private void GenerateCoverDescriptors()
@@ -182,6 +178,7 @@ public unsafe sealed class frmMusicDemo : Form
         CreateTrackSheet();
     }
 
+
     private void CreatePlayerSurface()
     {
         _player = lv_obj_create(_root);
@@ -206,7 +203,7 @@ public unsafe sealed class frmMusicDemo : Form
         _titleLabel = lv_label_create(_player);
         lv_obj_set_pos(_titleLabel, 30, 30);
         lv_obj_set_width(_titleLabel, 210);
-        lv_label_set_long_mode(_titleLabel, LV_LABEL_LONG_SCROLL_CIRCULAR);
+        lv_label_set_long_mode(_titleLabel, LV_LABEL_LONG_CLIP);
         ApplyFont(_titleLabel, _titleFont);
         lv_obj_set_style_text_color(_titleLabel, lv_color_hex(0x22183A), 0);
 
@@ -283,43 +280,30 @@ public unsafe sealed class frmMusicDemo : Form
     private void CreateAlbumArea()
     {
         _albumGlow = lv_obj_create(_player);
-        lv_obj_set_pos(_albumGlow, 296, 28);
-        lv_obj_set_size(_albumGlow, 156, 156);
-        lv_obj_set_style_radius(_albumGlow, LV_RADIUS_CIRCLE, 0);
-        lv_obj_set_style_bg_color(_albumGlow, lv_color_hex(0xFFFFFF), 0);
+        lv_obj_set_pos(_albumGlow, 296, 30);
+        lv_obj_set_size(_albumGlow, 150, 150);
+        lv_obj_set_style_radius(_albumGlow, 30, 0);
+        lv_obj_set_style_bg_color(_albumGlow, lv_color_hex(0xF6F1FD), 0);
         lv_obj_set_style_bg_opa(_albumGlow, 255, 0);
         lv_obj_set_style_border_width(_albumGlow, 0, 0);
-        lv_obj_set_style_shadow_width(_albumGlow, 42, 0);
-        lv_obj_set_style_shadow_spread(_albumGlow, 4, 0);
-        lv_obj_set_style_shadow_opa(_albumGlow, 70, 0);
-        lv_obj_set_style_shadow_color(_albumGlow, lv_color_hex(0x6F8AF6), 0);
+        lv_obj_set_style_shadow_width(_albumGlow, 0, 0);
+        lv_obj_set_style_shadow_spread(_albumGlow, 0, 0);
+        lv_obj_set_style_shadow_opa(_albumGlow, 0, 0);
         lv_obj_clear_flag(_albumGlow, lv_obj_flag_t.LV_OBJ_FLAG_SCROLLABLE);
 
-        _albumRing = lv_obj_create(_player);
-        lv_obj_set_pos(_albumRing, 304, 36);
-        lv_obj_set_size(_albumRing, 140, 140);
-        lv_obj_set_style_radius(_albumRing, LV_RADIUS_CIRCLE, 0);
-        lv_obj_set_style_bg_color(_albumRing, lv_color_hex(0xF4ECFB), 0);
+        _albumRing = lv_obj_create(_albumGlow);
+        lv_obj_center(_albumRing);
+        lv_obj_set_size(_albumRing, 136, 136);
+        lv_obj_set_style_radius(_albumRing, 24, 0);
+        lv_obj_set_style_bg_color(_albumRing, lv_color_hex(0xFFFFFF), 0);
         lv_obj_set_style_bg_opa(_albumRing, 255, 0);
         lv_obj_set_style_border_width(_albumRing, 0, 0);
-        lv_obj_set_style_outline_width(_albumRing, 2, 0);
-        lv_obj_set_style_outline_opa(_albumRing, 110, 0);
-        lv_obj_set_style_outline_pad(_albumRing, 5, 0);
-        lv_obj_set_style_outline_color(_albumRing, lv_color_hex(0x6F8AF6), 0);
+        lv_obj_set_style_pad_all(_albumRing, 0, 0);
         lv_obj_clear_flag(_albumRing, lv_obj_flag_t.LV_OBJ_FLAG_SCROLLABLE);
 
-        _albumClip = lv_obj_create(_albumRing);
-        lv_obj_set_size(_albumClip, CoverSize, CoverSize);
-        lv_obj_center(_albumClip);
-        lv_obj_set_style_radius(_albumClip, LV_RADIUS_CIRCLE, 0);
-        lv_obj_set_style_clip_corner(_albumClip, true, 0);
-        lv_obj_set_style_bg_color(_albumClip, lv_color_hex(0xFFFFFF), 0);
-        lv_obj_set_style_bg_opa(_albumClip, 255, 0);
-        lv_obj_set_style_border_width(_albumClip, 0, 0);
-        lv_obj_set_style_pad_all(_albumClip, 0, 0);
-        lv_obj_clear_flag(_albumClip, lv_obj_flag_t.LV_OBJ_FLAG_SCROLLABLE);
+        _albumClip = _albumRing;
 
-        _albumImage = lv_image_create(_albumClip);
+        _albumImage = lv_image_create(_albumRing);
         lv_obj_set_size(_albumImage, CoverSize, CoverSize);
         lv_obj_center(_albumImage);
         lv_image_set_inner_align(_albumImage, lv_image_align_t.LV_IMAGE_ALIGN_CENTER);
@@ -342,6 +326,8 @@ public unsafe sealed class frmMusicDemo : Form
                 Phase = 0.37f * index,
             };
         }
+
+        UpdateSpectrum(Environment.TickCount64);
     }
 
     private void CreateFooter()
@@ -522,32 +508,6 @@ public unsafe sealed class frmMusicDemo : Form
         }
 
         _playing = startPlayback;
-        TrackInfo track = CurrentTrack;
-
-        SetLabelText(_titleLabel, track.Title);
-        SetLabelText(_artistLabel, track.Artist);
-        SetLabelText(_genreLabel, track.Genre);
-        SetLabelText(_durationLabel, FormatTime(track.DurationSeconds));
-
-        _ignoreSliderEvents = true;
-        lv_slider_set_range(_progressSlider, 0, track.DurationSeconds);
-        lv_slider_set_value(_progressSlider, 0, LV_ANIM_OFF);
-        _ignoreSliderEvents = false;
-
-        if (_coverDescriptors.Length > 0)
-        {
-            lv_image_set_src(_albumImage, _coverDescriptors[_currentTrackIndex].Descriptor);
-        }
-
-        ApplyTheme(track);
-        UpdatePlaybackVisualState();
-        UpdateTrackRows();
-        UpdateProgressDisplay();
-
-        if (animateCover)
-        {
-            AnimateCoverPop();
-        }
     }
 
     private void ApplyTheme(TrackInfo track)
@@ -673,7 +633,10 @@ public unsafe sealed class frmMusicDemo : Form
             }
         }
 
-        lv_obj_scroll_to_view(_trackRows[_currentTrackIndex].Button, LV_ANIM_ON);
+        if (_trackSheetVisible)
+        {
+            lv_obj_scroll_to_view(_trackRows[_currentTrackIndex].Button, LV_ANIM_ON);
+        }
     }
 
     private void SetTrackSheetVisible(bool visible)

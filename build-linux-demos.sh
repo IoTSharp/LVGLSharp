@@ -26,6 +26,8 @@ Demos:
   WinFormsDemo
   PictureBoxDemo
   MusicDemo
+  MusicWinFromsDemo
+  SmartWatchDemo
 
 If no demo is specified, all demos are published.
 EOF
@@ -54,6 +56,12 @@ normalize_demo() {
             ;;
         musicdemo|MusicDemo)
             printf 'MusicDemo'
+            ;;
+        musicwinfromsdemo|MusicWinFromsDemo)
+            printf 'MusicWinFromsDemo'
+            ;;
+        smartwatchdemo|SmartWatchDemo)
+            printf 'SmartWatchDemo'
             ;;
         *)
             return 1
@@ -95,7 +103,7 @@ while (($# > 0)); do
 done
 
 if ((${#DEMO_NAMES[@]} == 0)); then
-    DEMO_NAMES=(SerialPort WinFormsDemo PictureBoxDemo MusicDemo)
+    DEMO_NAMES=(SerialPort WinFormsDemo PictureBoxDemo MusicDemo MusicWinFromsDemo SmartWatchDemo)
 fi
 
 require_cmd cmake

@@ -45,6 +45,7 @@ namespace LVGLSharp.Runtime.Windows
         public static lv_group_t* key_inputGroup { get; set; }
         public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCb { get; set; } = &HandleSendTextAreaFocusCb;
         public static uint CurrentMouseButton => mouseButton;
+        public static (int X, int Y) CurrentMousePosition => (mouseX, mouseY);
         public lv_obj_t* Root => root;
         public lv_group_t* KeyInputGroup => key_inputGroup;
         public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCb;

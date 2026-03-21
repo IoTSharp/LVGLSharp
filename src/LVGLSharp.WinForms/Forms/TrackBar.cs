@@ -8,12 +8,29 @@ namespace LVGLSharp.Forms
         private int _maximum = 10;
         private int _value = 0;
 
+        public event EventHandler? ValueChanged;
+
         public int Minimum
         {
             get => _minimum;
             set
             {
+                if (_minimum == value)
+                {
+                    return;
+                }
+
                 _minimum = value;
+                if (_maximum < _minimum)
+                {
+                    _maximum = _minimum;
+                }
+
+                if (_value < _minimum)
+                {
+                    _value = _minimum;
+                }
+
                 UpdateLvglValue();
             }
         }
@@ -23,7 +40,22 @@ namespace LVGLSharp.Forms
             get => _maximum;
             set
             {
+                if (_maximum == value)
+                {
+                    return;
+                }
+
                 _maximum = value;
+                if (_minimum > _maximum)
+                {
+                    _minimum = _maximum;
+                }
+
+                if (_value > _maximum)
+                {
+                    _value = _maximum;
+                }
+
                 UpdateLvglValue();
             }
         }
@@ -33,8 +65,15 @@ namespace LVGLSharp.Forms
             get => _value;
             set
             {
-                _value = value;
+                int clampedValue = Math.Clamp(value, _minimum, _maximum);
+                if (_value == clampedValue)
+                {
+                    return;
+                }
+
+                _value = clampedValue;
                 UpdateLvglValue();
+                OnValueChanged(EventArgs.Empty);
             }
         }
 
@@ -47,6 +86,11 @@ namespace LVGLSharp.Forms
         public int SmallChange { get; set; } = 1;
         /// <remarks>Not currently applied to the LVGL slider widget.</remarks>
         public int LargeChange { get; set; } = 5;
+
+        protected virtual void OnValueChanged(EventArgs e)
+        {
+            ValueChanged?.Invoke(this, e);
+        }
 
         private unsafe void UpdateLvglValue()
         {
@@ -70,6 +114,35 @@ namespace LVGLSharp.Forms
             Application.CurrentStyleSet.TrackBar.Apply(obj);
             ApplyLvglProperties();
             CreateChildrenLvglObjects();
+        }
+
+        protected override void DispatchLvglEvent(lv_event_code_t code)
+        {
+            if (code == LV_EVENT_VALUE_CHANGED)
+            {
+                SyncValueFromLvgl();
+                return;
+            }
+
+            base.DispatchLvglEvent(code);
+        }
+
+        private unsafe void SyncValueFromLvgl()
+        {
+            if (_lvglObjectHandle == nint.Zero)
+            {
+                return;
+            }
+
+            int currentValue = lv_slider_get_value((lv_obj_t*)_lvglObjectHandle);
+            currentValue = Math.Clamp(currentValue, _minimum, _maximum);
+            if (_value == currentValue)
+            {
+                return;
+            }
+
+            _value = currentValue;
+            OnValueChanged(EventArgs.Empty);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace LVGLSharp.Runtime.Linux;
 internal static class LinuxSystemFontResolver
 {
     private static readonly Lazy<FontFamily?> s_cachedFontFamily = new(TryResolveFontFamilyCore);
+    private static readonly Lazy<string?> s_cachedFontPath = new(TryResolveFontPathCore);
 
     private static readonly string[] s_appPreferredFamilyNames =
     [
@@ -41,6 +42,50 @@ internal static class LinuxSystemFontResolver
     internal static FontFamily? TryResolveFontFamily()
     {
         return s_cachedFontFamily.Value;
+    }
+
+    internal static string? TryResolveFontPath()
+    {
+        return s_cachedFontPath.Value;
+    }
+
+    private static string? TryResolveFontPathCore()
+    {
+        foreach (var desktopFontSetting in EnumerateDesktopFontSettings())
+        {
+            var desktopFamilyName = NormalizeDesktopFontFamilyName(desktopFontSetting);
+            if (!string.IsNullOrWhiteSpace(desktopFamilyName) &&
+                TryResolveFontconfigFilePath(desktopFamilyName, out var desktopFontPath))
+            {
+                return desktopFontPath;
+            }
+        }
+
+        foreach (var familyName in s_appPreferredFamilyNames)
+        {
+            if (TryResolveFontconfigFilePath(familyName, out var preferredFontPath))
+            {
+                return preferredFontPath;
+            }
+        }
+
+        string[] genericFallbackFamilies =
+        [
+            "sans-serif",
+            "Noto Sans",
+            "DejaVu Sans",
+            "Liberation Sans",
+        ];
+
+        foreach (var familyName in genericFallbackFamilies)
+        {
+            if (TryResolveFontconfigFilePath(familyName, out var fallbackFontPath))
+            {
+                return fallbackFontPath;
+            }
+        }
+
+        return null;
     }
 
     private static FontFamily? TryResolveFontFamilyCore()
@@ -353,6 +398,22 @@ internal static class LinuxSystemFontResolver
         }
 
         resolvedFamilyName = string.Empty;
+        return false;
+    }
+
+    private static bool TryResolveFontconfigFilePath(string familyName, out string resolvedFontPath)
+    {
+        if (TryRunCommand("fc-match", ["-f", "%{file}\n", familyName], out var output))
+        {
+            string candidatePath = output.Trim().Trim('\'', '"');
+            if (!string.IsNullOrWhiteSpace(candidatePath) && File.Exists(candidatePath))
+            {
+                resolvedFontPath = candidatePath;
+                return true;
+            }
+        }
+
+        resolvedFontPath = string.Empty;
         return false;
     }
 

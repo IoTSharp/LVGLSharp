@@ -3998,35 +3998,37 @@ namespace LVGLSharp.Forms
         /// <summary>Dispatches an LVGL event code to the appropriate On* method(s).</summary>
         protected virtual void DispatchLvglEvent(Interop.lv_event_code_t code)
         {
+            MouseEventArgs mouseEventArgs = CreateMouseEventArgs(code);
+
             switch (code)
             {
                 case LV_EVENT_CLICKED:
                     OnClick(EventArgs.Empty);
-                    OnMouseClick(new MouseEventArgs());
+                    OnMouseClick(mouseEventArgs);
                     break;
                 case LV_EVENT_DOUBLE_CLICKED:
                     OnDoubleClick(EventArgs.Empty);
-                    OnMouseDoubleClick(new MouseEventArgs());
+                    OnMouseDoubleClick(mouseEventArgs);
                     break;
                 case LV_EVENT_PRESSED:
-                    OnMouseDown(new MouseEventArgs());
+                    OnMouseDown(mouseEventArgs);
                     break;
                 case LV_EVENT_RELEASED:
-                    OnMouseUp(new MouseEventArgs());
+                    OnMouseUp(mouseEventArgs);
                     break;
                 case LV_EVENT_PRESSING:
-                    OnMouseMove(new MouseEventArgs());
+                    OnMouseMove(mouseEventArgs);
                     break;
                 case LV_EVENT_FOCUSED:
                     OnEnter(EventArgs.Empty);
                     OnGotFocus(EventArgs.Empty);
                     break;
                 case LV_EVENT_DEFOCUSED:
-                    // Object has lost keyboard focus ¡ª fire LostFocus
+                    // Object has lost keyboard focus ï¿½ï¿½ fire LostFocus
                     OnLostFocus(EventArgs.Empty);
                     break;
                 case LV_EVENT_LEAVE:
-                    // Group navigation moved away from this object ¡ª fire Leave
+                    // Group navigation moved away from this object ï¿½ï¿½ fire Leave
                     OnLeave(EventArgs.Empty);
                     break;
                 case LV_EVENT_KEY:
@@ -4053,7 +4055,7 @@ namespace LVGLSharp.Forms
                     OnMouseLeave(EventArgs.Empty);
                     break;
                 case LV_EVENT_SCROLL:
-                    OnMouseWheel(new MouseEventArgs());
+                    OnMouseWheel(mouseEventArgs);
                     break;
                 case LV_EVENT_DELETE:
                     OnHandleDestroyed(EventArgs.Empty);
@@ -4062,6 +4064,28 @@ namespace LVGLSharp.Forms
                     OnTextChanged(EventArgs.Empty);
                     break;
             }
+        }
+
+        private static MouseEventArgs CreateMouseEventArgs(Interop.lv_event_code_t code)
+        {
+            var position = RuntimeInputState.GetCurrentMousePosition();
+            MouseButtons button = MapMouseButton(RuntimeInputState.GetCurrentMouseButton());
+            int clicks = code == LV_EVENT_DOUBLE_CLICKED ? 2 : 1;
+
+            return new MouseEventArgs(button, clicks, position.X, position.Y);
+        }
+
+        private static MouseButtons MapMouseButton(uint button)
+        {
+            return button switch
+            {
+                1 => MouseButtons.Left,
+                2 => MouseButtons.Right,
+                4 => MouseButtons.Middle,
+                8 => MouseButtons.XButton1,
+                16 => MouseButtons.XButton2,
+                _ => MouseButtons.None,
+            };
         }
 
         /// <summary>Converts a percentage value to an LVGL LV_PCT coordinate.
@@ -4104,6 +4128,17 @@ namespace LVGLSharp.Forms
             int h = Size.Height > 0 ? Size.Height : LV_SIZE_CONTENT;
             lv_obj_set_size(obj, w, h);
             lv_obj_set_pos(obj, Location.X, Location.Y);
+
+            if (BackColor != Color.Empty)
+            {
+                lv_obj_set_style_bg_opa(obj, (byte)LV_OPA_COVER, 0);
+                lv_obj_set_style_bg_color(obj, lv_color_make(BackColor.R, BackColor.G, BackColor.B), 0);
+            }
+
+            if (ForeColor != Color.Empty)
+            {
+                lv_obj_set_style_text_color(obj, lv_color_make(ForeColor.R, ForeColor.G, ForeColor.B), 0);
+            }
 
             if (!AllowsNativeScrolling)
             {

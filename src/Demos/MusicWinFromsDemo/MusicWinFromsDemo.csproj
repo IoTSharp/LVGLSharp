@@ -34,15 +34,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\..\..\libs\lv_port_linux\lvgl\demos\music\assets\png\480_png\cover_1.png">
+    <Content Include="..\..\Share\lvgl.png">
       <Link>Assets\music\cover_1.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\..\libs\lv_port_linux\lvgl\demos\music\assets\png\480_png\cover_2.png">
+    <Content Include="..\..\Share\lvgl128x128.png">
       <Link>Assets\music\cover_2.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\..\libs\lv_port_linux\lvgl\demos\music\assets\png\480_png\cover_3.png">
+    <Content Include="..\..\Share\lvgl64x64.png">
       <Link>Assets\music\cover_3.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

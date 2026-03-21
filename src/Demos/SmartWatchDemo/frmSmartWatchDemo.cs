@@ -188,16 +188,30 @@ public sealed class frmSmartWatchDemo : Form
     private long _lastDynamicUpdateStamp = -1;
     private long _lastWarmupTick = -1;
 
+#if WINDOWS
+    private readonly System.Windows.Forms.Timer _updateTimer = new() { Interval = 33 };
+#endif
+
     public frmSmartWatchDemo()
     {
         Directory.CreateDirectory(_generatedAssetDirectory);
         InitializeComponent();
+
+#if WINDOWS
+        _updateTimer.Tick += UpdateTimer_Tick;
+        _updateTimer.Start();
+#endif
     }
 
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
+#if WINDOWS
+            _updateTimer.Stop();
+            _updateTimer.Tick -= UpdateTimer_Tick;
+            _updateTimer.Dispose();
+#endif
             TryDeleteGeneratedAssets();
         }
 
@@ -241,7 +255,7 @@ public sealed class frmSmartWatchDemo : Form
 
         _watchShellPanel.Margin = new Padding(0);
         _watchShellPanel.BackColor = Rgb(18, 24, 36);
-        _watchShellPanel.EnableLvglInputEvents = false;
+        DisableLvglInputEvents(_watchShellPanel);
 
         _watchViewportPanel.BackColor = Rgb(0, 0, 0);
 
@@ -547,7 +561,7 @@ public sealed class frmSmartWatchDemo : Form
     {
         _heartRatePage.SuspendLayout();
         _heartRatePage.BackColor = Rgb(0, 0, 0);
-        _heartRatePage.EnableLvglInputEvents = false;
+        DisableLvglInputEvents(_heartRatePage);
         CreateDetailHeader(_heartRatePage, "Heart Rate", "Live tracking + quick zones");
 
         Panel heroCard = CreateCardPanel(new Point(20, 84), new Size(344, 92), Rgb(22, 28, 39));
@@ -607,13 +621,13 @@ public sealed class frmSmartWatchDemo : Form
             };
 
             Panel track = _heartZoneTracks[i];
-            track.EnableLvglInputEvents = false;
+            DisableLvglInputEvents(track);
             track.Location = new Point(92, 6);
             track.Size = new Size(186, 12);
             track.BackColor = Rgb(37, 48, 66);
 
             Panel fill = _heartZoneFills[i];
-            fill.EnableLvglInputEvents = false;
+            DisableLvglInputEvents(fill);
             fill.BackColor = zoneColors[i];
             track.Controls.Add(fill);
 
@@ -640,7 +654,7 @@ public sealed class frmSmartWatchDemo : Form
     {
         _weatherPage.SuspendLayout();
         _weatherPage.BackColor = Rgb(0, 0, 0);
-        _weatherPage.EnableLvglInputEvents = false;
+        DisableLvglInputEvents(_weatherPage);
         CreateDetailHeader(_weatherPage, "Weather", "Daily forecast + quick glance");
 
         Panel heroCard = CreateCardPanel(new Point(20, 84), new Size(344, 96), Rgb(20, 33, 45));
@@ -714,7 +728,7 @@ public sealed class frmSmartWatchDemo : Form
     {
         _sleepPage.SuspendLayout();
         _sleepPage.BackColor = Rgb(0, 0, 0);
-        _sleepPage.EnableLvglInputEvents = false;
+        DisableLvglInputEvents(_sleepPage);
         CreateDetailHeader(_sleepPage, "Sleep", "Last night + stage balance");
 
         Panel heroCard = CreateCardPanel(new Point(20, 84), new Size(344, 84), Rgb(20, 27, 43));
@@ -759,13 +773,13 @@ public sealed class frmSmartWatchDemo : Form
             };
 
             Panel track = _sleepStageTracks[i];
-            track.EnableLvglInputEvents = false;
+            DisableLvglInputEvents(track);
             track.Location = new Point(92, 6);
             track.Size = new Size(186, 12);
             track.BackColor = Rgb(37, 48, 66);
 
             Panel fill = _sleepStageFills[i];
-            fill.EnableLvglInputEvents = false;
+            DisableLvglInputEvents(fill);
             fill.BackColor = i switch
             {
                 0 => Rgb(95, 118, 255),
@@ -870,14 +884,52 @@ public sealed class frmSmartWatchDemo : Form
 
     private Panel CreateCardPanel(Point location, Size size, DrawingColor backColor)
     {
-        return new Panel
+        Panel panel = new()
         {
-            EnableLvglInputEvents = false,
             Location = location,
             Size = size,
             BackColor = backColor,
         };
+
+        DisableLvglInputEvents(panel);
+        return panel;
     }
+
+    private static void DisableLvglInputEvents(Panel panel)
+    {
+        ArgumentNullException.ThrowIfNull(panel);
+
+#if !WINDOWS
+        panel.EnableLvglInputEvents = false;
+#endif
+    }
+
+    private void TickDynamicContent()
+    {
+        WarmPendingPages();
+
+        long secondStamp = DateTime.UtcNow.Ticks / TimeSpan.TicksPerSecond;
+        if (secondStamp == _lastDynamicUpdateStamp)
+        {
+            return;
+        }
+
+        _lastDynamicUpdateStamp = secondStamp;
+        UpdateDynamicContent();
+    }
+
+#if WINDOWS
+    private void UpdateTimer_Tick(object? sender, EventArgs e)
+    {
+        TickDynamicContent();
+    }
+#else
+    protected override void OnMessageLoopIteration()
+    {
+        base.OnMessageLoopIteration();
+        TickDynamicContent();
+    }
+#endif
 
     private Label CreateCardCaption(string text, Point location, Size size, float fontSize)
     {
@@ -1821,19 +1873,4 @@ public sealed class frmSmartWatchDemo : Form
 #endif
     }
 
-    protected   void OnMessageLoopIteration()
-    {
-        base.OnMessageLoopIteration();
-
-        WarmPendingPages();
-
-        long secondStamp = DateTime.UtcNow.Ticks / TimeSpan.TicksPerSecond;
-        if (secondStamp == _lastDynamicUpdateStamp)
-        {
-            return;
-        }
-
-        _lastDynamicUpdateStamp = secondStamp;
-        UpdateDynamicContent();
-    }
 }

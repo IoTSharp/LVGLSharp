@@ -25,6 +25,20 @@ function Require-Command {
     }
 }
 
+function Get-DemoTargetFramework {
+    param([string]$DemoName)
+
+    switch ($DemoName) {
+        "SerialPort" { return "net10.0-windows" }
+        "WinFormsDemo" { return "net10.0-windows" }
+        "PictureBoxDemo" { return "net10.0-windows" }
+        "MusicDemo" { return "net10.0-windows" }
+        "MusicWinFromsDemo" { return "net10.0-windows" }
+        "SmartWatchDemo" { return "net10.0-windows" }
+        default { return "net10.0" }
+    }
+}
+
 function Normalize-Demo {
     param([string]$Name)
 
@@ -132,16 +146,17 @@ function Publish-Demo {
     $projectPath = Join-Path $rootDir "src/Demos/$DemoName/$DemoName.csproj"
     $publishDir = Join-Path $distDir $DemoName
     $executablePath = Join-Path $publishDir "$DemoName.exe"
+    $targetFramework = Get-DemoTargetFramework $DemoName
 
     if (-not (Test-Path $projectPath)) {
         Fail "missing demo project: $projectPath"
     }
 
-    Write-Host "==> Publishing $DemoName"
+    Write-Host "==> Publishing $DemoName ($targetFramework)"
     Remove-Item -Recurse -Force $publishDir -ErrorAction SilentlyContinue
 
     & dotnet publish $projectPath `
-        -f net10.0 `
+        -f $targetFramework `
         -c $Configuration `
         -r $Rid `
         -o $publishDir `

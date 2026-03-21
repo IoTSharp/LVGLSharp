@@ -33,6 +33,17 @@ If no demo is specified, all demos are published.
 EOF
 }
 
+get_demo_target_framework() {
+    case "$1" in
+        SerialPort|WinFormsDemo|PictureBoxDemo|MusicDemo|MusicWinFromsDemo|SmartWatchDemo)
+            printf 'net10.0'
+            ;;
+        *)
+            fail "no target framework mapping for demo: $1"
+            ;;
+    esac
+}
+
 fail() {
     printf 'error: %s
 ' "$*" >&2
@@ -125,9 +136,17 @@ fi
 
 mkdir -p "$DIST_DIR"
 
-printf '==> Building LVGL shared library (%s)
-' "$RID"
-cmake -S "$LVGL_SOURCE_DIR" -B "$LVGL_BUILD_DIR"     -DCMAKE_BUILD_TYPE="$CONFIGURATION"     -DBUILD_SHARED_LIBS=ON     -DCONFIG_LV_BUILD_EXAMPLES=OFF     -DCONFIG_LV_BUILD_DEMOS=OFF     -DCONFIG_LV_USE_LINUX_FBDEV=OFF     -DCONFIG_LV_USE_SDL=OFF     -DCONFIG_LV_USE_LINUX_DRM=OFF     -DCONFIG_LV_USE_WAYLAND=OFF     -DLV_BUILD_CONF_DIR="$ROOT_DIR/libs"
+printf '==> Building LVGL shared library (%s)\n' "$RID"
+cmake -S "$LVGL_SOURCE_DIR" -B "$LVGL_BUILD_DIR" \
+    -DCMAKE_BUILD_TYPE="$CONFIGURATION" \
+    -DBUILD_SHARED_LIBS=ON \
+    -DCONFIG_LV_BUILD_EXAMPLES=OFF \
+    -DCONFIG_LV_BUILD_DEMOS=OFF \
+    -DCONFIG_LV_USE_LINUX_FBDEV=OFF \
+    -DCONFIG_LV_USE_SDL=OFF \
+    -DCONFIG_LV_USE_LINUX_DRM=OFF \
+    -DCONFIG_LV_USE_WAYLAND=OFF \
+    -DLV_BUILD_CONF_DIR="$ROOT_DIR/libs"
 cmake --build "$LVGL_BUILD_DIR" -j"$JOBS"
 
 [[ -f "$LVGL_SONAME_PATH" ]] || fail "missing built LVGL shared library: $LVGL_SONAME_PATH"
@@ -137,14 +156,21 @@ publish_demo() {
     local project_path="$ROOT_DIR/src/Demos/$demo_name/$demo_name.csproj"
     local publish_dir="$DIST_DIR/$demo_name"
     local executable_path="$publish_dir/$demo_name"
+    local target_framework
+
+    target_framework="$(get_demo_target_framework "$demo_name")"
 
     [[ -f "$project_path" ]] || fail "missing demo project: $project_path"
 
-    printf '==> Publishing %s
-' "$demo_name"
+    printf '==> Publishing %s (%s)\n' "$demo_name" "$target_framework"
     rm -rf "$publish_dir"
 
-    dotnet publish "$project_path"         -f net10.0         -c "$CONFIGURATION"         -r "$RID"         -o "$publish_dir"         -p:EnableWindowsTargeting=true
+    dotnet publish "$project_path" \
+        -f "$target_framework" \
+        -c "$CONFIGURATION" \
+        -r "$RID" \
+        -o "$publish_dir" \
+        -p:EnableWindowsTargeting=true
 
     [[ -f "$executable_path" ]] || fail "missing published executable: $executable_path"
 

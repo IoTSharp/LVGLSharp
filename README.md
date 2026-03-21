@@ -90,7 +90,7 @@
 - 引用 `LVGLSharp.Forms`
 - 引用 `LVGLSharp.Runtime.Windows`
 - 引用 `LVGLSharp.Runtime.Linux`
-- 在入口程序中显式调用 `Application.UseRuntime(...)` 与 `Image.RegisterFactory(...)` 的封装配置（仓库示例使用 `DemoRuntimeConfiguration.Configure()`）
+- `buildTransitive` 会根据已引用的运行时包自动生成对应平台的注册代码，并在 `ApplicationConfiguration.Initialize()` 中完成运行时初始化
 
 可参考示例工程：[`src/Demos/PictureBoxDemo/PictureBoxDemo.csproj`](./src/Demos/PictureBoxDemo/PictureBoxDemo.csproj)。
 
@@ -98,19 +98,15 @@
 
  `UseWindowsForms=true` 的目标无需任何 `LVGLSharp` 运行时注册。
 
- `UseLVGLSharpForms=true` 的目标需要在 `Application.Run(...)` 之前注册运行时。推荐像示例工程一样封装到一个共享辅助类中：
+ `UseLVGLSharpForms=true` 的目标只需要正常调用 `ApplicationConfiguration.Initialize()`；如果已引用 `LVGLSharp.Runtime.Windows`、`LVGLSharp.Runtime.Linux`，运行时会自动注册：
 
 ```csharp
 ApplicationConfiguration.Initialize();
 
-#if LVGLSHARP_FORMS
-DemoRuntimeConfiguration.Configure();
-#endif
-
 Application.Run(new frmMain());
 ```
 
-`DemoRuntimeConfiguration.Configure()` 内部会在 `UseLVGLSharpForms` 路径下根据当前运行平台（Windows 或 Linux）选择对应的 `LVGL` 宿主与图片加载实现。
+如果只引用 Windows 运行时，则只生成 Windows 注册；如果只引用 Linux 运行时，则只生成 Linux 注册；如果两者都引用，则会在启动时按当前平台自动选择对应的 `LVGL` 宿主与图片加载实现。
 
 ### 3. `LVGLSharp 布局`
 

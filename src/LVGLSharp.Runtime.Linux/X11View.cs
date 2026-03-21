@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace LVGLSharp.Runtime.Linux;
 
-public unsafe partial class X11View : IWindow
+public unsafe partial class X11View : IView
 {
     private const string X11Lib = "libX11.so.6";
 

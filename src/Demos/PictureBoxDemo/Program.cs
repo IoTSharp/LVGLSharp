@@ -14,10 +14,6 @@ namespace PictureBoxDemo
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-#if LVGLSHARP_FORMS
-            DemoRuntimeConfiguration.Configure();
-#endif
-
             Application.Run(new frmPictureBoxDemo());
         }
     }

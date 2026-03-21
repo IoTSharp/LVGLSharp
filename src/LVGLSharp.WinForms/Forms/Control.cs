@@ -224,7 +224,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Never)]
         [SRCategoryAttribute("CatBehavior")]
         [SRDescriptionAttribute("ControlWindowTargetDescr")]
-        public IWindowTarget WindowTarget { get; set; }
+        public IViewTarget WindowTarget { get; set; }
         //
         // ժҪ:
         //     Gets the size of a rectangular area into which the control can fit.

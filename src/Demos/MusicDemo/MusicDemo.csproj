@@ -21,7 +21,6 @@
 		<ProjectReference Include="..\..\LVGLSharp.Windows\LVGLSharp.Runtime.Windows.csproj" />
 		<ProjectReference Include="..\..\LVGLSharp.Runtime.Linux\LVGLSharp.Runtime.Linux.csproj" />
 		<ProjectReference Include="..\..\LVGLSharp.Analyzers\LVGLSharp.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-		<Compile Include="..\DemoRuntimeConfiguration.cs" Link="DemoRuntimeConfiguration.cs" />
         <Using Include="LVGLSharp.Forms" />
 		<Using Include="LVGLSharp.Drawing" />
 	</ItemGroup>

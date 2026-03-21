@@ -6,7 +6,6 @@ internal static class Program
     private static void Main()
     {
         ApplicationConfiguration.Initialize();
-        DemoRuntimeConfiguration.Configure();
         Application.Run(new frmMusicDemo());
     }
 }

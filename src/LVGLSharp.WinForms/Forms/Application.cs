@@ -20,14 +20,14 @@ namespace LVGLSharp.Forms
         /// Registers the platform runtime used by <see cref="Run(Form)"/>.
         /// </summary>
         public static void UseRuntime(
-            Func<string, int, int, IWindow> windowFactory,
+            Func<string, int, int, IView> viewFactory,
             Func<uint>? currentMouseButtonProvider = null,
             Func<(int X, int Y)>? currentMousePositionProvider = null)
         {
-            ArgumentNullException.ThrowIfNull(windowFactory);
+            ArgumentNullException.ThrowIfNull(viewFactory);
 
             UseRuntime(
-                options => windowFactory(options.Title, options.Width, options.Height),
+                options => viewFactory(options.Title, options.Width, options.Height),
                 currentMouseButtonProvider,
                 currentMousePositionProvider);
         }
@@ -36,13 +36,13 @@ namespace LVGLSharp.Forms
         /// Registers the platform runtime used by <see cref="Run(Form)"/>.
         /// </summary>
         public static void UseRuntime(
-            Func<WindowCreateOptions, IWindow> windowFactory,
+            Func<WindowCreateOptions, IView> viewFactory,
             Func<uint>? currentMouseButtonProvider = null,
             Func<(int X, int Y)>? currentMousePositionProvider = null)
         {
-            ArgumentNullException.ThrowIfNull(windowFactory);
+            ArgumentNullException.ThrowIfNull(viewFactory);
 
-            WindowHostFactory.Register(windowFactory);
+            WindowHostFactory.Register(viewFactory);
             RuntimeInputState.RegisterCurrentMouseButtonProvider(currentMouseButtonProvider);
             RuntimeInputState.RegisterCurrentMousePositionProvider(currentMousePositionProvider);
         }
@@ -57,7 +57,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            throw new NotSupportedException("`Application.UseWindowsRuntime()` is not AOT-safe. Reference `LVGLSharp.Runtime.Windows`, then call `Application.UseRuntime(...)` and `Image.RegisterFactory(...)` explicitly.");
+            throw new NotSupportedException("`Application.UseWindowsRuntime()` is not AOT-safe. Reference `LVGLSharp.Runtime.Windows` so the runtime is registered automatically during `ApplicationConfiguration.Initialize()`, or call `Application.UseRuntime(...)` and `Image.RegisterFactory(...)` explicitly.");
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            throw new NotSupportedException("`Application.UseLinuxRuntime()` is not AOT-safe. Reference `LVGLSharp.Runtime.Linux`, then call `Application.UseRuntime(...)` and `Image.RegisterFactory(...)` explicitly.");
+            throw new NotSupportedException("`Application.UseLinuxRuntime()` is not AOT-safe. Reference `LVGLSharp.Runtime.Linux` so the runtime is registered automatically during `ApplicationConfiguration.Initialize()`, or call `Application.UseRuntime(...)` and `Image.RegisterFactory(...)` explicitly.");
         }
 
         public static void Run(Form main)

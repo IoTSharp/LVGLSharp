@@ -89,7 +89,7 @@ On the `UseLVGLSharpForms=true` target:
 - reference `LVGLSharp.Forms`
 - reference `LVGLSharp.Runtime.Windows`
 - reference `LVGLSharp.Runtime.Linux`
-- register the runtime explicitly before `Application.Run(...)` by calling a helper that wraps `Application.UseRuntime(...)` and `Image.RegisterFactory(...)` (the demos use `DemoRuntimeConfiguration.Configure()`)
+- `buildTransitive` generates the matching platform registration code from the referenced runtime packages and runs it from `ApplicationConfiguration.Initialize()`
 
 See [`src/Demos/PictureBoxDemo/PictureBoxDemo.csproj`](./src/Demos/PictureBoxDemo/PictureBoxDemo.csproj).
 
@@ -97,19 +97,15 @@ See [`src/Demos/PictureBoxDemo/PictureBoxDemo.csproj`](./src/Demos/PictureBoxDem
 
 The `UseWindowsForms=true` target does not require any `LVGLSharp` runtime registration.
 
-The `UseLVGLSharpForms=true` target must register the runtime before `Application.Run(...)`. The recommended pattern is to wrap that in a shared helper, like the demos do:
+The `UseLVGLSharpForms=true` target only needs a normal `ApplicationConfiguration.Initialize()` call. If `LVGLSharp.Runtime.Windows` and/or `LVGLSharp.Runtime.Linux` are referenced, the runtime is registered automatically:
 
 ```csharp
 ApplicationConfiguration.Initialize();
 
-#if LVGLSHARP_FORMS
-DemoRuntimeConfiguration.Configure();
-#endif
-
 Application.Run(new frmMain());
 ```
 
-Inside `DemoRuntimeConfiguration.Configure()`, the `LVGLSharp.Forms` path detects the current runtime platform (Windows or Linux) and selects the matching LVGL host and image implementation.
+If only the Windows runtime is referenced, only the Windows registration is generated. If only the Linux runtime is referenced, only the Linux registration is generated. If both are referenced, startup selects the matching LVGL host and image implementation for the current platform automatically.
 
 ### 3. Run on Linux
 

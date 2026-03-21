@@ -9,10 +9,6 @@ internal static class Program
     {
         ApplicationConfiguration.Initialize();
 
-#if LVGLSHARP_FORMS
-        DemoRuntimeConfiguration.Configure();
-#endif
-
         Application.Run(new frmSmartWatchDemo());
     }
 }

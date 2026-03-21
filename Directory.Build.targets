@@ -1,5 +1,4 @@
 <Project>
-  <PropertyGroup Condition="'$(UseLVGLSharpForms)' == 'true'">
-    <DefineConstants>$(DefineConstants);LVGLSHARP_FORMS</DefineConstants>
-  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)src\LVGLSharp.WinForms\buildTransitive\LVGLSharp.Forms.targets"
+          Condition="'$(UseLVGLSharpForms)' == 'true' And Exists('$(MSBuildThisFileDirectory)src\LVGLSharp.WinForms\buildTransitive\LVGLSharp.Forms.targets')" />
 </Project>

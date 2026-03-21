@@ -20,7 +20,7 @@ unsafe class Program
     static lv_obj_t* send_btn;
     static lv_obj_t* clear_btn;
     static lv_obj_t* hex_switch;
-    static IWindow? window;
+    static IView? view;
     static SerialPort? serialPort;
     static List<string> serialPorts = [];
     static List<string> bauds = ["9600", "19200", "38400", "57600", "115200"];
@@ -31,23 +31,23 @@ unsafe class Program
 
     static void Main(string[] args)
     {
-        window = CreateWindow();
-        window.Init();
+        view = CreateView();
+        view.Init();
 
-        root = window.Root;
-        key_inputGroup = window.KeyInputGroup;
-        SendTextAreaFocusCb = window.SendTextAreaFocusCallback;
+        root = view.Root;
+        key_inputGroup = view.KeyInputGroup;
+        SendTextAreaFocusCb = view.SendTextAreaFocusCallback;
 
         InitUI();
 
-        window.StartLoop(() => { });
+        view.StartLoop(() => { });
     }
 
-    static IWindow CreateWindow()
+    static IView CreateView()
     {
         if (Environment.OSVersion.Platform == PlatformID.Win32NT)
         {
-            return new Win32Window("SerialPort", 700, 360);
+            return new Win32View("SerialPort", 700, 360);
         }
         else
         {
@@ -276,7 +276,7 @@ unsafe class Program
             lv_group_add_obj(key_inputGroup, send_textarea);
         lv_obj_set_height(send_textarea, 50);
 
-        window?.AttachTextInput(send_textarea);
+        view?.AttachTextInput(send_textarea);
 
         // 发送按钮
         send_btn = lv_btn_create(send_container);

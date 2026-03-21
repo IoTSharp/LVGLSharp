@@ -14,10 +14,6 @@ namespace WinFormsDemo
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-#if LVGLSHARP_FORMS
-            DemoRuntimeConfiguration.Configure();
-#endif
-
             Application.Run(new frmMain());
         }
     }

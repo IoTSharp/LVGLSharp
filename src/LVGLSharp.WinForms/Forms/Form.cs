@@ -8,7 +8,7 @@ namespace LVGLSharp.Forms
 {
     public unsafe class Form : Control
     {
-        private IWindow? _window;
+        private IView? _view;
         private bool _loadRaised;
 
         public Form()
@@ -42,7 +42,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected override void CreateHandle()
         {
-            if (_window is not null)
+            if (_view is not null)
             {
                 return;
             }
@@ -56,12 +56,12 @@ namespace LVGLSharp.Forms
             Size = new Size(displayWidth, displayHeight);
 
             var windowOptions = new WindowCreateOptions(Text, displayWidth, displayHeight, FormBorderStyle == FormBorderStyle.None);
-            _window = WindowHostFactory.Create(windowOptions);
-            _window.Init();
+            _view = WindowHostFactory.Create(windowOptions);
+            _view.Init();
 
-            root = _window.Root;
-            key_inputGroup = _window.KeyInputGroup;
-            SendTextAreaFocusCb = _window.SendTextAreaFocusCallback;
+            root = _view.Root;
+            key_inputGroup = _view.KeyInputGroup;
+            SendTextAreaFocusCb = _view.SendTextAreaFocusCallback;
             Application.CurrentStyleSet.Root.Apply(root);
 
             _lvglObjectHandle = (nint)root;
@@ -83,7 +83,7 @@ namespace LVGLSharp.Forms
 
         public new void Show()
         {
-            if (_window is null)
+            if (_view is null)
             {
                 CreateHandle();
             }
@@ -101,12 +101,12 @@ namespace LVGLSharp.Forms
 
         internal void RunMessageLoop(Action? handle = null)
         {
-            if (_window is null)
+            if (_view is null)
             {
                 return;
             }
 
-            _window.StartLoop(() =>
+            _view.StartLoop(() =>
             {
                 handle?.Invoke();
                 OnMessageLoopIteration();
@@ -116,19 +116,19 @@ namespace LVGLSharp.Forms
 
         internal void ProcessEventsCore()
         {
-            _window?.ProcessEvents();
+            _view?.ProcessEvents();
         }
 
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected override void DestroyHandle()
         {
-            if (_window is null && Handle == 0)
+            if (_view is null && Handle == 0)
             {
                 return;
             }
 
-            _window?.Stop();
-            _window = null;
+            _view?.Stop();
+            _view = null;
             Application.UnregisterOpenForm(this);
             base.DestroyHandle();
         }

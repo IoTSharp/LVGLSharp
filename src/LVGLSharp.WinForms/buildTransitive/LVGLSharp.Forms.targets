@@ -1,16 +1,67 @@
 <Project>
   <PropertyGroup Condition="'$(UseLVGLSharpForms)' == 'true'">
     <DefineConstants>$(DefineConstants);LVGLSHARP_FORMS</DefineConstants>
+    <_LVGLSharpGeneratedRuntimeRegistrationFile>$(IntermediateOutputPath)LVGLSharp.RuntimeRegistration.g.cs</_LVGLSharpGeneratedRuntimeRegistrationFile>
   </PropertyGroup>
 
   <Target Name="LVGLSharpValidateFormsSelection" BeforeTargets="CoreCompile" Condition="'$(UseWindowsForms)' == 'true' And '$(UseLVGLSharpForms)' == 'true'">
     <Error Text="`UseWindowsForms` and `UseLVGLSharpForms` cannot both be `true` for the same target." />
   </Target>
 
+  <Target Name="LVGLSharpGenerateRuntimeRegistration" DependsOnTargets="ResolveReferences" BeforeTargets="CoreCompile" Condition="'$(UseLVGLSharpForms)' == 'true'">
+    <ItemGroup>
+      <_LVGLSharpRuntimeReference Include="@(ReferencePath)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows' Or '%(FileName)' == 'LVGLSharp.Runtime.Linux'" />
+      <_LVGLSharpWindowsRuntimeReference Include="@(_LVGLSharpRuntimeReference)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows'" />
+      <_LVGLSharpLinuxRuntimeReference Include="@(_LVGLSharpRuntimeReference)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Linux'" />
+    </ItemGroup>
+
+    <Delete Files="$(_LVGLSharpGeneratedRuntimeRegistrationFile)" Condition="'@(_LVGLSharpRuntimeReference)' == ''" />
+
+    <ItemGroup Condition="'@(_LVGLSharpRuntimeReference)' != ''">
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="// &lt;auto-generated /&gt;" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using System.Runtime.CompilerServices%3B" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using LVGLSharp.Drawing%3B" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using LVGLSharp.Forms%3B" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using LVGLSharp.Runtime.Windows%3B" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using LVGLSharp.Runtime.Linux%3B" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="internal static class LVGLSharpGeneratedRuntimeRegistration" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="{" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    [ModuleInitializer]" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    internal static void Register()" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    {" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        ApplicationConfiguration.RegisterWindowsRuntimeInitializer(ConfigureWindowsRuntime)%3B" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        ApplicationConfiguration.RegisterLinuxRuntimeInitializer(ConfigureLinuxRuntime)%3B" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    }" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    private static void ConfigureWindowsRuntime()" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    {" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        Application.UseRuntime(" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static options =&gt; new Win32View(options.Title, (uint)options.Width, (uint)options.Height, options.Borderless)," Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; Win32View.CurrentMouseButton," Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; Win32View.CurrentMousePosition)%3B" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        Image.RegisterFactory(static path =&gt; new WindowsImageSource(path))%3B" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    }" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    private static void ConfigureLinuxRuntime()" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    {" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        Application.UseRuntime(" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static options =&gt; new LinuxView(options.Title, options.Width, options.Height, borderless: options.Borderless)," Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; LinuxView.CurrentMouseButton," Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; LinuxView.CurrentMousePosition)%3B" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        Image.RegisterFactory(static path =&gt; new LinuxImageSource(path))%3B" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    }" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="}" />
+    </ItemGroup>
+
+    <WriteLinesToFile File="$(_LVGLSharpGeneratedRuntimeRegistrationFile)" Lines="@(_LVGLSharpGeneratedRuntimeRegistrationLines)" Overwrite="true" WriteOnlyWhenDifferent="true" Condition="'@(_LVGLSharpRuntimeReference)' != ''" />
+
+    <ItemGroup Condition="Exists('$(_LVGLSharpGeneratedRuntimeRegistrationFile)')">
+      <Compile Include="$(_LVGLSharpGeneratedRuntimeRegistrationFile)" Visible="false" AutoGen="true" />
+    </ItemGroup>
+  </Target>
+
   <Target Name="LVGLSharpValidateRuntimePackageReference" BeforeTargets="CoreCompile">
     <ItemGroup>
       <_LVGLSharpRuntimeReference Include="@(ReferencePath)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows' Or '%(FileName)' == 'LVGLSharp.Runtime.Linux'" />
     </ItemGroup>
-    <Warning Condition="'@(_LVGLSharpRuntimeReference)' == ''" Text="LVGLSharp.Forms requires a platform runtime reference. Add LVGLSharp.Runtime.Windows or LVGLSharp.Runtime.Linux and register the runtime explicitly before running the application or loading images." />
+    <Warning Condition="'@(_LVGLSharpRuntimeReference)' == ''" Text="LVGLSharp.Forms requires a platform runtime reference. Add LVGLSharp.Runtime.Windows and/or LVGLSharp.Runtime.Linux so the runtime can be registered automatically during ApplicationConfiguration.Initialize(), or call Application.UseRuntime(...) and Image.RegisterFactory(...) manually." />
   </Target>
 </Project>

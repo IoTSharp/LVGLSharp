@@ -2,30 +2,30 @@ namespace LVGLSharp
 {
     internal static class WindowHostFactory
     {
-        private static Func<WindowCreateOptions, IWindow>? s_factory;
+        private static Func<WindowCreateOptions, IView>? s_factory;
 
         internal static bool IsRegistered => s_factory is not null;
 
-        internal static void Register(Func<string, int, int, IWindow> factory)
+        internal static void Register(Func<string, int, int, IView> factory)
         {
             ArgumentNullException.ThrowIfNull(factory);
 
             Register(options => factory(options.Title, options.Width, options.Height));
         }
 
-        internal static void Register(Func<WindowCreateOptions, IWindow> factory)
+        internal static void Register(Func<WindowCreateOptions, IView> factory)
         {
             ArgumentNullException.ThrowIfNull(factory);
 
             s_factory = factory;
         }
 
-        internal static IWindow Create(string title, int width, int height)
+        internal static IView Create(string title, int width, int height)
         {
             return Create(new WindowCreateOptions(title, width, height));
         }
 
-        internal static IWindow Create(WindowCreateOptions options)
+        internal static IView Create(WindowCreateOptions options)
         {
             if (s_factory is null)
             {
@@ -33,7 +33,7 @@ namespace LVGLSharp
             }
 
             return s_factory?.Invoke(options)
-                ?? throw new InvalidOperationException("No LVGLSharp runtime has been configured. Call `Application.UseRuntime(...)` before `Application.Run(...)`.");
+                ?? throw new InvalidOperationException("No LVGLSharp runtime has been configured. Reference a matching runtime package so it is registered during `ApplicationConfiguration.Initialize()`, or call `Application.UseRuntime(...)` before `Application.Run(...)`.");
         }
     }
 

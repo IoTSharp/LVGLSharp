@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - 无。
 
 ### 变更 / Changed
-- 无
+- `LVGLSharp.Forms` 改为通过 `buildTransitive` 自动生成平台运行时注册代码，在 `ApplicationConfiguration.Initialize()` 中按当前平台完成初始化，不再依赖 demo 侧显式调用运行时配置辅助类。
 
 ### 修复 / Fixed
 - 无。

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace LVGLSharp.Runtime.Linux;
 
-public unsafe class LinuxView : IWindow
+public unsafe class LinuxView : IView
 {
     private enum LinuxViewMode
     {
@@ -14,7 +14,7 @@ public unsafe class LinuxView : IWindow
         FrameBuffer,
     }
 
-    private readonly IWindow _inner;
+    private readonly IView _inner;
     private readonly LinuxViewMode _mode;
     private static LinuxView? s_activeView;
 

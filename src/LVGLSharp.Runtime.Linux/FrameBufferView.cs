@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LVGLSharp.Runtime.Linux
 {
-    public unsafe class FrameBufferView : IWindow
+public unsafe class FrameBufferView : IView
     {
         static lv_display_t* g_display;
         static lv_indev_t* g_indev;

@@ -34,6 +34,43 @@ internal static unsafe partial class WaylandNative
         [FieldOffset(0)] public int H;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    internal readonly struct XdgWmBaseListener
+    {
+        public readonly delegate* unmanaged[Cdecl]<IntPtr, IntPtr, uint, void> Ping;
+
+        public XdgWmBaseListener(delegate* unmanaged[Cdecl]<IntPtr, IntPtr, uint, void> ping)
+        {
+            Ping = ping;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal readonly struct XdgToplevelListener
+    {
+        public readonly delegate* unmanaged[Cdecl]<IntPtr, IntPtr, int, int, IntPtr, void> Configure;
+        public readonly delegate* unmanaged[Cdecl]<IntPtr, IntPtr, void> Close;
+
+        public XdgToplevelListener(
+            delegate* unmanaged[Cdecl]<IntPtr, IntPtr, int, int, IntPtr, void> configure,
+            delegate* unmanaged[Cdecl]<IntPtr, IntPtr, void> close)
+        {
+            Configure = configure;
+            Close = close;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal readonly struct XdgSurfaceListener
+    {
+        public readonly delegate* unmanaged[Cdecl]<IntPtr, IntPtr, uint, void> Configure;
+
+        public XdgSurfaceListener(delegate* unmanaged[Cdecl]<IntPtr, IntPtr, uint, void> configure)
+        {
+            Configure = configure;
+        }
+    }
+
     [LibraryImport(WaylandClientLib, EntryPoint = "wl_proxy_marshal_array_flags")]
     private static partial IntPtr WlProxyMarshalArrayFlags(IntPtr proxy, uint opcode, IntPtr interfacePtr, uint version, uint flags, WlArgument* args);
 
@@ -42,6 +79,15 @@ internal static unsafe partial class WaylandNative
 
     [LibraryImport(WaylandClientLib, EntryPoint = "wl_proxy_destroy")]
     private static partial void WlProxyDestroy(IntPtr proxy);
+
+    [LibraryImport(WaylandClientLib, EntryPoint = "wl_proxy_add_listener")]
+    private static partial int WlProxyAddXdgWmBaseListener(IntPtr proxy, XdgWmBaseListener* implementation, IntPtr data);
+
+    [LibraryImport(WaylandClientLib, EntryPoint = "wl_proxy_add_listener")]
+    private static partial int WlProxyAddXdgSurfaceListener(IntPtr proxy, XdgSurfaceListener* implementation, IntPtr data);
+
+    [LibraryImport(WaylandClientLib, EntryPoint = "wl_proxy_add_listener")]
+    private static partial int WlProxyAddXdgToplevelListener(IntPtr proxy, XdgToplevelListener* implementation, IntPtr data);
 
     internal static IntPtr BindGlobal(IntPtr registryProxy, WaylandGlobalInfo globalInfo, string interfaceSymbolName)
     {
@@ -148,6 +194,34 @@ internal static unsafe partial class WaylandNative
         return xdgToplevelProxy;
     }
 
+    internal static void PongXdgWmBase(IntPtr xdgWmBaseProxy, uint serial)
+    {
+        if (xdgWmBaseProxy == IntPtr.Zero)
+        {
+            throw new ArgumentException("Wayland xdg_wm_base proxy cannot be zero.", nameof(xdgWmBaseProxy));
+        }
+
+        WlArgument* arguments = stackalloc WlArgument[1];
+        arguments[0].U = serial;
+
+        var proxyVersion = WlProxyGetVersion(xdgWmBaseProxy);
+        _ = WlProxyMarshalArrayFlags(xdgWmBaseProxy, 3u, IntPtr.Zero, proxyVersion, 0u, arguments);
+    }
+
+    internal static void AckXdgSurfaceConfigure(IntPtr xdgSurfaceProxy, uint serial)
+    {
+        if (xdgSurfaceProxy == IntPtr.Zero)
+        {
+            throw new ArgumentException("Wayland xdg_surface proxy cannot be zero.", nameof(xdgSurfaceProxy));
+        }
+
+        WlArgument* arguments = stackalloc WlArgument[1];
+        arguments[0].U = serial;
+
+        var proxyVersion = WlProxyGetVersion(xdgSurfaceProxy);
+        _ = WlProxyMarshalArrayFlags(xdgSurfaceProxy, 4u, IntPtr.Zero, proxyVersion, 0u, arguments);
+    }
+
     internal static void SetXdgToplevelTitle(IntPtr xdgToplevelProxy, string title)
     {
         if (xdgToplevelProxy == IntPtr.Zero)
@@ -191,6 +265,36 @@ internal static unsafe partial class WaylandNative
         }
 
         WlProxyDestroy(proxy);
+    }
+
+    internal static int AddXdgWmBaseListener(IntPtr xdgWmBaseProxy, XdgWmBaseListener* listener, IntPtr data)
+    {
+        if (xdgWmBaseProxy == IntPtr.Zero)
+        {
+            throw new ArgumentException("Wayland xdg_wm_base proxy cannot be zero.", nameof(xdgWmBaseProxy));
+        }
+
+        return WlProxyAddXdgWmBaseListener(xdgWmBaseProxy, listener, data);
+    }
+
+    internal static int AddXdgSurfaceListener(IntPtr xdgSurfaceProxy, XdgSurfaceListener* listener, IntPtr data)
+    {
+        if (xdgSurfaceProxy == IntPtr.Zero)
+        {
+            throw new ArgumentException("Wayland xdg_surface proxy cannot be zero.", nameof(xdgSurfaceProxy));
+        }
+
+        return WlProxyAddXdgSurfaceListener(xdgSurfaceProxy, listener, data);
+    }
+
+    internal static int AddXdgToplevelListener(IntPtr xdgToplevelProxy, XdgToplevelListener* listener, IntPtr data)
+    {
+        if (xdgToplevelProxy == IntPtr.Zero)
+        {
+            throw new ArgumentException("Wayland xdg_toplevel proxy cannot be zero.", nameof(xdgToplevelProxy));
+        }
+
+        return WlProxyAddXdgToplevelListener(xdgToplevelProxy, listener, data);
     }
 
     internal static IntPtr GetRequiredInterfaceSymbol(string symbolName)

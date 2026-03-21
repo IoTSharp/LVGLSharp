@@ -42,6 +42,12 @@ internal sealed unsafe partial class WaylandDisplayConnection : IDisposable
     [LibraryImport(WaylandClientLib, EntryPoint = "wl_display_dispatch_pending")]
     private static partial int WlDisplayDispatchPending(IntPtr display);
 
+    [LibraryImport(WaylandClientLib, EntryPoint = "wl_display_dispatch")]
+    private static partial int WlDisplayDispatch(IntPtr display);
+
+    [LibraryImport(WaylandClientLib, EntryPoint = "wl_display_flush")]
+    private static partial int WlDisplayFlush(IntPtr display);
+
     [LibraryImport(WaylandClientLib, EntryPoint = "wl_display_get_registry")]
     private static partial IntPtr WlDisplayGetRegistry(IntPtr display);
 
@@ -128,6 +134,36 @@ internal sealed unsafe partial class WaylandDisplayConnection : IDisposable
         {
             throw new InvalidOperationException($"Wayland dispatch pending failed. {DiagnosticSummary}");
         }
+    }
+
+    public void Dispatch()
+    {
+        ThrowIfDisposed();
+        ThrowIfNotConnected();
+
+        var result = WlDisplayDispatch(_display);
+        if (result < 0)
+        {
+            throw new InvalidOperationException($"Wayland dispatch failed. {DiagnosticSummary}");
+        }
+    }
+
+    public void Flush()
+    {
+        ThrowIfDisposed();
+        ThrowIfNotConnected();
+
+        var result = WlDisplayFlush(_display);
+        if (result < 0)
+        {
+            throw new InvalidOperationException($"Wayland flush failed. {DiagnosticSummary}");
+        }
+    }
+
+    public void PumpEvents()
+    {
+        Flush();
+        DispatchPending();
     }
 
     public void Disconnect()

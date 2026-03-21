@@ -1,18 +1,30 @@
 using LVGLSharp;
 using LVGLSharp.Interop;
 using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace LVGLSharp.Runtime.Linux;
 
 public unsafe sealed class WaylandView : IView
 {
+    private static WaylandView? s_activeView;
+    private static int s_startTick;
+
     private readonly WaylandDisplayConnection _connection;
     private readonly WaylandWindow _window;
     private readonly WaylandInputSource _inputSource;
     private readonly WaylandBufferPresenter _bufferPresenter;
     private readonly X11View? _fallbackView;
     private readonly string _diagnosticSummary;
+    private lv_display_t* _lvDisplay;
+    private lv_indev_t* _mouseIndev;
+    private lv_indev_t* _keyboardIndev;
+    private lv_obj_t* _root;
+    private lv_group_t* _keyInputGroup;
     private bool _initialized;
+    private bool _running;
 
     public WaylandView(
         string title = "LVGLSharp Wayland",
@@ -43,15 +55,15 @@ public unsafe sealed class WaylandView : IView
         }
     }
 
-    public static (int X, int Y) CurrentMousePosition => X11View.CurrentMousePosition;
+    public static (int X, int Y) CurrentMousePosition => s_activeView?._inputSource.CurrentMousePosition ?? (0, 0);
 
-    public static uint CurrentMouseButton => X11View.CurrentMouseButton;
+    public static uint CurrentMouseButton => s_activeView?._inputSource.CurrentMouseButton ?? 0U;
 
-    public lv_obj_t* Root => GetActiveView().Root;
+    public lv_obj_t* Root => _fallbackView is not null ? _fallbackView.Root : _root;
 
-    public lv_group_t* KeyInputGroup => GetActiveView().KeyInputGroup;
+    public lv_group_t* KeyInputGroup => _fallbackView is not null ? _fallbackView.KeyInputGroup : _keyInputGroup;
 
-    public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => GetActiveView().SendTextAreaFocusCallback;
+    public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => _fallbackView is not null ? _fallbackView.SendTextAreaFocusCallback : null;
 
     public void Init()
     {
@@ -65,68 +77,198 @@ public unsafe sealed class WaylandView : IView
         if (_fallbackView is not null)
         {
             _fallbackView.Init();
+            _running = true;
             _initialized = true;
             return;
         }
 
+        InitializeLvgl();
         _window.InitializeSurface(_connection);
+        _connection.PumpEvents();
+        s_activeView = this;
+        _running = true;
         _initialized = true;
-        _connection.ThrowIfDisposed();
-        throw CreateNativeHostNotImplementedException();
     }
 
     public void ProcessEvents()
     {
-        GetActiveView().ProcessEvents();
+        if (_fallbackView is not null)
+        {
+            _fallbackView.ProcessEvents();
+            return;
+        }
+
+        if (!_initialized)
+        {
+            return;
+        }
+
+        _connection.PumpEvents();
+        lv_timer_handler();
     }
 
     public void StartLoop(Action handle)
     {
-        GetActiveView().StartLoop(handle);
+        if (_fallbackView is not null)
+        {
+            _fallbackView.StartLoop(handle);
+            return;
+        }
+
+        while (_running)
+        {
+            ProcessEvents();
+            handle?.Invoke();
+            Thread.Sleep(5);
+        }
     }
 
     public void Stop()
     {
+        if (s_activeView == this)
+        {
+            s_activeView = null;
+        }
+
+        _running = false;
+
         try
         {
             _fallbackView?.Stop();
         }
         finally
         {
+            if (_mouseIndev != null)
+            {
+                lv_indev_delete(_mouseIndev);
+                _mouseIndev = null;
+            }
+
+            if (_keyboardIndev != null)
+            {
+                lv_indev_delete(_keyboardIndev);
+                _keyboardIndev = null;
+            }
+
+            if (_keyInputGroup != null)
+            {
+                lv_group_delete(_keyInputGroup);
+                _keyInputGroup = null;
+            }
+
+            if (_lvDisplay != null)
+            {
+                lv_display_delete(_lvDisplay);
+                _lvDisplay = null;
+            }
+
+            _root = null;
             _bufferPresenter.Dispose();
             _inputSource.Dispose();
             _window.Dispose();
             _connection.Dispose();
+            _initialized = false;
         }
     }
 
     public void AttachTextInput(lv_obj_t* textArea)
     {
-        GetActiveView().AttachTextInput(textArea);
+        _fallbackView?.AttachTextInput(textArea);
     }
 
     public override string ToString() => _fallbackView is null
-        ? $"{_diagnosticSummary}, Mode=WaylandSkeleton, Connected={_connection.IsConnected}, Compositor={_connection.HasCompositor}, Shm={_connection.HasSharedMemory}, XdgWmBase={_connection.HasXdgWmBase}, NativeSurface={_window.IsNativeSurfaceInitialized}, XdgSurface={_window.IsXdgSurfaceInitialized}, XdgToplevel={_window.IsXdgToplevelInitialized}"
-        : $"{_diagnosticSummary}, Mode=X11Fallback, Connected={_connection.IsConnected}, Compositor={_connection.HasCompositor}, Shm={_connection.HasSharedMemory}, XdgWmBase={_connection.HasXdgWmBase}, NativeSurface={_window.IsNativeSurfaceInitialized}, XdgSurface={_window.IsXdgSurfaceInitialized}, XdgToplevel={_window.IsXdgToplevelInitialized}";
-
-    private IView GetActiveView()
-    {
-        if (_fallbackView is not null)
-        {
-            return _fallbackView;
-        }
-
-        _connection.ThrowIfDisposed();
-        _window.ThrowIfDisposed();
-        _inputSource.ThrowIfDisposed();
-        _bufferPresenter.ThrowIfDisposed();
-
-        throw CreateNativeHostNotImplementedException();
-    }
+        ? $"{_diagnosticSummary}, Mode=WaylandSkeleton, Connected={_connection.IsConnected}, Compositor={_connection.HasCompositor}, Shm={_connection.HasSharedMemory}, XdgWmBase={_connection.HasXdgWmBase}, NativeSurface={_window.IsNativeSurfaceInitialized}, XdgSurface={_window.IsXdgSurfaceInitialized}, XdgToplevel={_window.IsXdgToplevelInitialized}, Configure={_window.HasReceivedConfigure}:{_window.LastConfigureSerial}, Ack={_window.HasAcknowledgedConfigure}, Pong={_window.HasRespondedToPing}:{_window.LastPingSerial}, ToplevelSize={_window.LastConfiguredWidth}x{_window.LastConfiguredHeight}, Close={_window.IsCloseRequested}"
+        : $"{_diagnosticSummary}, Mode=X11Fallback, Connected={_connection.IsConnected}, Compositor={_connection.HasCompositor}, Shm={_connection.HasSharedMemory}, XdgWmBase={_connection.HasXdgWmBase}, NativeSurface={_window.IsNativeSurfaceInitialized}, XdgSurface={_window.IsXdgSurfaceInitialized}, XdgToplevel={_window.IsXdgToplevelInitialized}, Configure={_window.HasReceivedConfigure}:{_window.LastConfigureSerial}, Ack={_window.HasAcknowledgedConfigure}, Pong={_window.HasRespondedToPing}:{_window.LastPingSerial}, ToplevelSize={_window.LastConfiguredWidth}x{_window.LastConfiguredHeight}, Close={_window.IsCloseRequested}";
 
     private InvalidOperationException CreateNativeHostNotImplementedException()
     {
         return new InvalidOperationException(
-            $"Wayland native host is not implemented yet. {_connection.DiagnosticSummary}, Connected={_connection.IsConnected}, ConnectedDisplay={_connection.ConnectedDisplayName ?? "<default>"}, Compositor={_connection.HasCompositor}:{_connection.CompositorVersion}, Shm={_connection.HasSharedMemory}:{_connection.SharedMemoryVersion}, XdgWmBase={_connection.HasXdgWmBase}:{_connection.XdgWmBaseVersion}, Window={_window.Title}({_window.Width}x{_window.Height}), SurfaceReady={_window.HasSurfacePrerequisites}, NativeSurface={_window.IsNativeSurfaceInitialized}, XdgReady={_window.HasXdgShellPrerequisites}, XdgSurface={_window.IsXdgSurfaceInitialized}, XdgToplevel={_window.IsXdgToplevelInitialized}, WindowInit={_window.InitializationSummary ?? "<pending>"}, Pointer={_inputSource.SupportsPointer}, Keyboard={_inputSource.SupportsKeyboard}, TextInput={_inputSource.SupportsTextInput}, Surface={_bufferPresenter.PixelWidth}x{_bufferPresenter.PixelHeight}@{_bufferPresenter.Dpi:0.##}dpi");
+            $"Wayland native host is not implemented yet. {_connection.DiagnosticSummary}, Connected={_connection.IsConnected}, ConnectedDisplay={_connection.ConnectedDisplayName ?? "<default>"}, Compositor={_connection.HasCompositor}:{_connection.CompositorVersion}, Shm={_connection.HasSharedMemory}:{_connection.SharedMemoryVersion}, XdgWmBase={_connection.HasXdgWmBase}:{_connection.XdgWmBaseVersion}, Window={_window.Title}({_window.Width}x{_window.Height}), SurfaceReady={_window.HasSurfacePrerequisites}, NativeSurface={_window.IsNativeSurfaceInitialized}, XdgReady={_window.HasXdgShellPrerequisites}, XdgSurface={_window.IsXdgSurfaceInitialized}, XdgToplevel={_window.IsXdgToplevelInitialized}, Configure={_window.HasReceivedConfigure}:{_window.LastConfigureSerial}, Ack={_window.HasAcknowledgedConfigure}, Pong={_window.HasRespondedToPing}:{_window.LastPingSerial}, ToplevelSize={_window.LastConfiguredWidth}x{_window.LastConfiguredHeight}, Close={_window.IsCloseRequested}, WindowInit={_window.InitializationSummary ?? "<pending>"}, Pointer={_inputSource.SupportsPointer}, Keyboard={_inputSource.SupportsKeyboard}, TextInput={_inputSource.SupportsTextInput}, Surface={_bufferPresenter.PixelWidth}x{_bufferPresenter.PixelHeight}@{_bufferPresenter.Dpi:0.##}dpi, LvDisplay={_lvDisplay != null}, Root={_root != null}, KeyGroup={_keyInputGroup != null}, Flushes={_bufferPresenter.FlushCount}:{_bufferPresenter.LastFlushWidth}x{_bufferPresenter.LastFlushHeight}");
+    }
+
+    private void InitializeLvgl()
+    {
+        LvglNativeLibraryResolver.EnsureRegistered();
+        s_startTick = Environment.TickCount;
+
+        if (!lv_is_initialized())
+        {
+            lv_init();
+        }
+
+        lv_tick_set_cb(&TickCb);
+
+        _bufferPresenter.Initialize();
+        _lvDisplay = lv_display_create(_bufferPresenter.PixelWidth, _bufferPresenter.PixelHeight);
+        if (_lvDisplay == null)
+        {
+            throw new InvalidOperationException("LVGL display 创建失败。" );
+        }
+
+        lv_display_set_buffers(_lvDisplay, _bufferPresenter.DrawBuffer, null, _bufferPresenter.DrawBufferByteSize, LV_DISPLAY_RENDER_MODE_FULL);
+        lv_display_set_flush_cb(_lvDisplay, &FlushCb);
+
+        _mouseIndev = lv_indev_create();
+        lv_indev_set_type(_mouseIndev, LV_INDEV_TYPE_POINTER);
+        lv_indev_set_read_cb(_mouseIndev, &MouseReadCb);
+        lv_indev_set_display(_mouseIndev, _lvDisplay);
+
+        _keyboardIndev = lv_indev_create();
+        lv_indev_set_type(_keyboardIndev, LV_INDEV_TYPE_KEYPAD);
+        lv_indev_set_read_cb(_keyboardIndev, &KeyboardReadCb);
+        lv_indev_set_display(_keyboardIndev, _lvDisplay);
+
+        _root = lv_scr_act();
+        _keyInputGroup = lv_group_create();
+        if (_keyboardIndev != null && _keyInputGroup != null)
+        {
+            lv_indev_set_group(_keyboardIndev, _keyInputGroup);
+        }
+    }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static uint TickCb()
+    {
+        return (uint)(Environment.TickCount - s_startTick);
+    }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static void FlushCb(lv_display_t* display, lv_area_t* area, byte* pxMap)
+    {
+        var view = s_activeView;
+        if (view is null)
+        {
+            lv_display_flush_ready(display);
+            return;
+        }
+
+        view._bufferPresenter.Flush(display, area, view._window.SurfaceProxy);
+    }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static void MouseReadCb(lv_indev_t* indev, lv_indev_data_t* data)
+    {
+        var view = s_activeView;
+        if (view is null)
+        {
+            data->point.x = 0;
+            data->point.y = 0;
+            data->state = LV_INDEV_STATE_REL;
+            data->btn_id = 0;
+            return;
+        }
+
+        var position = view._inputSource.CurrentMousePosition;
+        data->point.x = position.X;
+        data->point.y = position.Y;
+        data->state = view._inputSource.CurrentMouseButton != 0 ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+        data->btn_id = view._inputSource.CurrentMouseButton;
+    }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static void KeyboardReadCb(lv_indev_t* indev, lv_indev_data_t* data)
+    {
+        data->key = 0;
+        data->state = LV_INDEV_STATE_REL;
     }
 }

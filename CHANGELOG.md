@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### 变更 / Changed
 - `LVGLSharp.Forms` 改为通过 `buildTransitive` 自动生成平台运行时注册代码，在 `ApplicationConfiguration.Initialize()` 中按当前平台完成初始化，不再依赖 demo 侧显式调用运行时配置辅助类。
+- 新增 Linux `IView` 路线图与 `WSL2/WSLg` 开发者手册，统一记录 Linux 图形宿主扩展方向与 demo 开发调试流程。
+- 新增 `Visual Studio 2026` + `WSL` 调试手册，补充说明通用 `WSL` 程序与本仓库 demo 的推荐调试方式。
 
 ### 修复 / Fixed
 - 无。

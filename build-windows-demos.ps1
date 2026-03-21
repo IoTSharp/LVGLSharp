@@ -42,7 +42,7 @@ function Get-DemoProjectPath {
     param([string]$DemoName)
 
     switch ($DemoName) {
-        "MusicDemo" { return (Join-Path $rootDir "src/Demos/MusicWinFromsDemo/MusicDemo.csproj") }
+        "MusicDemo" { return (Join-Path $rootDir "src/Demos/MusicDemo/MusicDemo.csproj") }
         default { return (Join-Path $rootDir "src/Demos/$DemoName/$DemoName.csproj") }
     }
 }

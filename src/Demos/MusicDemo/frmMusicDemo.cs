@@ -1,1154 +1,741 @@
-using LVGLSharp;
-using LVGLSharp.Interop;
-using SixLabors.Fonts;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using static LVGLSharp.Interop.LVGL;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
-using ImageSharpImage = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>;
+#if LVGLSHARP_FORMS
+using DrawingColor = LVGLSharp.Drawing.Color;
+#else
+using DrawingColor = System.Drawing.Color;
+#endif
 
 namespace MusicDemo;
 
-public unsafe sealed class frmMusicDemo : Form
+public sealed class frmMusicDemo : Form
 {
-    private const int DemoWidth = 478;
-    private const int DemoHeight = 271;
-    private const int PlayerHeight = 238;
-    private const int CoverSize = 128;
-    private const int SpectrumBarCount = 24;
-    private const uint LvImageHeaderMagic = 0x19;
+    private readonly record struct TrackInfo(
+        string Title,
+        string Artist,
+        string Album,
+        int DurationSeconds,
+        string CoverFileName,
+        byte AccentR,
+        byte AccentG,
+        byte AccentB,
+        string Description);
 
-    private const int CommandToggleList = 1;
-    private const int CommandHideList = 2;
-    private const int CommandCloseList = 3;
-    private const int CommandTogglePlay = 4;
-    private const int CommandPrevTrack = 5;
-    private const int CommandNextTrack = 6;
-    private const int CommandToggleShuffle = 7;
-    private const int CommandToggleLoop = 8;
-    private const int CommandSeekSlider = 9;
-    private const int CommandTrackBase = 100;
-
-    private static readonly TrackInfo[] s_tracks =
+    private static readonly IReadOnlyList<TrackInfo> s_tracks =
     [
-        new("Waiting for true love", "The John Smith Band", "Rock - 1997", 74, 0x7B6AF6, 0xF18CB8, 0x6F8AF6, 11),
-        new("Need a Better Future", "My True Name", "Drum'n bass - 2016", 146, 0xFF8F70, 0xFF5E7D, 0xFFB26A, 29),
-        new("Vibrations", "Robotics", "Psy trance - 2020", 114, 0x00C2C7, 0x4E83FF, 0x72E3D7, 47),
-        new("Why now?", "John Smith", "Metal - 2015", 144, 0x7B6AF6, 0xF18CB8, 0x6F8AF6, 59),
-        new("Never Look Back", "My True Name", "Metal - 2015", 157, 0xFF8F70, 0xFF5E7D, 0xFFB26A, 73),
-        new("It happened Yesterday", "Robotics", "Metal - 2015", 213, 0x00C2C7, 0x4E83FF, 0x72E3D7, 83),
-        new("Feeling so High", "Robotics", "Metal - 2015", 116, 0x7B6AF6, 0xF18CB8, 0x6F8AF6, 97),
-        new("Go Deeper", "Unknown artist", "Metal - 2015", 211, 0xFF8F70, 0xFF5E7D, 0xFFB26A, 109),
-        new("Find You There", "Unknown artist", "Metal - 2015", 140, 0x00C2C7, 0x4E83FF, 0x72E3D7, 127),
-        new("Until the End", "Unknown artist", "Metal - 2015", 139, 0x7B6AF6, 0xF18CB8, 0x6F8AF6, 149),
+        new("Midnight Circuit", "LVGLSharp Sessions", "Neon Avenue", 222, "cover_1.png", 255, 115, 64, "Warm synth lines, long roads, and a very clean control-layer UI."),
+        new("Glass Harbor", "Northern Signals", "After Hours", 256, "cover_2.png", 91, 173, 255, "A calmer groove with plenty of space for seek, switch, and pause interactions."),
+        new("Daybreak Relay", "Static Bloom", "First Light", 207, "cover_3.png", 104, 214, 168, "Bright, fast, and useful for checking track switching and progress updates."),
+        new("Velvet Transfer", "Tape Motion", "City Loop", 244, "cover_2.png", 244, 189, 86, "A slower bridge track that keeps the playlist from feeling synthetic."),
+        new("Blue Hour Frame", "Mono District", "Late Window", 198, "cover_1.png", 176, 148, 255, "A short closer for verifying wraparound behavior and replay state.")
     ];
 
-    private static frmMusicDemo? s_activeDemo;
+    private readonly TableLayoutPanel _rootLayout = new();
+    private readonly TableLayoutPanel _headerLayout = new();
+    private readonly FlowLayoutPanel _headerTextLayout = new();
+    private readonly Label _headerKickerLabel = new();
+    private readonly Label _headerTitleLabel = new();
+    private readonly Label _modeLabel = new();
 
-    private readonly List<SixLaborsFontManager> _fontManagers = new();
-    private readonly SpectrumBar[] _spectrumBars = new SpectrumBar[SpectrumBarCount];
-    private readonly TrackRow[] _trackRows = new TrackRow[s_tracks.Length];
+    private readonly TableLayoutPanel _contentLayout = new();
+    private readonly TableLayoutPanel _playerCardLayout = new();
+    private readonly Label _trackPillLabel = new();
+    private readonly FlowLayoutPanel _metaLayout = new();
+    private readonly Label _titleLabel = new();
+    private readonly Label _artistLabel = new();
+    private readonly Label _albumLabel = new();
+    private readonly Label _descriptionLabel = new();
+    private readonly FlowLayoutPanel _coverHostLayout = new();
+    private readonly PictureBox _coverPictureBox = new();
+    private readonly TableLayoutPanel _progressLayout = new();
+    private readonly TrackBar _progressTrackBar = new();
+    private readonly TableLayoutPanel _timeLayout = new();
+    private readonly Label _elapsedLabel = new();
+    private readonly Label _durationLabel = new();
+    private readonly FlowLayoutPanel _transportLayout = new();
+    private readonly Button _shuffleButton = new();
+    private readonly Button _previousButton = new();
+    private readonly Button _playPauseButton = new();
+    private readonly Button _nextButton = new();
+    private readonly Button _repeatButton = new();
+    private readonly FlowLayoutPanel _footerLayout = new();
+    private readonly Label _statusLabel = new();
+    private readonly Label _hintLabel = new();
 
-    private ImageDescriptor[] _coverDescriptors = Array.Empty<ImageDescriptor>();
+    private readonly TableLayoutPanel _queueCardLayout = new();
+    private readonly Label _queueTitleLabel = new();
+    private readonly Label _queueHintLabel = new();
+    private readonly FlowLayoutPanel _playlistLayout = new();
+    private readonly Label _queueFooterLabel = new();
 
-    private lv_obj_t* _root;
-    private lv_obj_t* _player;
-    private lv_obj_t* _titleLabel;
-    private lv_obj_t* _artistLabel;
-    private lv_obj_t* _genreLabel;
-    private lv_obj_t* _progressSlider;
-    private lv_obj_t* _elapsedLabel;
-    private lv_obj_t* _durationLabel;
-    private lv_obj_t* _shuffleButton;
-    private lv_obj_t* _shuffleIcon;
-    private lv_obj_t* _loopButton;
-    private lv_obj_t* _loopIcon;
-    private lv_obj_t* _prevButton;
-    private lv_obj_t* _prevIcon;
-    private lv_obj_t* _playButton;
-    private lv_obj_t* _playIcon;
-    private lv_obj_t* _nextButton;
-    private lv_obj_t* _nextIcon;
-    private lv_obj_t* _albumGlow;
-    private lv_obj_t* _albumRing;
-    private lv_obj_t* _albumClip;
-    private lv_obj_t* _albumImage;
-    private lv_obj_t* _topBlob;
-    private lv_obj_t* _bottomBlobLeft;
-    private lv_obj_t* _bottomBlobRight;
-    private lv_obj_t* _footerButton;
-    private lv_obj_t* _footerLabel;
-    private lv_obj_t* _footerCountLabel;
-    private lv_obj_t* _trackSheetMask;
-    private lv_obj_t* _trackSheet;
-    private lv_obj_t* _trackList;
+    private readonly List<Button> _trackButtons = [];
+    private readonly Random _random = new();
 
-    private lv_timer_t* _uiTimer;
-    private lv_font_t* _fallbackFont;
-    private SixLaborsFontManager? _titleFont;
-    private SixLaborsFontManager? _bodyFont;
-    private SixLaborsFontManager? _smallFont;
-    private SixLaborsFontManager? _iconFont;
-
-    private long _lastTickMs;
-    private int _currentTrackIndex;
-    private int _playbackMilliseconds;
-    private bool _playing;
+    private CancellationTokenSource? _playbackLoopCts;
     private bool _shuffleEnabled;
-    private bool _loopEnabled = true;
-    private bool _ignoreSliderEvents;
-    private bool _trackSheetVisible;
+    private bool _repeatEnabled;
+    private bool _isPlaying;
+    private bool _suppressProgressChange;
+    private int _currentTrackIndex;
+    private int _currentSecond;
 
     public frmMusicDemo()
     {
-        Text = "LVGL Music Demo";
-        ClientSize = new LVGLSharp.Drawing.Size(DemoWidth, DemoHeight);
-        Load += OnMusicDemoLoad;
+        InitializeComponent();
     }
 
-    protected override void DestroyHandle()
+    protected override void Dispose(bool disposing)
     {
-        CleanupResources();
-        base.DestroyHandle();
+        if (disposing)
+        {
+            _playbackLoopCts?.Cancel();
+            _playbackLoopCts?.Dispose();
+            _playbackLoopCts = null;
+        }
+
+        base.Dispose(disposing);
     }
 
-    private void OnMusicDemoLoad(object? sender, EventArgs e)
+    private void InitializeComponent()
     {
-        s_activeDemo = this;
-        _root = (lv_obj_t*)Handle;
-        _fallbackFont = lv_obj_get_style_text_font(_root, LV_PART_MAIN);
-        ConfigureRoot();
-        CreateScene();
+        SuspendLayout();
+        _rootLayout.SuspendLayout();
+        _headerLayout.SuspendLayout();
+        _headerTextLayout.SuspendLayout();
+        _contentLayout.SuspendLayout();
+        _playerCardLayout.SuspendLayout();
+        _metaLayout.SuspendLayout();
+        _coverHostLayout.SuspendLayout();
+        _progressLayout.SuspendLayout();
+        _timeLayout.SuspendLayout();
+        _transportLayout.SuspendLayout();
+        _footerLayout.SuspendLayout();
+        _queueCardLayout.SuspendLayout();
+        _playlistLayout.SuspendLayout();
+
+        Text = "MusicDemo";
+        ClientSize = new Size(1240, 820);
+        BackColor = Rgb(12, 18, 28);
+
+        Load += frmMusicDemo_Load;
+        SizeChanged += frmMusicDemo_SizeChanged;
+
+        _rootLayout.ColumnCount = 1;
+        _rootLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        _rootLayout.RowCount = 2;
+        _rootLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 92F));
+        _rootLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+        _rootLayout.Dock = DockStyle.Fill;
+        _rootLayout.Padding = new Padding(18);
+        _rootLayout.BackColor = Rgb(12, 18, 28);
+
+        _headerLayout.ColumnCount = 2;
+        _headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 72F));
+        _headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 28F));
+        _headerLayout.RowCount = 1;
+        _headerLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+        _headerLayout.Dock = DockStyle.Fill;
+        _headerLayout.Margin = Padding.Empty;
+        _headerLayout.Padding = new Padding(18, 14, 18, 14);
+        _headerLayout.BackColor = Rgb(21, 31, 47);
+
+        _headerTextLayout.Dock = DockStyle.Fill;
+        _headerTextLayout.Margin = Padding.Empty;
+
+        _headerKickerLabel.Text = "LVGLSharp.WinForms Only";
+        _headerKickerLabel.Size = new Size(280, 24);
+        _headerKickerLabel.ForeColor = Rgb(132, 160, 196);
+        _headerKickerLabel.Font = new Font("Segoe UI", 12F);
+
+        _headerTitleLabel.Text = "MusicDemo";
+        _headerTitleLabel.Size = new Size(520, 42);
+        _headerTitleLabel.ForeColor = Rgb(244, 247, 252);
+        _headerTitleLabel.Font = new Font("Segoe UI", 26F);
+
+        _headerTextLayout.Controls.Add(_headerKickerLabel);
+        _headerTextLayout.Controls.Add(_headerTitleLabel);
+
+        _modeLabel.Dock = DockStyle.Fill;
+        _modeLabel.Text = "Loading playlist";
+        _modeLabel.TextAlign = ContentAlignment.MiddleCenter;
+        _modeLabel.ForeColor = Rgb(224, 231, 242);
+        _modeLabel.Font = new Font("Segoe UI", 13F);
+
+        _headerLayout.Controls.Add(_headerTextLayout, 0, 0);
+        _headerLayout.Controls.Add(_modeLabel, 1, 0);
+
+        _contentLayout.ColumnCount = 2;
+        _contentLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 63F));
+        _contentLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 37F));
+        _contentLayout.RowCount = 1;
+        _contentLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+        _contentLayout.Dock = DockStyle.Fill;
+        _contentLayout.Margin = new Padding(0, 18, 0, 0);
+
+        _playerCardLayout.ColumnCount = 1;
+        _playerCardLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        _playerCardLayout.RowCount = 6;
+        _playerCardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 36F));
+        _playerCardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 132F));
+        _playerCardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 392F));
+        _playerCardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 76F));
+        _playerCardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
+        _playerCardLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+        _playerCardLayout.Dock = DockStyle.Fill;
+        _playerCardLayout.Margin = new Padding(0, 0, 10, 0);
+        _playerCardLayout.Padding = new Padding(22);
+        _playerCardLayout.BackColor = Rgb(21, 31, 47);
+
+        _trackPillLabel.Text = "NOW PLAYING";
+        _trackPillLabel.Size = new Size(180, 26);
+        _trackPillLabel.ForeColor = Rgb(147, 174, 204);
+        _trackPillLabel.Font = new Font("Segoe UI", 12F);
+
+        _metaLayout.Dock = DockStyle.Fill;
+        _metaLayout.Margin = Padding.Empty;
+
+        _titleLabel.Text = "Select a track";
+        _titleLabel.Size = new Size(520, 44);
+        _titleLabel.ForeColor = Rgb(247, 249, 252);
+        _titleLabel.Font = new Font("Segoe UI", 28F);
+
+        _artistLabel.Size = new Size(520, 30);
+        _artistLabel.ForeColor = Rgb(197, 208, 224);
+        _artistLabel.Font = new Font("Segoe UI", 16F);
+
+        _albumLabel.Size = new Size(520, 24);
+        _albumLabel.ForeColor = Rgb(139, 160, 188);
+        _albumLabel.Font = new Font("Segoe UI", 12F);
+
+        _descriptionLabel.Size = new Size(560, 44);
+        _descriptionLabel.ForeColor = Rgb(167, 182, 202);
+        _descriptionLabel.Font = new Font("Segoe UI", 11F);
+
+        _metaLayout.Controls.Add(_titleLabel);
+        _metaLayout.Controls.Add(_artistLabel);
+        _metaLayout.Controls.Add(_albumLabel);
+        _metaLayout.Controls.Add(_descriptionLabel);
+
+        _coverHostLayout.Dock = DockStyle.Fill;
+        _coverHostLayout.Margin = Padding.Empty;
+        _coverHostLayout.Padding = new Padding(0, 12, 0, 0);
+        _coverHostLayout.BackColor = Rgb(16, 24, 36);
+
+        _coverPictureBox.Size = new Size(360, 360);
+        _coverPictureBox.Margin = new Padding(12);
+        _coverPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+
+        _coverHostLayout.Controls.Add(_coverPictureBox);
+
+        _progressLayout.ColumnCount = 1;
+        _progressLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        _progressLayout.RowCount = 2;
+        _progressLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 42F));
+        _progressLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 24F));
+        _progressLayout.Dock = DockStyle.Fill;
+        _progressLayout.Margin = Padding.Empty;
+
+        _progressTrackBar.Minimum = 0;
+        _progressTrackBar.Maximum = 1;
+        _progressTrackBar.Value = 0;
+        _progressTrackBar.Dock = DockStyle.Fill;
+        _progressTrackBar.Margin = new Padding(0, 4, 0, 0);
+        _progressTrackBar.ValueChanged += progressTrackBar_ValueChanged;
+
+        _timeLayout.ColumnCount = 2;
+        _timeLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+        _timeLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+        _timeLayout.RowCount = 1;
+        _timeLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+        _timeLayout.Dock = DockStyle.Fill;
+        _timeLayout.Margin = Padding.Empty;
+
+        _elapsedLabel.Dock = DockStyle.Fill;
+        _elapsedLabel.Text = "00:00";
+        _elapsedLabel.ForeColor = Rgb(200, 210, 224);
+        _elapsedLabel.Font = new Font("Segoe UI", 11F);
+
+        _durationLabel.Dock = DockStyle.Fill;
+        _durationLabel.Text = "00:00";
+        _durationLabel.TextAlign = ContentAlignment.MiddleRight;
+        _durationLabel.ForeColor = Rgb(200, 210, 224);
+        _durationLabel.Font = new Font("Segoe UI", 11F);
+
+        _timeLayout.Controls.Add(_elapsedLabel, 0, 0);
+        _timeLayout.Controls.Add(_durationLabel, 1, 0);
+
+        _progressLayout.Controls.Add(_progressTrackBar, 0, 0);
+        _progressLayout.Controls.Add(_timeLayout, 0, 1);
+
+        _transportLayout.Dock = DockStyle.Fill;
+        _transportLayout.Margin = Padding.Empty;
+
+        ConfigureTransportButton(_shuffleButton, "Shuffle", shuffleButton_Click);
+        ConfigureTransportButton(_previousButton, "Prev", previousButton_Click);
+        ConfigureTransportButton(_playPauseButton, "Play", playPauseButton_Click, 120);
+        ConfigureTransportButton(_nextButton, "Next", nextButton_Click);
+        ConfigureTransportButton(_repeatButton, "Loop", repeatButton_Click);
+
+        _transportLayout.Controls.Add(_shuffleButton);
+        _transportLayout.Controls.Add(_previousButton);
+        _transportLayout.Controls.Add(_playPauseButton);
+        _transportLayout.Controls.Add(_nextButton);
+        _transportLayout.Controls.Add(_repeatButton);
+
+        _footerLayout.Dock = DockStyle.Fill;
+        _footerLayout.Margin = Padding.Empty;
+        _footerLayout.Padding = new Padding(0, 8, 0, 0);
+
+        _statusLabel.Size = new Size(640, 28);
+        _statusLabel.ForeColor = Rgb(228, 234, 243);
+        _statusLabel.Font = new Font("Segoe UI", 12F);
+
+        _hintLabel.Size = new Size(640, 24);
+        _hintLabel.Text = "Try track switch, play/pause, shuffle, loop, and drag the progress bar.";
+        _hintLabel.ForeColor = Rgb(143, 165, 191);
+        _hintLabel.Font = new Font("Segoe UI", 10F);
+
+        _footerLayout.Controls.Add(_statusLabel);
+        _footerLayout.Controls.Add(_hintLabel);
+
+        _playerCardLayout.Controls.Add(_trackPillLabel, 0, 0);
+        _playerCardLayout.Controls.Add(_metaLayout, 0, 1);
+        _playerCardLayout.Controls.Add(_coverHostLayout, 0, 2);
+        _playerCardLayout.Controls.Add(_progressLayout, 0, 3);
+        _playerCardLayout.Controls.Add(_transportLayout, 0, 4);
+        _playerCardLayout.Controls.Add(_footerLayout, 0, 5);
+
+        _queueCardLayout.ColumnCount = 1;
+        _queueCardLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        _queueCardLayout.RowCount = 4;
+        _queueCardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F));
+        _queueCardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 56F));
+        _queueCardLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+        _queueCardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28F));
+        _queueCardLayout.Dock = DockStyle.Fill;
+        _queueCardLayout.Margin = new Padding(10, 0, 0, 0);
+        _queueCardLayout.Padding = new Padding(20);
+        _queueCardLayout.BackColor = Rgb(21, 31, 47);
+
+        _queueTitleLabel.Text = "PLAYLIST";
+        _queueTitleLabel.Size = new Size(180, 28);
+        _queueTitleLabel.ForeColor = Rgb(147, 174, 204);
+        _queueTitleLabel.Font = new Font("Segoe UI", 14F);
+
+        _queueHintLabel.Text = "Each entry is a regular WinForms-style button mapped onto the LVGL host.";
+        _queueHintLabel.Size = new Size(360, 44);
+        _queueHintLabel.ForeColor = Rgb(167, 182, 202);
+        _queueHintLabel.Font = new Font("Segoe UI", 11F);
+
+        _playlistLayout.Dock = DockStyle.Fill;
+        _playlistLayout.Margin = Padding.Empty;
+        _playlistLayout.Padding = new Padding(0, 10, 0, 0);
+
+        _queueFooterLabel.Size = new Size(360, 24);
+        _queueFooterLabel.ForeColor = Rgb(133, 153, 179);
+        _queueFooterLabel.Font = new Font("Segoe UI", 10F);
+
+        _queueCardLayout.Controls.Add(_queueTitleLabel, 0, 0);
+        _queueCardLayout.Controls.Add(_queueHintLabel, 0, 1);
+        _queueCardLayout.Controls.Add(_playlistLayout, 0, 2);
+        _queueCardLayout.Controls.Add(_queueFooterLabel, 0, 3);
+
+        _contentLayout.Controls.Add(_playerCardLayout, 0, 0);
+        _contentLayout.Controls.Add(_queueCardLayout, 1, 0);
+
+        _rootLayout.Controls.Add(_headerLayout, 0, 0);
+        _rootLayout.Controls.Add(_contentLayout, 0, 1);
+
+        Controls.Add(_rootLayout);
+
+        _playlistLayout.ResumeLayout(false);
+        _queueCardLayout.ResumeLayout(false);
+        _footerLayout.ResumeLayout(false);
+        _transportLayout.ResumeLayout(false);
+        _timeLayout.ResumeLayout(false);
+        _progressLayout.ResumeLayout(false);
+        _coverHostLayout.ResumeLayout(false);
+        _metaLayout.ResumeLayout(false);
+        _playerCardLayout.ResumeLayout(false);
+        _contentLayout.ResumeLayout(false);
+        _headerTextLayout.ResumeLayout(false);
+        _headerLayout.ResumeLayout(false);
+        _rootLayout.ResumeLayout(false);
+        ResumeLayout(false);
     }
 
-    private void ConfigureRoot()
+    private void frmMusicDemo_Load(object? sender, EventArgs e)
     {
-        lv_obj_set_style_bg_color(_root, lv_color_hex(0x343247), 0);
-        lv_obj_set_style_bg_opa(_root, LV_OPA_COVER, 0);
-        lv_obj_set_style_border_width(_root, 0, 0);
-        lv_obj_set_style_radius(_root, 0, 0);
-        lv_obj_set_style_pad_all(_root, 0, 0);
-        lv_obj_clear_flag(_root,
-            lv_obj_flag_t.LV_OBJ_FLAG_SCROLLABLE |
-            lv_obj_flag_t.LV_OBJ_FLAG_SCROLL_ELASTIC |
-            lv_obj_flag_t.LV_OBJ_FLAG_SCROLL_MOMENTUM |
-            lv_obj_flag_t.LV_OBJ_FLAG_SCROLL_CHAIN);
-        lv_obj_set_scrollbar_mode(_root, lv_scrollbar_mode_t.LV_SCROLLBAR_MODE_OFF);
+        BuildPlaylistButtons();
+        SelectTrack(0, startPlayback: true);
+
+        _playbackLoopCts = new CancellationTokenSource();
+        _ = PlaybackLoopAsync(_playbackLoopCts.Token);
+
+        ApplyResponsiveLayout();
     }
 
-    private void CreateFonts()
+    private void frmMusicDemo_SizeChanged(object? sender, EventArgs e)
     {
-        FontFamily? family = ResolveFontFamily();
-        if (family is null || _fallbackFont == null)
+        ApplyResponsiveLayout();
+    }
+
+    private void ConfigureTransportButton(Button button, string text, EventHandler clickHandler, int width = 96)
+    {
+        button.Text = text;
+        button.Size = new Size(width, 42);
+        button.Margin = new Padding(0, 0, 12, 0);
+        button.ForeColor = Rgb(245, 247, 252);
+        button.BackColor = Rgb(51, 70, 96);
+        button.Font = new Font("Segoe UI", 12F);
+        button.Click += clickHandler;
+    }
+
+    private void BuildPlaylistButtons()
+    {
+        _playlistLayout.Controls.Clear();
+        _trackButtons.Clear();
+
+        for (int i = 0; i < s_tracks.Count; i++)
+        {
+            int trackIndex = i;
+            TrackInfo track = s_tracks[i];
+            Button button = new()
+            {
+                Size = new Size(360, 58),
+                Margin = new Padding(0, 0, 0, 12),
+                Text = BuildPlaylistButtonText(trackIndex, track, isCurrent: false),
+                ForeColor = Rgb(219, 227, 239),
+                BackColor = Rgb(36, 48, 68),
+                Font = new Font("Segoe UI", 11F),
+            };
+
+            button.Click += (_, _) => SelectTrack(trackIndex, startPlayback: true);
+
+            _trackButtons.Add(button);
+            _playlistLayout.Controls.Add(button);
+        }
+    }
+
+    private void playPauseButton_Click(object? sender, EventArgs e)
+    {
+        _isPlaying = !_isPlaying;
+        UpdatePlaybackState();
+    }
+
+    private void previousButton_Click(object? sender, EventArgs e)
+    {
+        int previousIndex = _shuffleEnabled
+            ? PickRandomTrackIndex(excluding: _currentTrackIndex)
+            : (_currentTrackIndex - 1 + s_tracks.Count) % s_tracks.Count;
+
+        SelectTrack(previousIndex, startPlayback: _isPlaying);
+    }
+
+    private void nextButton_Click(object? sender, EventArgs e)
+    {
+        MoveToNextTrack(startPlayback: _isPlaying);
+    }
+
+    private void shuffleButton_Click(object? sender, EventArgs e)
+    {
+        _shuffleEnabled = !_shuffleEnabled;
+        UpdatePlaybackState();
+    }
+
+    private void repeatButton_Click(object? sender, EventArgs e)
+    {
+        _repeatEnabled = !_repeatEnabled;
+        UpdatePlaybackState();
+    }
+
+    private void progressTrackBar_ValueChanged(object? sender, EventArgs e)
+    {
+        if (_suppressProgressChange)
         {
             return;
         }
 
-        FontFamily resolvedFamily = (FontFamily)family;
-
-        _titleFont = RegisterFontManager(new SixLaborsFontManager(new SixLabors.Fonts.Font(resolvedFamily, 20f), dpi: 96f, fallback: _fallbackFont));
-        _bodyFont = RegisterFontManager(new SixLaborsFontManager(new SixLabors.Fonts.Font(resolvedFamily, 13f), dpi: 96f, fallback: _fallbackFont));
-        _smallFont = RegisterFontManager(new SixLaborsFontManager(new SixLabors.Fonts.Font(resolvedFamily, 11f), dpi: 96f, fallback: _fallbackFont));
-        _iconFont = RegisterFontManager(new SixLaborsFontManager(new SixLabors.Fonts.Font(resolvedFamily, 16f), dpi: 96f, fallback: _fallbackFont));
+        _currentSecond = Math.Clamp(_progressTrackBar.Value, 0, s_tracks[_currentTrackIndex].DurationSeconds);
+        UpdateProgressPresentation();
+        UpdateStatusText($"Seeked to {FormatTime(_currentSecond)}");
     }
 
-    private void GenerateCoverDescriptors()
+    private void SelectTrack(int trackIndex, bool startPlayback)
     {
-        DisposeCoverDescriptors();
-        _coverDescriptors = new ImageDescriptor[s_tracks.Length];
+        _currentTrackIndex = Math.Clamp(trackIndex, 0, s_tracks.Count - 1);
+        _currentSecond = 0;
+        _isPlaying = startPlayback;
 
-        for (int index = 0; index < s_tracks.Length; index++)
+        ApplyTrackPresentation();
+        UpdatePlaybackState();
+    }
+
+    private void MoveToNextTrack(bool startPlayback)
+    {
+        int nextIndex = _shuffleEnabled
+            ? PickRandomTrackIndex(excluding: _currentTrackIndex)
+            : (_currentTrackIndex + 1) % s_tracks.Count;
+
+        SelectTrack(nextIndex, startPlayback);
+    }
+
+    private int PickRandomTrackIndex(int excluding)
+    {
+        if (s_tracks.Count <= 1)
         {
-            using ImageSharpImage image = new(CoverSize, CoverSize);
-            PaintCoverImage(image, s_tracks[index]);
-            _coverDescriptors[index] = CreateImageDescriptor(image);
-        }
-    }
-
-    private void CreateScene()
-    {
-        CreatePlayerSurface();
-        CreateHeader();
-        CreateControlStrip();
-        CreateAlbumArea();
-        CreateFooter();
-        CreateTrackSheet();
-    }
-
-
-    private void CreatePlayerSurface()
-    {
-        _player = lv_obj_create(_root);
-        lv_obj_set_pos(_player, 0, 0);
-        lv_obj_set_size(_player, DemoWidth, PlayerHeight);
-        lv_obj_set_style_bg_color(_player, lv_color_hex(0xFFFEFF), 0);
-        lv_obj_set_style_bg_grad_color(_player, lv_color_hex(0xF7F3FC), 0);
-        lv_obj_set_style_bg_grad_dir(_player, lv_grad_dir_t.LV_GRAD_DIR_VER, 0);
-        lv_obj_set_style_border_width(_player, 0, 0);
-        lv_obj_set_style_pad_all(_player, 0, 0);
-        lv_obj_set_style_radius(_player, 0, 0);
-        lv_obj_clear_flag(_player, lv_obj_flag_t.LV_OBJ_FLAG_SCROLLABLE);
-        lv_obj_set_scrollbar_mode(_player, lv_scrollbar_mode_t.LV_SCROLLBAR_MODE_OFF);
-
-        _topBlob = CreateBlob(_player, -24, -34, 238, 126, 0xF6EEFC, 255);
-        _bottomBlobLeft = CreateBlob(_player, -38, 176, 210, 78, 0xF7F0FD, 255);
-        _bottomBlobRight = CreateBlob(_player, 248, 160, 240, 100, 0xF4ECFB, 255);
-    }
-
-    private void CreateHeader()
-    {
-        _titleLabel = lv_label_create(_player);
-        lv_obj_set_pos(_titleLabel, 30, 30);
-        lv_obj_set_width(_titleLabel, 210);
-        lv_label_set_long_mode(_titleLabel, LV_LABEL_LONG_CLIP);
-        ApplyFont(_titleLabel, _titleFont);
-        lv_obj_set_style_text_color(_titleLabel, lv_color_hex(0x22183A), 0);
-
-        _artistLabel = lv_label_create(_player);
-        lv_obj_set_pos(_artistLabel, 30, 66);
-        lv_obj_set_width(_artistLabel, 220);
-        ApplyFont(_artistLabel, _bodyFont);
-        lv_obj_set_style_text_color(_artistLabel, lv_color_hex(0x5D5675), 0);
-
-        _genreLabel = lv_label_create(_player);
-        lv_obj_set_pos(_genreLabel, 30, 88);
-        lv_obj_set_width(_genreLabel, 220);
-        ApplyFont(_genreLabel, _smallFont);
-        lv_obj_set_style_text_color(_genreLabel, lv_color_hex(0xA9A2BC), 0);
-
-        lv_obj_t* chip = CreateChipButton(_player, 30, 112, 28, 28, LV_SYMBOL_AUDIO, clickable: false, command: 0);
-        lv_obj_set_style_bg_color(chip, lv_color_hex(0xF0E8FAu), 0);
-        chip = CreateChipButton(_player, 70, 112, 28, 28, LV_SYMBOL_VOLUME_MAX, clickable: false, command: 0);
-        lv_obj_set_style_bg_color(chip, lv_color_hex(0xF0E8FAu), 0);
-        chip = CreateChipButton(_player, 110, 112, 28, 28, LV_SYMBOL_BELL, clickable: false, command: 0);
-        lv_obj_set_style_bg_color(chip, lv_color_hex(0xF0E8FAu), 0);
-        chip = CreateChipButton(_player, 150, 112, 28, 28, LV_SYMBOL_LIST, clickable: false, command: 0);
-        lv_obj_set_style_bg_color(chip, lv_color_hex(0xF0E8FAu), 0);
-    }
-
-    private void CreateControlStrip()
-    {
-        _shuffleButton = CreateChipButton(_player, 30, 148, 30, 30, LV_SYMBOL_SHUFFLE, clickable: true, command: CommandToggleShuffle);
-        _shuffleIcon = lv_obj_get_child(_shuffleButton, 0);
-
-        _prevButton = CreateCircleButton(_player, 76, 145, 40, 40, LV_SYMBOL_PREV, CommandPrevTrack);
-        _prevIcon = lv_obj_get_child(_prevButton, 0);
-
-        _playButton = CreateCircleButton(_player, 126, 136, 58, 58, LV_SYMBOL_PLAY, CommandTogglePlay);
-        _playIcon = lv_obj_get_child(_playButton, 0);
-
-        _nextButton = CreateCircleButton(_player, 194, 145, 40, 40, LV_SYMBOL_NEXT, CommandNextTrack);
-        _nextIcon = lv_obj_get_child(_nextButton, 0);
-
-        _loopButton = CreateChipButton(_player, 250, 148, 30, 30, LV_SYMBOL_LOOP, clickable: true, command: CommandToggleLoop);
-        _loopIcon = lv_obj_get_child(_loopButton, 0);
-
-        _progressSlider = lv_slider_create(_player);
-        lv_obj_set_pos(_progressSlider, 30, 200);
-        lv_obj_set_size(_progressSlider, 210, 8);
-        lv_slider_set_range(_progressSlider, 0, s_tracks[0].DurationSeconds);
-        lv_obj_add_event_cb(_progressSlider, &OnCommandEvent, lv_event_code_t.LV_EVENT_VALUE_CHANGED, (void*)CommandSeekSlider);
-        lv_obj_set_style_bg_color(_progressSlider, lv_color_hex(0xE8DEFA), LV_PART_MAIN);
-        lv_obj_set_style_bg_opa(_progressSlider, 255, LV_PART_MAIN);
-        lv_obj_set_style_radius(_progressSlider, 10, LV_PART_MAIN);
-        lv_obj_set_style_bg_color(_progressSlider, lv_color_hex(0x6F8AF6), LV_PART_INDICATOR);
-        lv_obj_set_style_bg_opa(_progressSlider, 255, LV_PART_INDICATOR);
-        lv_obj_set_style_radius(_progressSlider, 10, LV_PART_INDICATOR);
-        lv_obj_set_style_bg_color(_progressSlider, lv_color_hex(0xFFFFFF), LV_PART_KNOB);
-        lv_obj_set_style_bg_opa(_progressSlider, 255, LV_PART_KNOB);
-        lv_obj_set_style_radius(_progressSlider, LV_RADIUS_CIRCLE, LV_PART_KNOB);
-        lv_obj_set_style_border_width(_progressSlider, 0, LV_PART_KNOB);
-        lv_obj_set_style_shadow_width(_progressSlider, 14, LV_PART_KNOB);
-        lv_obj_set_style_shadow_spread(_progressSlider, 0, LV_PART_KNOB);
-        lv_obj_set_style_shadow_color(_progressSlider, lv_color_hex(0x7B6AF6), LV_PART_KNOB);
-        lv_obj_set_style_shadow_opa(_progressSlider, 55, LV_PART_KNOB);
-
-        _elapsedLabel = lv_label_create(_player);
-        lv_obj_set_pos(_elapsedLabel, 30, 214);
-        ApplyFont(_elapsedLabel, _smallFont);
-        lv_obj_set_style_text_color(_elapsedLabel, lv_color_hex(0x7E7894), 0);
-
-        _durationLabel = lv_label_create(_player);
-        lv_obj_set_pos(_durationLabel, 208, 214);
-        ApplyFont(_durationLabel, _smallFont);
-        lv_obj_set_style_text_color(_durationLabel, lv_color_hex(0x7E7894), 0);
-    }
-
-    private void CreateAlbumArea()
-    {
-        _albumGlow = lv_obj_create(_player);
-        lv_obj_set_pos(_albumGlow, 296, 30);
-        lv_obj_set_size(_albumGlow, 150, 150);
-        lv_obj_set_style_radius(_albumGlow, 30, 0);
-        lv_obj_set_style_bg_color(_albumGlow, lv_color_hex(0xF6F1FD), 0);
-        lv_obj_set_style_bg_opa(_albumGlow, 255, 0);
-        lv_obj_set_style_border_width(_albumGlow, 0, 0);
-        lv_obj_set_style_shadow_width(_albumGlow, 0, 0);
-        lv_obj_set_style_shadow_spread(_albumGlow, 0, 0);
-        lv_obj_set_style_shadow_opa(_albumGlow, 0, 0);
-        lv_obj_clear_flag(_albumGlow, lv_obj_flag_t.LV_OBJ_FLAG_SCROLLABLE);
-
-        _albumRing = lv_obj_create(_albumGlow);
-        lv_obj_center(_albumRing);
-        lv_obj_set_size(_albumRing, 136, 136);
-        lv_obj_set_style_radius(_albumRing, 24, 0);
-        lv_obj_set_style_bg_color(_albumRing, lv_color_hex(0xFFFFFF), 0);
-        lv_obj_set_style_bg_opa(_albumRing, 255, 0);
-        lv_obj_set_style_border_width(_albumRing, 0, 0);
-        lv_obj_set_style_pad_all(_albumRing, 0, 0);
-        lv_obj_clear_flag(_albumRing, lv_obj_flag_t.LV_OBJ_FLAG_SCROLLABLE);
-
-        _albumClip = _albumRing;
-
-        _albumImage = lv_image_create(_albumRing);
-        lv_obj_set_size(_albumImage, CoverSize, CoverSize);
-        lv_obj_center(_albumImage);
-        lv_image_set_inner_align(_albumImage, lv_image_align_t.LV_IMAGE_ALIGN_CENTER);
-
-        for (int index = 0; index < SpectrumBarCount; index++)
-        {
-            lv_obj_t* bar = lv_obj_create(_player);
-            lv_obj_set_size(bar, 6, 18);
-            lv_obj_set_style_radius(bar, 6, 0);
-            lv_obj_set_style_border_width(bar, 0, 0);
-            lv_obj_set_style_pad_all(bar, 0, 0);
-            lv_obj_set_style_bg_color(bar, lv_color_hex(0x6F8AF6), 0);
-            lv_obj_set_style_bg_opa(bar, 180, 0);
-            lv_obj_clear_flag(bar, lv_obj_flag_t.LV_OBJ_FLAG_SCROLLABLE);
-
-            _spectrumBars[index] = new SpectrumBar
-            {
-                Object = bar,
-                Angle = (360 / SpectrumBarCount) * index,
-                Phase = 0.37f * index,
-            };
+            return excluding;
         }
 
-        UpdateSpectrum(Environment.TickCount64);
-    }
-
-    private void CreateFooter()
-    {
-        _footerButton = lv_button_create(_root);
-        lv_obj_set_pos(_footerButton, 24, 242);
-        lv_obj_set_size(_footerButton, 142, 22);
-        lv_obj_add_event_cb(_footerButton, &OnCommandEvent, lv_event_code_t.LV_EVENT_CLICKED, (void*)CommandToggleList);
-        lv_obj_set_style_bg_color(_footerButton, lv_color_hex(0x343247), 0);
-        lv_obj_set_style_bg_opa(_footerButton, 0, 0);
-        lv_obj_set_style_border_width(_footerButton, 0, 0);
-        lv_obj_set_style_shadow_width(_footerButton, 0, 0);
-        lv_obj_set_style_pad_all(_footerButton, 0, 0);
-
-        lv_obj_t* footerIcon = lv_label_create(_footerButton);
-        lv_obj_set_pos(footerIcon, 0, 2);
-        ApplyFont(footerIcon, _iconFont);
-        lv_obj_set_style_text_color(footerIcon, lv_color_hex(0xD8D1EF), 0);
-        SetLabelText(footerIcon, LV_SYMBOL_LIST);
-
-        _footerLabel = lv_label_create(_footerButton);
-        lv_obj_set_pos(_footerLabel, 22, 2);
-        ApplyFont(_footerLabel, _bodyFont);
-        lv_obj_set_style_text_color(_footerLabel, lv_color_hex(0xFFFFFF), 0);
-        SetLabelText(_footerLabel, "ALL TRACKS");
-
-        _footerCountLabel = lv_label_create(_root);
-        lv_obj_set_pos(_footerCountLabel, 346, 244);
-        ApplyFont(_footerCountLabel, _smallFont);
-        lv_obj_set_style_text_color(_footerCountLabel, lv_color_hex(0xA9A3BE), 0);
-        SetLabelText(_footerCountLabel, $"{s_tracks.Length} tracks ready");
-    }
-
-    private void CreateTrackSheet()
-    {
-        _trackSheetMask = lv_obj_create(_root);
-        lv_obj_set_size(_trackSheetMask, DemoWidth, DemoHeight);
-        lv_obj_set_pos(_trackSheetMask, 0, 0);
-        lv_obj_set_style_bg_color(_trackSheetMask, lv_color_hex(0x161321), 0);
-        lv_obj_set_style_bg_opa(_trackSheetMask, 92, 0);
-        lv_obj_set_style_border_width(_trackSheetMask, 0, 0);
-        lv_obj_set_style_radius(_trackSheetMask, 0, 0);
-        lv_obj_set_style_pad_all(_trackSheetMask, 0, 0);
-        lv_obj_add_event_cb(_trackSheetMask, &OnCommandEvent, lv_event_code_t.LV_EVENT_CLICKED, (void*)CommandHideList);
-        lv_obj_add_flag(_trackSheetMask, lv_obj_flag_t.LV_OBJ_FLAG_HIDDEN);
-
-        _trackSheet = lv_obj_create(_root);
-        lv_obj_set_pos(_trackSheet, 18, 16);
-        lv_obj_set_size(_trackSheet, 442, 238);
-        lv_obj_set_style_bg_color(_trackSheet, lv_color_hex(0x3A3750), 0);
-        lv_obj_set_style_bg_grad_color(_trackSheet, lv_color_hex(0x2F2B43), 0);
-        lv_obj_set_style_bg_grad_dir(_trackSheet, lv_grad_dir_t.LV_GRAD_DIR_VER, 0);
-        lv_obj_set_style_bg_opa(_trackSheet, 248, 0);
-        lv_obj_set_style_border_width(_trackSheet, 0, 0);
-        lv_obj_set_style_radius(_trackSheet, 26, 0);
-        lv_obj_set_style_pad_all(_trackSheet, 0, 0);
-        lv_obj_set_style_shadow_width(_trackSheet, 24, 0);
-        lv_obj_set_style_shadow_spread(_trackSheet, 1, 0);
-        lv_obj_set_style_shadow_color(_trackSheet, lv_color_hex(0x171422), 0);
-        lv_obj_set_style_shadow_opa(_trackSheet, 80, 0);
-        lv_obj_add_flag(_trackSheet, lv_obj_flag_t.LV_OBJ_FLAG_HIDDEN);
-
-        lv_obj_t* sheetTitle = lv_label_create(_trackSheet);
-        lv_obj_set_pos(sheetTitle, 22, 18);
-        ApplyFont(sheetTitle, _bodyFont);
-        lv_obj_set_style_text_color(sheetTitle, lv_color_hex(0xFFFFFF), 0);
-        SetLabelText(sheetTitle, "ALL TRACKS");
-
-        lv_obj_t* sheetSubtitle = lv_label_create(_trackSheet);
-        lv_obj_set_pos(sheetSubtitle, 22, 40);
-        ApplyFont(sheetSubtitle, _smallFont);
-        lv_obj_set_style_text_color(sheetSubtitle, lv_color_hex(0xB8B2CC), 0);
-        SetLabelText(sheetSubtitle, "Pure C# playback host with live controls");
-
-        lv_obj_t* closeButton = CreateChipButton(_trackSheet, 392, 16, 30, 30, LV_SYMBOL_CLOSE, clickable: true, command: CommandCloseList);
-        lv_obj_set_style_bg_color(closeButton, lv_color_hex(0x4B4761), 0);
-
-        _trackList = lv_obj_create(_trackSheet);
-        lv_obj_set_pos(_trackList, 18, 70);
-        lv_obj_set_size(_trackList, 406, 150);
-        lv_obj_set_style_bg_opa(_trackList, 0, 0);
-        lv_obj_set_style_border_width(_trackList, 0, 0);
-        lv_obj_set_style_pad_top(_trackList, 0, 0);
-        lv_obj_set_style_pad_bottom(_trackList, 0, 0);
-        lv_obj_set_style_pad_left(_trackList, 0, 0);
-        lv_obj_set_style_pad_right(_trackList, 4, 0);
-        lv_obj_set_style_pad_row(_trackList, 8, 0);
-        lv_obj_set_scroll_dir(_trackList, lv_dir_t.LV_DIR_VER);
-        lv_obj_set_scrollbar_mode(_trackList, lv_scrollbar_mode_t.LV_SCROLLBAR_MODE_OFF);
-        lv_obj_set_flex_flow(_trackList, lv_flex_flow_t.LV_FLEX_FLOW_COLUMN);
-
-        for (int index = 0; index < s_tracks.Length; index++)
+        int nextIndex;
+        do
         {
-            lv_obj_t* rowButton = lv_button_create(_trackList);
-            lv_obj_set_size(rowButton, lv_pct(100), 50);
-            lv_obj_add_event_cb(rowButton, &OnCommandEvent, lv_event_code_t.LV_EVENT_CLICKED, (void*)(CommandTrackBase + index));
-            lv_obj_set_style_radius(rowButton, 18, 0);
-            lv_obj_set_style_border_width(rowButton, 0, 0);
-            lv_obj_set_style_shadow_width(rowButton, 0, 0);
-            lv_obj_set_style_pad_all(rowButton, 0, 0);
-
-            lv_obj_t* icon = lv_label_create(rowButton);
-            lv_obj_set_pos(icon, 12, 14);
-            ApplyFont(icon, _iconFont);
-
-            lv_obj_t* title = lv_label_create(rowButton);
-            lv_obj_set_pos(title, 42, 8);
-            lv_obj_set_width(title, 250);
-            ApplyFont(title, _bodyFont);
-            lv_label_set_long_mode(title, LV_LABEL_LONG_CLIP);
-            SetLabelText(title, s_tracks[index].Title);
-
-            lv_obj_t* meta = lv_label_create(rowButton);
-            lv_obj_set_pos(meta, 42, 26);
-            lv_obj_set_width(meta, 250);
-            ApplyFont(meta, _smallFont);
-            lv_label_set_long_mode(meta, LV_LABEL_LONG_CLIP);
-            SetLabelText(meta, s_tracks[index].Artist);
-
-            lv_obj_t* duration = lv_label_create(rowButton);
-            lv_obj_set_pos(duration, 332, 16);
-            ApplyFont(duration, _smallFont);
-            SetLabelText(duration, FormatTime(s_tracks[index].DurationSeconds));
-
-            _trackRows[index] = new TrackRow
-            {
-                Button = rowButton,
-                Icon = icon,
-                Title = title,
-                Meta = meta,
-                Duration = duration,
-            };
+            nextIndex = _random.Next(0, s_tracks.Count);
         }
+        while (nextIndex == excluding);
+
+        return nextIndex;
     }
 
-    private void StartUiTimer()
+    private async Task PlaybackLoopAsync(CancellationToken cancellationToken)
     {
-        _lastTickMs = Environment.TickCount64;
-        _uiTimer = lv_timer_create(&OnUiTimer, 33, null);
-    }
-
-    private void Tick()
-    {
-        long now = Environment.TickCount64;
-        int elapsed = (int)Math.Clamp(now - _lastTickMs, 0, 100);
-        _lastTickMs = now;
-
-        if (_playing)
+        while (!cancellationToken.IsCancellationRequested)
         {
-            _playbackMilliseconds += elapsed;
-            if (_playbackMilliseconds >= CurrentTrack.DurationSeconds * 1000)
+            try
             {
-                OnTrackCompleted();
+                await Task.Delay(1000, cancellationToken);
             }
-        }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
 
-        UpdateProgressDisplay();
-        UpdateSpectrum(now);
-    }
-
-    private void OnTrackCompleted()
-    {
-        if (_loopEnabled)
-        {
-            _playbackMilliseconds = 0;
-            return;
-        }
-
-        LoadTrack(GetAdjacentTrackIndex(1), startPlayback: true, resetProgress: true, animateCover: true);
-    }
-
-    private void LoadTrack(int index, bool startPlayback, bool resetProgress, bool animateCover)
-    {
-        _currentTrackIndex = NormalizeTrackIndex(index);
-        if (resetProgress)
-        {
-            _playbackMilliseconds = 0;
-        }
-
-        _playing = startPlayback;
-    }
-
-    private void ApplyTheme(TrackInfo track)
-    {
-        uint accent = track.AccentColor;
-        uint primary = track.PrimaryColor;
-        uint secondary = track.SecondaryColor;
-
-        lv_obj_set_style_bg_color(_player, lv_color_hex(0xFFFEFF), 0);
-        lv_obj_set_style_bg_grad_color(_player, lv_color_hex(BlendColor(accent, 0xFFFFFF, 0.88f)), 0);
-        lv_obj_set_style_bg_grad_dir(_player, lv_grad_dir_t.LV_GRAD_DIR_VER, 0);
-
-        lv_obj_set_style_bg_color(_topBlob, lv_color_hex(BlendColor(primary, 0xFFFFFF, 0.85f)), 0);
-        lv_obj_set_style_bg_color(_bottomBlobLeft, lv_color_hex(BlendColor(accent, 0xFFFFFF, 0.90f)), 0);
-        lv_obj_set_style_bg_color(_bottomBlobRight, lv_color_hex(BlendColor(secondary, 0xFFFFFF, 0.89f)), 0);
-
-        lv_obj_set_style_text_color(_genreLabel, lv_color_hex(BlendColor(accent, 0x7A748F, 0.35f)), 0);
-        lv_obj_set_style_bg_color(_playButton, lv_color_hex(accent), 0);
-        lv_obj_set_style_shadow_color(_playButton, lv_color_hex(accent), 0);
-        lv_obj_set_style_shadow_color(_progressSlider, lv_color_hex(accent), LV_PART_KNOB);
-        lv_obj_set_style_bg_color(_progressSlider, lv_color_hex(accent), LV_PART_INDICATOR);
-        lv_obj_set_style_shadow_color(_albumGlow, lv_color_hex(accent), 0);
-        lv_obj_set_style_outline_color(_albumRing, lv_color_hex(BlendColor(accent, 0xFFFFFF, 0.28f)), 0);
-
-        lv_obj_set_style_text_color(_footerLabel, lv_color_hex(0xFFFFFF), 0);
-        lv_obj_set_style_text_color(_footerCountLabel, lv_color_hex(BlendColor(accent, 0xCFC8E5, 0.72f)), 0);
-    }
-
-    private void UpdatePlaybackVisualState()
-    {
-        SetLabelText(_playIcon, _playing ? LV_SYMBOL_PAUSE : LV_SYMBOL_PLAY);
-        lv_obj_set_style_text_color(_playIcon, lv_color_hex(0xFFFFFF), 0);
-
-        UpdateToggleButton(_shuffleButton, _shuffleIcon, _shuffleEnabled);
-        UpdateToggleButton(_loopButton, _loopIcon, _loopEnabled);
-    }
-
-    private void UpdateToggleButton(lv_obj_t* button, lv_obj_t* icon, bool active)
-    {
-        uint bgColor = active ? CurrentTrack.AccentColor : 0xF0E8FA;
-        uint textColor = active ? 0xFFFFFFu : 0x786F92u;
-
-        lv_obj_set_style_bg_opa(button, 255, 0);
-        lv_obj_set_style_bg_color(button, lv_color_hex(bgColor), 0);
-        lv_obj_set_style_text_color(icon, lv_color_hex(textColor), 0);
-    }
-
-    private void UpdateProgressDisplay()
-    {
-        int totalSeconds = CurrentTrack.DurationSeconds;
-        int currentSeconds = Math.Clamp(_playbackMilliseconds / 1000, 0, totalSeconds);
-
-        SetLabelText(_elapsedLabel, FormatTime(currentSeconds));
-
-        _ignoreSliderEvents = true;
-        lv_slider_set_value(_progressSlider, currentSeconds, LV_ANIM_OFF);
-        _ignoreSliderEvents = false;
-    }
-
-    private void UpdateSpectrum(long now)
-    {
-        TrackInfo track = CurrentTrack;
-        float time = (now % 100000) / 1000f;
-        float playbackT = _playbackMilliseconds / 1000f;
-
-        const int centerX = 374;
-        const int centerY = 106;
-        const int ringRadius = 74;
-
-        for (int index = 0; index < _spectrumBars.Length; index++)
-        {
-            ref SpectrumBar bar = ref _spectrumBars[index];
-            if (bar.Object == null)
+            if (!_isPlaying)
             {
                 continue;
             }
 
-            float energy = ComputeSpectrumEnergy(index, time, playbackT, track.Seed, _playing);
-            int height = 12 + (int)(energy * 26f);
-            int width = 6;
-            int y = centerY - ringRadius - height;
-            int x = centerX - (width / 2);
-            uint color = BlendColor(track.AccentColor, index % 2 == 0 ? track.PrimaryColor : 0xFFFFFF, 0.45f + (energy * 0.35f));
-
-            lv_obj_set_size(bar.Object, width, height);
-            lv_obj_set_pos(bar.Object, x, y);
-            lv_obj_set_style_bg_color(bar.Object, lv_color_hex(color), 0);
-            lv_obj_set_style_bg_opa(bar.Object, (byte)(100 + (energy * 155f)), 0);
-            lv_obj_set_style_transform_pivot_x(bar.Object, width / 2, 0);
-            lv_obj_set_style_transform_pivot_y(bar.Object, height + ringRadius, 0);
-            lv_obj_set_style_transform_rotation(bar.Object, bar.Angle * 10, 0);
-        }
-
-        uint imageScale = 256u + (uint)(ComputeSpectrumEnergy(0, time, playbackT, track.Seed, _playing) * (_playing ? 20f : 8f));
-        lv_image_set_scale(_albumImage, imageScale);
-    }
-
-    private void UpdateTrackRows()
-    {
-        for (int index = 0; index < _trackRows.Length; index++)
-        {
-            TrackRow row = _trackRows[index];
-            bool selected = index == _currentTrackIndex;
-
-            lv_obj_set_style_bg_opa(row.Button, selected ? (byte)255 : (byte)0, 0);
-            lv_obj_set_style_bg_color(row.Button, lv_color_hex(selected ? 0x4D4967u : 0x000000u), 0);
-
-            if (selected)
+            TrackInfo track = s_tracks[_currentTrackIndex];
+            if (_currentSecond < track.DurationSeconds)
             {
-                lv_obj_set_style_text_color(row.Icon, lv_color_hex(BlendColor(CurrentTrack.AccentColor, 0xFFFFFF, 0.45f)), 0);
-                lv_obj_set_style_text_color(row.Title, lv_color_hex(0xFFFFFF), 0);
-                lv_obj_set_style_text_color(row.Meta, lv_color_hex(0xC8C2DB), 0);
-                lv_obj_set_style_text_color(row.Duration, lv_color_hex(0xFFFFFF), 0);
-                SetLabelText(row.Icon, _playing ? LV_SYMBOL_PAUSE : LV_SYMBOL_PLAY);
+                _currentSecond++;
+                UpdateProgressPresentation();
             }
-            else
-            {
-                lv_obj_set_style_text_color(row.Icon, lv_color_hex(0xA7A1BC), 0);
-                lv_obj_set_style_text_color(row.Title, lv_color_hex(0xF4F1FA), 0);
-                lv_obj_set_style_text_color(row.Meta, lv_color_hex(0xA8A2BE), 0);
-                lv_obj_set_style_text_color(row.Duration, lv_color_hex(0xC6C0D7), 0);
-                SetLabelText(row.Icon, LV_SYMBOL_PLAY);
-            }
-        }
 
-        if (_trackSheetVisible)
-        {
-            lv_obj_scroll_to_view(_trackRows[_currentTrackIndex].Button, LV_ANIM_ON);
+            if (_currentSecond < track.DurationSeconds)
+            {
+                continue;
+            }
+
+            if (_repeatEnabled)
+            {
+                _currentSecond = 0;
+                UpdateProgressPresentation();
+                UpdateStatusText($"Replaying {track.Title}");
+                continue;
+            }
+
+            MoveToNextTrack(startPlayback: true);
         }
     }
 
-    private void SetTrackSheetVisible(bool visible)
+    private void ApplyTrackPresentation()
     {
-        if (_trackSheetVisible == visible)
-        {
-            return;
-        }
+        TrackInfo track = s_tracks[_currentTrackIndex];
 
-        _trackSheetVisible = visible;
+        _trackPillLabel.Text = $"NOW PLAYING  |  {_currentTrackIndex + 1:00}/{s_tracks.Count:00}";
+        _titleLabel.Text = track.Title;
+        _artistLabel.Text = track.Artist;
+        _albumLabel.Text = $"{track.Album}  |  {FormatTime(track.DurationSeconds)}";
+        _descriptionLabel.Text = track.Description;
 
-        if (visible)
+        string? coverPath = ResolveCoverPath(track.CoverFileName);
+        if (!string.IsNullOrWhiteSpace(coverPath))
         {
-            lv_obj_clear_flag(_trackSheetMask, lv_obj_flag_t.LV_OBJ_FLAG_HIDDEN);
-            lv_obj_clear_flag(_trackSheet, lv_obj_flag_t.LV_OBJ_FLAG_HIDDEN);
-            lv_obj_fade_in(_trackSheetMask, 140, 0);
-            lv_obj_fade_in(_trackSheet, 180, 0);
+            _coverPictureBox.Load(coverPath);
         }
         else
         {
-            lv_obj_add_flag(_trackSheetMask, lv_obj_flag_t.LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(_trackSheet, lv_obj_flag_t.LV_OBJ_FLAG_HIDDEN);
+            _coverPictureBox.ImageLocation = null;
+            _coverPictureBox.Image = null;
         }
+
+        DrawingColor accentColor = Rgb(track.AccentR, track.AccentG, track.AccentB);
+
+        _trackPillLabel.ForeColor = accentColor;
+        _playPauseButton.BackColor = accentColor;
+        _playerCardLayout.BackColor = Rgb(21, 31, 47);
+        _coverHostLayout.BackColor = Rgb(16, 24, 36);
+
+        UpdateProgressPresentation();
+        RefreshPlaylistButtons();
+        UpdateQueueFooter();
     }
 
-    private void TogglePlay()
+    private void UpdatePlaybackState()
     {
-        _playing = !_playing;
-        UpdatePlaybackVisualState();
-        UpdateTrackRows();
+        _playPauseButton.Text = _isPlaying ? "Pause" : "Play";
+        _playPauseButton.ForeColor = Rgb(245, 247, 252);
+
+        _shuffleButton.BackColor = _shuffleEnabled ? Rgb(74, 117, 186) : Rgb(51, 70, 96);
+        _repeatButton.BackColor = _repeatEnabled ? Rgb(74, 117, 186) : Rgb(51, 70, 96);
+
+        string stateText = _isPlaying ? "Playing" : "Paused";
+        string sequenceText = _shuffleEnabled ? "Shuffle" : "Sequential";
+        string repeatText = _repeatEnabled ? "Loop one" : "Loop off";
+
+        _modeLabel.Text = $"{stateText}  |  {sequenceText}  |  {repeatText}";
+        UpdateStatusText($"{stateText}: {s_tracks[_currentTrackIndex].Title}");
+        UpdateQueueFooter();
     }
 
-    private void ToggleShuffle()
+    private void UpdateProgressPresentation()
     {
-        _shuffleEnabled = !_shuffleEnabled;
-        UpdatePlaybackVisualState();
+        TrackInfo track = s_tracks[_currentTrackIndex];
+        int clampedSecond = Math.Clamp(_currentSecond, 0, track.DurationSeconds);
+        _currentSecond = clampedSecond;
+
+        _suppressProgressChange = true;
+        _progressTrackBar.Minimum = 0;
+        _progressTrackBar.Maximum = Math.Max(1, track.DurationSeconds);
+        _progressTrackBar.Value = Math.Min(clampedSecond, _progressTrackBar.Maximum);
+        _suppressProgressChange = false;
+
+        _elapsedLabel.Text = FormatTime(clampedSecond);
+        _durationLabel.Text = FormatTime(track.DurationSeconds);
     }
 
-    private void ToggleLoop()
+    private void RefreshPlaylistButtons()
     {
-        _loopEnabled = !_loopEnabled;
-        UpdatePlaybackVisualState();
-    }
-
-    private void SelectPreviousTrack()
-    {
-        LoadTrack(GetAdjacentTrackIndex(-1), startPlayback: _playing, resetProgress: true, animateCover: true);
-    }
-
-    private void SelectNextTrack()
-    {
-        LoadTrack(GetAdjacentTrackIndex(1), startPlayback: _playing, resetProgress: true, animateCover: true);
-    }
-
-    private void SelectTrack(int trackIndex)
-    {
-        LoadTrack(trackIndex, startPlayback: true, resetProgress: true, animateCover: true);
-        SetTrackSheetVisible(false);
-    }
-
-    private void SeekTo(int second)
-    {
-        _playbackMilliseconds = Math.Clamp(second, 0, CurrentTrack.DurationSeconds) * 1000;
-        UpdateProgressDisplay();
-    }
-
-    private int GetAdjacentTrackIndex(int direction)
-    {
-        if (_shuffleEnabled)
+        for (int i = 0; i < _trackButtons.Count; i++)
         {
-            int candidate;
-            do
-            {
-                candidate = Random.Shared.Next(s_tracks.Length);
-            }
-            while (s_tracks.Length > 1 && candidate == _currentTrackIndex);
+            TrackInfo track = s_tracks[i];
+            bool isCurrent = i == _currentTrackIndex;
+            Button button = _trackButtons[i];
 
-            return candidate;
+            button.Text = BuildPlaylistButtonText(i, track, isCurrent);
+            button.BackColor = isCurrent
+                ? Rgb(track.AccentR, track.AccentG, track.AccentB)
+                : Rgb(36, 48, 68);
+            button.ForeColor = isCurrent
+                ? Rgb(255, 255, 255)
+                : Rgb(219, 227, 239);
         }
-
-        return NormalizeTrackIndex(_currentTrackIndex + direction);
     }
 
-    private int NormalizeTrackIndex(int index)
+    private void UpdateStatusText(string text)
     {
-        int count = s_tracks.Length;
-        int normalized = index % count;
-        return normalized < 0 ? normalized + count : normalized;
+        TrackInfo track = s_tracks[_currentTrackIndex];
+        _statusLabel.Text = $"{text}  |  {FormatTime(_currentSecond)} / {FormatTime(track.DurationSeconds)}";
     }
 
-    private void AnimateCoverPop()
+    private void UpdateQueueFooter()
     {
-        lv_anim_t animation;
-        lv_anim_init(&animation);
-        lv_anim_set_var(&animation, _albumImage);
-        lv_anim_set_values(&animation, 218, 256);
-        lv_anim_set_duration(&animation, 220);
-        lv_anim_set_exec_cb(&animation, &ImageScaleAnimation);
-        lv_anim_start(&animation);
+        string stateText = _isPlaying ? "live" : "idle";
+        string orderText = _shuffleEnabled ? "random order" : "fixed order";
+        _queueFooterLabel.Text = $"Track {_currentTrackIndex + 1}/{s_tracks.Count}  |  {stateText}  |  {orderText}";
     }
 
-    private void CleanupResources()
+    private void ApplyResponsiveLayout()
     {
-        if (_uiTimer != null)
+        int availableHeroWidth = Math.Max(260, _playerCardLayout.ClientSize.Width - 44);
+        int availableHeroHeight = Math.Max(240, _contentLayout.ClientSize.Height - 360);
+        int coverSize = Math.Max(220, Math.Min(availableHeroWidth, availableHeroHeight));
+        coverSize = Math.Min(coverSize, 420);
+
+        _playerCardLayout.RowStyles[2] = new RowStyle(SizeType.Absolute, coverSize + 24F);
+        _coverPictureBox.Size = new Size(coverSize, coverSize);
+        _titleLabel.Size = new Size(availableHeroWidth, 44);
+        _artistLabel.Size = new Size(availableHeroWidth, 30);
+        _albumLabel.Size = new Size(availableHeroWidth, 24);
+        _descriptionLabel.Size = new Size(availableHeroWidth, 44);
+        _statusLabel.Size = new Size(availableHeroWidth, 28);
+        _hintLabel.Size = new Size(availableHeroWidth, 24);
+
+        int playlistWidth = Math.Max(240, _queueCardLayout.ClientSize.Width - 40);
+        foreach (Button button in _trackButtons)
         {
-            lv_timer_delete(_uiTimer);
-            _uiTimer = null;
+            button.Size = new Size(playlistWidth, 58);
         }
 
-        DisposeCoverDescriptors();
+        _queueHintLabel.Size = new Size(playlistWidth, 44);
+        _queueFooterLabel.Size = new Size(playlistWidth, 24);
 
-        foreach (var manager in _fontManagers)
-        {
-            manager.Dispose();
-        }
-
-        _fontManagers.Clear();
-        _titleFont = null;
-        _bodyFont = null;
-        _smallFont = null;
-        _iconFont = null;
-        s_activeDemo = null;
+        _playerCardLayout.PerformLayout();
+        _queueCardLayout.PerformLayout();
+        _playlistLayout.PerformLayout();
     }
 
-    private void DisposeCoverDescriptors()
+    private static string BuildPlaylistButtonText(int index, TrackInfo track, bool isCurrent)
     {
-        foreach (var descriptor in _coverDescriptors)
-        {
-            descriptor.Dispose();
-        }
-
-        _coverDescriptors = Array.Empty<ImageDescriptor>();
+        string marker = isCurrent ? "> " : "  ";
+        return $"{marker}{index + 1:00}  {track.Title}  |  {FormatTime(track.DurationSeconds)}";
     }
 
-    private SixLaborsFontManager RegisterFontManager(SixLaborsFontManager manager)
+    private static string FormatTime(int totalSeconds)
     {
-        _fontManagers.Add(manager);
-        return manager;
+        TimeSpan duration = TimeSpan.FromSeconds(Math.Max(0, totalSeconds));
+        return $"{(int)duration.TotalMinutes:00}:{duration.Seconds:00}";
     }
 
-    private void ApplyFont(lv_obj_t* obj, SixLaborsFontManager? manager)
+    private static string? ResolveCoverPath(string fileName)
     {
-        if (obj != null && manager is not null)
-        {
-            lv_obj_set_style_text_font(obj, manager.GetLvFontPtr(), 0);
-        }
-    }
-
-    private static FontFamily? ResolveFontFamily()
-    {
-        string[] candidateNames =
+        string[] localCandidates =
         [
-            "Segoe UI",
-            "Microsoft YaHei",
-            "Microsoft YaHei UI",
-            "Noto Sans CJK SC",
-            "Noto Sans",
-            "DejaVu Sans",
-            "Liberation Sans",
-            "Arial",
+            Path.Combine(AppContext.BaseDirectory, "Assets", "music", fileName),
+            Path.Combine(AppContext.BaseDirectory, fileName),
         ];
 
-        foreach (string candidateName in candidateNames)
+        foreach (string candidate in localCandidates)
         {
-            if (SystemFonts.TryGet(candidateName, out FontFamily family))
+            if (File.Exists(candidate))
             {
-                return family;
+                return candidate;
             }
         }
 
-        foreach (FontFamily family in SystemFonts.Families)
+        string currentDirectory = AppContext.BaseDirectory;
+        for (int depth = 0; depth < 8; depth++)
         {
-            return family;
+            string candidate = Path.Combine(
+                currentDirectory,
+                "libs",
+                "lv_port_linux",
+                "lvgl",
+                "demos",
+                "music",
+                "assets",
+                "png",
+                "480_png",
+                fileName);
+
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            string? parentDirectory = Directory.GetParent(currentDirectory)?.FullName;
+            if (string.IsNullOrWhiteSpace(parentDirectory))
+            {
+                break;
+            }
+
+            currentDirectory = parentDirectory;
         }
 
         return null;
     }
 
-    private static void PaintCoverImage(ImageSharpImage image, TrackInfo track)
+    private static DrawingColor Rgb(byte r, byte g, byte b)
     {
-        image.ProcessPixelRows(accessor =>
-        {
-            int width = accessor.Width;
-            int height = accessor.Height;
-            float halfWidth = width / 2f;
-            float halfHeight = height / 2f;
-
-            for (int y = 0; y < height; y++)
-            {
-                Span<Rgba32> row = accessor.GetRowSpan(y);
-                float fy = (y - halfHeight) / halfHeight;
-
-                for (int x = 0; x < width; x++)
-                {
-                    float fx = (x - halfWidth) / halfWidth;
-                    float radial = MathF.Sqrt((fx * fx) + (fy * fy));
-                    float diagonal = (fx - fy + 2f) / 4f;
-                    float swirl = 0.5f + (0.5f * MathF.Sin(((fx * 7.4f) + (fy * 5.2f) + track.Seed) * 1.35f));
-                    float bloom = MathF.Max(0f, 1.2f - (radial * 1.35f));
-                    float stripe = MathF.Max(0f, 1f - MathF.Abs((fx * 0.75f) + (fy * 1.2f) - 0.15f) * 2.3f);
-
-                    uint baseColor = BlendColor(track.PrimaryColor, track.SecondaryColor, diagonal);
-                    uint litColor = BlendColor(baseColor, track.AccentColor, (bloom * 0.55f) + (stripe * 0.22f));
-                    uint finalColor = BlendColor(litColor, 0xFFFFFF, 0.06f + (swirl * 0.12f));
-
-                    if (radial > 1f)
-                    {
-                        row[x] = new Rgba32(0, 0, 0, 0);
-                        continue;
-                    }
-
-                    row[x] = ToPixel(finalColor);
-                }
-            }
-        });
+#if LVGLSHARP_FORMS
+        return new DrawingColor(r, g, b);
+#else
+        return DrawingColor.FromArgb(r, g, b);
+#endif
     }
-
-    private static ImageDescriptor CreateImageDescriptor(ImageSharpImage image)
-    {
-        byte[] rgbaBytes = GC.AllocateUninitializedArray<byte>(image.Width * image.Height * Unsafe.SizeOf<Rgba32>());
-        byte[] bgraBytes = GC.AllocateUninitializedArray<byte>(rgbaBytes.Length);
-
-        image.CopyPixelDataTo(MemoryMarshal.Cast<byte, Rgba32>(rgbaBytes.AsSpan()));
-        ConvertRgbaToBgra(rgbaBytes, bgraBytes);
-
-        nuint descriptorSize = (nuint)sizeof(lv_image_dsc_t);
-        nuint totalSize = descriptorSize + (nuint)bgraBytes.Length;
-        byte* buffer = (byte*)NativeMemory.Alloc(totalSize);
-        if (buffer == null)
-        {
-            throw new OutOfMemoryException("Unable to allocate image descriptor for MusicDemo.");
-        }
-
-        var descriptor = (lv_image_dsc_t*)buffer;
-        byte* data = buffer + descriptorSize;
-
-        fixed (byte* source = bgraBytes)
-        {
-            Buffer.MemoryCopy(source, data, bgraBytes.Length, bgraBytes.Length);
-        }
-
-        *descriptor = new lv_image_dsc_t
-        {
-            header = new lv_image_header_t
-            {
-                magic = LvImageHeaderMagic,
-                cf = (uint)lv_color_format_t.LV_COLOR_FORMAT_ARGB8888,
-                flags = 0,
-                w = (uint)image.Width,
-                h = (uint)image.Height,
-                stride = (uint)(image.Width * 4),
-            },
-            data_size = (uint)bgraBytes.Length,
-            data = data,
-        };
-
-        return new ImageDescriptor((nint)buffer, descriptor);
-    }
-
-    private static void ConvertRgbaToBgra(ReadOnlySpan<byte> rgbaBytes, Span<byte> bgraBytes)
-    {
-        for (int offset = 0; offset < rgbaBytes.Length; offset += 4)
-        {
-            bgraBytes[offset] = rgbaBytes[offset + 2];
-            bgraBytes[offset + 1] = rgbaBytes[offset + 1];
-            bgraBytes[offset + 2] = rgbaBytes[offset];
-            bgraBytes[offset + 3] = rgbaBytes[offset + 3];
-        }
-    }
-
-    private static float ComputeSpectrumEnergy(int index, float time, float playbackTime, int seed, bool playing)
-    {
-        float pace = playing ? 1f : 0.26f;
-        float waveA = 0.5f + (0.5f * MathF.Sin(((time * pace * 3.2f) + (index * 0.55f) + (seed * 0.1f))));
-        float waveB = 0.5f + (0.5f * MathF.Sin(((playbackTime * 1.6f) + (index * 0.9f) + seed) * 0.73f));
-        float waveC = 0.5f + (0.5f * MathF.Cos(((time * pace * 1.9f) + (index * 0.33f) + (seed * 0.07f))));
-        float blend = (waveA * 0.55f) + (waveB * 0.30f) + (waveC * 0.15f);
-
-        return Math.Clamp(blend * (playing ? 1f : 0.55f), 0.08f, 1f);
-    }
-
-    private static lv_obj_t* CreateBlob(lv_obj_t* parent, int x, int y, int width, int height, uint color, byte opacity)
-    {
-        lv_obj_t* blob = lv_obj_create(parent);
-        lv_obj_set_pos(blob, x, y);
-        lv_obj_set_size(blob, width, height);
-        lv_obj_set_style_bg_color(blob, lv_color_hex(color), 0);
-        lv_obj_set_style_bg_opa(blob, opacity, 0);
-        lv_obj_set_style_border_width(blob, 0, 0);
-        lv_obj_set_style_radius(blob, 80, 0);
-        lv_obj_set_style_pad_all(blob, 0, 0);
-        lv_obj_clear_flag(blob, lv_obj_flag_t.LV_OBJ_FLAG_SCROLLABLE);
-        return blob;
-    }
-
-    private lv_obj_t* CreateChipButton(lv_obj_t* parent, int x, int y, int width, int height, ReadOnlySpan<byte> symbol, bool clickable, int command)
-    {
-        lv_obj_t* button = lv_button_create(parent);
-        lv_obj_set_pos(button, x, y);
-        lv_obj_set_size(button, width, height);
-        if (clickable)
-        {
-            lv_obj_add_event_cb(button, &OnCommandEvent, lv_event_code_t.LV_EVENT_CLICKED, (void*)command);
-        }
-
-        lv_obj_set_style_radius(button, 14, 0);
-        lv_obj_set_style_border_width(button, 0, 0);
-        lv_obj_set_style_shadow_width(button, 0, 0);
-        lv_obj_set_style_pad_all(button, 0, 0);
-        lv_obj_set_style_bg_color(button, lv_color_hex(0xF0E8FA), 0);
-        lv_obj_set_style_bg_opa(button, 255, 0);
-
-        lv_obj_t* icon = lv_label_create(button);
-        ApplyFont(icon, _iconFont);
-        lv_obj_set_style_text_color(icon, lv_color_hex(0x786F92), 0);
-        SetLabelText(icon, symbol);
-        lv_obj_center(icon);
-        return button;
-    }
-
-    private lv_obj_t* CreateCircleButton(lv_obj_t* parent, int x, int y, int width, int height, ReadOnlySpan<byte> symbol, int command)
-    {
-        lv_obj_t* button = lv_button_create(parent);
-        lv_obj_set_pos(button, x, y);
-        lv_obj_set_size(button, width, height);
-        lv_obj_add_event_cb(button, &OnCommandEvent, lv_event_code_t.LV_EVENT_CLICKED, (void*)command);
-        lv_obj_set_style_radius(button, LV_RADIUS_CIRCLE, 0);
-        lv_obj_set_style_border_width(button, 0, 0);
-        lv_obj_set_style_pad_all(button, 0, 0);
-        lv_obj_set_style_shadow_width(button, width > 40 ? 22 : 12, 0);
-        lv_obj_set_style_shadow_spread(button, 0, 0);
-        lv_obj_set_style_shadow_opa(button, (byte)(width > 40 ? 55 : 35), 0);
-        lv_obj_set_style_bg_color(button, lv_color_hex(width > 40 ? 0x6F8AF6u : 0xEEE7FAu), 0);
-
-        lv_obj_t* icon = lv_label_create(button);
-        ApplyFont(icon, width > 40 ? _iconFont : _bodyFont);
-        lv_obj_set_style_text_color(icon, lv_color_hex(width > 40 ? 0xFFFFFFu : 0x564F6Eu), 0);
-        SetLabelText(icon, symbol);
-        lv_obj_center(icon);
-        return button;
-    }
-
-    private static void SetLabelText(lv_obj_t* label, string text)
-    {
-        byte[] utf8Bytes = Encoding.UTF8.GetBytes(text + '\0');
-        fixed (byte* ptr = utf8Bytes)
-        {
-            lv_label_set_text(label, ptr);
-        }
-    }
-
-    private static void SetLabelText(lv_obj_t* label, ReadOnlySpan<byte> utf8Text)
-    {
-        fixed (byte* ptr = utf8Text)
-        {
-            lv_label_set_text(label, ptr);
-        }
-    }
-
-    private static string FormatTime(int totalSeconds)
-    {
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
-        return $"{minutes}:{seconds:00}";
-    }
-
-    private TrackInfo CurrentTrack => s_tracks[_currentTrackIndex];
-
-    private static uint BlendColor(uint left, uint right, float amount)
-    {
-        float t = Math.Clamp(amount, 0f, 1f);
-        byte lr = (byte)((left >> 16) & 0xFF);
-        byte lg = (byte)((left >> 8) & 0xFF);
-        byte lb = (byte)(left & 0xFF);
-
-        byte rr = (byte)((right >> 16) & 0xFF);
-        byte rg = (byte)((right >> 8) & 0xFF);
-        byte rb = (byte)(right & 0xFF);
-
-        byte br = (byte)(lr + ((rr - lr) * t));
-        byte bg = (byte)(lg + ((rg - lg) * t));
-        byte bb = (byte)(lb + ((rb - lb) * t));
-
-        return (uint)((br << 16) | (bg << 8) | bb);
-    }
-
-    private static Rgba32 ToPixel(uint color)
-    {
-        return new Rgba32(
-            (byte)((color >> 16) & 0xFF),
-            (byte)((color >> 8) & 0xFF),
-            (byte)(color & 0xFF),
-            255);
-    }
-
-    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-    private static void OnUiTimer(lv_timer_t* timer)
-    {
-        _ = timer;
-        s_activeDemo?.Tick();
-    }
-
-    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-    private static void OnCommandEvent(lv_event_t* e)
-    {
-        frmMusicDemo? demo = s_activeDemo;
-        if (demo is null)
-        {
-            return;
-        }
-
-        lv_event_code_t code = lv_event_get_code(e);
-        int command = (int)(nint)lv_event_get_user_data(e);
-
-        if (command == CommandSeekSlider)
-        {
-            if (code == lv_event_code_t.LV_EVENT_VALUE_CHANGED && !demo._ignoreSliderEvents)
-            {
-                lv_obj_t* slider = lv_event_get_target_obj(e);
-                demo.SeekTo(lv_slider_get_value(slider));
-            }
-
-            return;
-        }
-
-        if (code != lv_event_code_t.LV_EVENT_CLICKED)
-        {
-            return;
-        }
-
-        switch (command)
-        {
-            case CommandToggleList:
-                demo.SetTrackSheetVisible(!demo._trackSheetVisible);
-                return;
-            case CommandHideList:
-            case CommandCloseList:
-                demo.SetTrackSheetVisible(false);
-                return;
-            case CommandTogglePlay:
-                demo.TogglePlay();
-                return;
-            case CommandPrevTrack:
-                demo.SelectPreviousTrack();
-                return;
-            case CommandNextTrack:
-                demo.SelectNextTrack();
-                return;
-            case CommandToggleShuffle:
-                demo.ToggleShuffle();
-                return;
-            case CommandToggleLoop:
-                demo.ToggleLoop();
-                return;
-        }
-
-        if (command >= CommandTrackBase)
-        {
-            demo.SelectTrack(command - CommandTrackBase);
-        }
-    }
-
-    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-    private static void ImageScaleAnimation(void* obj, int value)
-    {
-        lv_image_set_scale((lv_obj_t*)obj, (uint)value);
-    }
-
-    private readonly struct ImageDescriptor : IDisposable
-    {
-        public ImageDescriptor(nint buffer, lv_image_dsc_t* descriptor)
-        {
-            Buffer = buffer;
-            Descriptor = descriptor;
-        }
-
-        public nint Buffer { get; }
-
-        public lv_image_dsc_t* Descriptor { get; }
-
-        public void Dispose()
-        {
-            if (Buffer != nint.Zero)
-            {
-                NativeMemory.Free((void*)Buffer);
-            }
-        }
-    }
-
-    private struct SpectrumBar
-    {
-        public lv_obj_t* Object;
-        public int Angle;
-        public float Phase;
-    }
-
-    private struct TrackRow
-    {
-        public lv_obj_t* Button;
-        public lv_obj_t* Icon;
-        public lv_obj_t* Title;
-        public lv_obj_t* Meta;
-        public lv_obj_t* Duration;
-    }
-
-    private sealed record TrackInfo(
-        string Title,
-        string Artist,
-        string Genre,
-        int DurationSeconds,
-        uint PrimaryColor,
-        uint SecondaryColor,
-        uint AccentColor,
-        int Seed);
 }

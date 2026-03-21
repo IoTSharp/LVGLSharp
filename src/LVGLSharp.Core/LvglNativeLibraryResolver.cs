@@ -70,6 +70,41 @@ namespace LVGLSharp
                     yield return Path.Combine(baseDirectory, "runtimes", runtimeIdentifier, "native", fileName);
                 }
             }
+
+            foreach (var candidatePath in GetRepositoryCandidatePaths(baseDirectory))
+            {
+                yield return candidatePath;
+            }
+        }
+
+        private static IEnumerable<string> GetRepositoryCandidatePaths(string baseDirectory)
+        {
+            foreach (var directory in EnumerateBaseDirectoryAndAncestors(baseDirectory))
+            {
+                var repositoryNativeRoot = Path.Combine(directory, "src", "LVGLSharp.Native", "runtimes");
+                if (!Directory.Exists(repositoryNativeRoot))
+                {
+                    continue;
+                }
+
+                foreach (var runtimeIdentifier in GetCandidateRuntimeIdentifiers())
+                {
+                    foreach (var fileName in GetLibraryFileNames())
+                    {
+                        yield return Path.Combine(repositoryNativeRoot, runtimeIdentifier, "native", fileName);
+                    }
+                }
+
+                yield break;
+            }
+        }
+
+        private static IEnumerable<string> EnumerateBaseDirectoryAndAncestors(string baseDirectory)
+        {
+            for (var current = new DirectoryInfo(Path.GetFullPath(baseDirectory)); current is not null; current = current.Parent)
+            {
+                yield return current.FullName;
+            }
         }
 
         private static IEnumerable<string> GetCandidateRuntimeIdentifiers()

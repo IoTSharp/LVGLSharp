@@ -165,12 +165,20 @@ src/
 └── Demos/
     ├── WinFormsDemo/       # 基础 WinForms / LVGLSharp.Forms 对照演示
     ├── PictureBoxDemo/     # PictureBox 控件演示
-    ├── MusicWinFromsDemo/  # MusicDemo 演示项目
+    ├── MusicDemo/          # MusicDemo 演示项目
     ├── SmartWatchDemo/     # SmartWatch 界面演示
     └── SerialPort/         # SerialPort 演示项目
 libs/
 └── lvgl/                   # LVGL 源码（submodule）
 ```
+
+---
+
+## 📚 开发文档
+
+- [`docs/Linux-View-Roadmap.md`](./docs/Linux-View-Roadmap.md)：Linux `IView` 现状、常见图形宿主清单与后续扩展路线图。
+- [`docs/WSL-Developer-Guide.md`](./docs/WSL-Developer-Guide.md)：`WSL2/WSLg` 下运行、验证与调试 demo 的开发者手册。
+- [`docs/VS2026-WSL-Debug-Guide.md`](./docs/VS2026-WSL-Debug-Guide.md)：使用 `Visual Studio 2026` 调试 `WSL` 程序与本仓库 demo 的建议流程。
 
 ---
 

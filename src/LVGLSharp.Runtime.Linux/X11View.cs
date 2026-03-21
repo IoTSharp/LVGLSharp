@@ -1,7 +1,6 @@
 using LVGLSharp;
 using LVGLSharp.Interop;
 using System;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -385,45 +384,6 @@ public unsafe partial class X11View : IView
     public lv_group_t* KeyInputGroup => key_inputGroup;
     public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCb;
 
-    private static IEnumerable<string> EnumerateSocketDisplays()
-    {
-        const string x11SocketDir = "/tmp/.X11-unix";
-        if (!Directory.Exists(x11SocketDir))
-        {
-            yield break;
-        }
-
-        foreach (var displayEntry in Directory.EnumerateFiles(x11SocketDir, "X*")
-            .Select(Path.GetFileName)
-            .Select(static name => name is { Length: > 1 } value ? value[1..] : string.Empty)
-            .Where(static value => value.Length > 0)
-            .OrderBy(static value => value, StringComparer.Ordinal))
-        {
-            yield return $":{displayEntry}";
-        }
-    }
-
-    private static IReadOnlyList<string?> GetDisplayCandidates(string? preferredDisplay)
-    {
-        List<string?> candidates = new();
-        HashSet<string> seen = new(StringComparer.Ordinal);
-
-        if (!string.IsNullOrWhiteSpace(preferredDisplay) && seen.Add(preferredDisplay))
-        {
-            candidates.Add(preferredDisplay);
-        }
-
-        foreach (var detectedDisplay in EnumerateSocketDisplays())
-        {
-            if (seen.Add(detectedDisplay))
-            {
-                candidates.Add(detectedDisplay);
-            }
-        }
-
-        return candidates;
-    }
-
     public void Init()
     {
         if (_initialized)
@@ -605,7 +565,7 @@ public unsafe partial class X11View : IView
 
     private void InitializeWindow()
     {
-        var displayCandidates = GetDisplayCandidates(_requestedDisplayName);
+        var displayCandidates = LinuxEnvironmentDetector.GetX11DisplayCandidates(_requestedDisplayName);
         foreach (var displayCandidate in displayCandidates)
         {
             _display = XOpenDisplay(displayCandidate);

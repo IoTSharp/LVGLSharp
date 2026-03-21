@@ -46,7 +46,7 @@ get_demo_target_framework() {
 get_demo_project_path() {
     case "$1" in
         MusicDemo)
-            printf '%s' "$ROOT_DIR/src/Demos/MusicWinFromsDemo/MusicDemo.csproj"
+            printf '%s' "$ROOT_DIR/src/Demos/MusicDemo/MusicDemo.csproj"
             ;;
         *)
             printf '%s' "$ROOT_DIR/src/Demos/$1/$1.csproj"

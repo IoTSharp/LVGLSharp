@@ -4,8 +4,10 @@
       "commandName": "Project"
     },
     "WSL": {
-      "commandName": "WSL2",
-      "distributionName": ""
+      "commandName": "WSL",
+      "executablePath": "dotnet",
+      "commandLineArgs": "run --project {ProjectDir}",
+      "distributionName": "Ubuntu"
     }
   }
 }

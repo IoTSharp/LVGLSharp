@@ -145,12 +145,20 @@ src/
 └── Demos/
     ├── WinFormsDemo/       # Baseline WinForms / LVGLSharp.Forms comparison demo
     ├── PictureBoxDemo/     # PictureBox demo
-    ├── MusicWinFromsDemo/  # MusicDemo demo application
+    ├── MusicDemo/          # MusicDemo demo application
     ├── SmartWatchDemo/     # SmartWatch UI demo
     └── SerialPort/         # SerialPort demo application
 libs/
 └── lvgl/                   # LVGL source code (submodule)
 ```
+
+---
+
+## 📚 Developer Docs
+
+- [`docs/Linux-View-Roadmap.md`](./docs/Linux-View-Roadmap.md): current Linux `IView` support, common Linux graphical host inventory, and the planned expansion roadmap.
+- [`docs/WSL-Developer-Guide.md`](./docs/WSL-Developer-Guide.md): a developer guide for running, validating, and debugging demos on `WSL2/WSLg`.
+- [`docs/VS2026-WSL-Debug-Guide.md`](./docs/VS2026-WSL-Debug-Guide.md): the recommended workflow for using `Visual Studio 2026` with `WSL` and debugging this repo's demos.
 
 ---
 

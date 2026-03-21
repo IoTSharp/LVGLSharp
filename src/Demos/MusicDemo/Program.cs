@@ -1,11 +1,15 @@
-namespace MusicDemo;
+using System;
 
-internal static class Program
+namespace MusicDemo
 {
-    [STAThread]
-    private static void Main()
+    internal static class Program
     {
-        ApplicationConfiguration.Initialize();
-        Application.Run(new frmMusicDemo());
+        [STAThread]
+        private static void Main()
+        {
+            ApplicationConfiguration.Initialize();
+
+            Application.Run(new frmMusicDemo());
+        }
     }
 }

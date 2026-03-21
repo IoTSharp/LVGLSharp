@@ -16,3 +16,6 @@
 - `Label`、纯展示 `Panel` 这类被动控件不要默认桥接全量 LVGL 事件；只给真正需要输入/手势的控件开启事件桥接。这样能显著降低首屏创建成本。
 - 动态 UI 刷新优先挂到主消息循环节拍里，不要从后台线程直接持续推进 LVGL/Forms 控件状态；跨线程推进在 Linux/X11 路径上更容易造成异常渲染或刷新时序问题。
 - 验证 X11 显示问题时，不能只看窗口标题栏是否出现；应直接抓取 viewport 区域截图确认实际像素内容。
+
+## Repository Roadmap
+- 仓库路线规划偏好：Linux 宿主按 Wayland、SdlView、DRM、KMS、Offscreen、DirectFB、Mir 顺序逐个实现；其后新增 `LVGLSharp.Runtime.MacOs`；再新增独立远程运行时处理 VNC/RDP 等远程宿主。

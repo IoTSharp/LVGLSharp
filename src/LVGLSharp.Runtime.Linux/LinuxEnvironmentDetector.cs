@@ -8,12 +8,22 @@ namespace LVGLSharp.Runtime.Linux;
 internal enum LinuxHostEnvironment
 {
     Wslg,
+    Wayland,
     X11,
     FrameBuffer,
 }
 
 internal static class LinuxEnvironmentDetector
 {
+    internal static string FormatWaylandWindowTitle(string title, string? detectedWaylandDisplay, string? detectedX11Display)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+
+        var preferredWaylandDisplay = GetDiagnosticValue(GetPreferredWaylandDisplay(detectedWaylandDisplay));
+        var x11Fallback = GetDiagnosticValue(detectedX11Display);
+        return $"{title} [Wayland:{preferredWaylandDisplay}, X11:{x11Fallback}]";
+    }
+
     internal static string FormatWslgWindowTitle(string title, string? detectedDisplay)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
@@ -30,6 +40,17 @@ internal static class LinuxEnvironmentDetector
         var distroName = GetDiagnosticValue(Environment.GetEnvironmentVariable("WSL_DISTRO_NAME"));
 
         return $"WSLg DISPLAY={processDisplay}, PreferredX11={preferredDisplay}, WAYLAND={waylandDisplay}, DISTRO={distroName}";
+    }
+
+    internal static string GetWaylandDiagnosticSummary(string? detectedWaylandDisplay, string? detectedX11Display)
+    {
+        var sessionType = GetDiagnosticValue(Environment.GetEnvironmentVariable("XDG_SESSION_TYPE"));
+        var processWaylandDisplay = GetDiagnosticValue(Environment.GetEnvironmentVariable("WAYLAND_DISPLAY"));
+        var preferredWaylandDisplay = GetDiagnosticValue(GetPreferredWaylandDisplay(detectedWaylandDisplay));
+        var runtimeDir = GetDiagnosticValue(Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR"));
+        var x11Fallback = GetDiagnosticValue(detectedX11Display);
+
+        return $"Wayland SESSION={sessionType}, WAYLAND={processWaylandDisplay}, PreferredWayland={preferredWaylandDisplay}, XDG_RUNTIME_DIR={runtimeDir}, X11Fallback={x11Fallback}";
     }
 
     internal static IReadOnlyList<string?> GetX11DisplayCandidates(string? preferredDisplay)
@@ -53,14 +74,19 @@ internal static class LinuxEnvironmentDetector
         return candidates;
     }
 
-    internal static LinuxHostEnvironment ResolveHostEnvironment(string? detectedDisplay, string fbdev)
+    internal static LinuxHostEnvironment ResolveHostEnvironment(string? detectedWaylandDisplay, string? detectedX11Display, string fbdev)
     {
-        if (IsWslg(detectedDisplay))
+        if (IsWslg(detectedX11Display))
         {
             return LinuxHostEnvironment.Wslg;
         }
 
-        if (detectedDisplay is not null)
+        if (IsWayland(detectedWaylandDisplay))
+        {
+            return LinuxHostEnvironment.Wayland;
+        }
+
+        if (detectedX11Display is not null)
         {
             return LinuxHostEnvironment.X11;
         }
@@ -71,6 +97,32 @@ internal static class LinuxEnvironmentDetector
         }
 
         return LinuxHostEnvironment.X11;
+    }
+
+    internal static string? DetectWaylandDisplay()
+    {
+        var processWaylandDisplay = Environment.GetEnvironmentVariable("WAYLAND_DISPLAY");
+        if (!string.IsNullOrWhiteSpace(processWaylandDisplay))
+        {
+            return processWaylandDisplay;
+        }
+
+        var runtimeDir = Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR");
+        if (!string.IsNullOrWhiteSpace(runtimeDir) && Directory.Exists(runtimeDir))
+        {
+            var socketEntry = Directory.EnumerateFiles(runtimeDir, "wayland-*")
+                .Select(Path.GetFileName)
+                .Where(static name => !string.IsNullOrWhiteSpace(name))
+                .OrderBy(static name => name, StringComparer.Ordinal)
+                .FirstOrDefault();
+
+            if (!string.IsNullOrWhiteSpace(socketEntry))
+            {
+                return socketEntry;
+            }
+        }
+
+        return null;
     }
 
     internal static string? DetectX11Display()
@@ -128,6 +180,22 @@ internal static class LinuxEnvironmentDetector
         return Directory.Exists("/mnt/wslg") ? ":0" : null;
     }
 
+    internal static string? GetPreferredWaylandDisplay(string? detectedWaylandDisplay)
+    {
+        var processWaylandDisplay = Environment.GetEnvironmentVariable("WAYLAND_DISPLAY");
+        if (!string.IsNullOrWhiteSpace(processWaylandDisplay))
+        {
+            return processWaylandDisplay;
+        }
+
+        if (!string.IsNullOrWhiteSpace(detectedWaylandDisplay))
+        {
+            return detectedWaylandDisplay;
+        }
+
+        return null;
+    }
+
     private static bool IsWsl()
     {
         if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("WSL_DISTRO_NAME")) ||
@@ -162,6 +230,17 @@ internal static class LinuxEnvironmentDetector
 
         return detectedDisplay is not null &&
             !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("DISPLAY"));
+    }
+
+    private static bool IsWayland(string? detectedWaylandDisplay)
+    {
+        if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("WAYLAND_DISPLAY")) ||
+            !string.IsNullOrWhiteSpace(detectedWaylandDisplay))
+        {
+            return true;
+        }
+
+        return string.Equals(Environment.GetEnvironmentVariable("XDG_SESSION_TYPE"), "wayland", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string GetDiagnosticValue(string? value)

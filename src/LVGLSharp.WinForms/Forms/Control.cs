@@ -833,9 +833,9 @@ namespace LVGLSharp.Forms
                     if (obj != null)
                     {
                         if (_enabled)
-                            lv_obj_remove_state(obj, (ushort)0x0080 /* LV_STATE_DISABLED */);
+                            lv_obj_remove_state(obj, lv_state_t.LV_STATE_DISABLED);
                         else
-                            lv_obj_add_state(obj, (ushort)0x0080 /* LV_STATE_DISABLED */);
+                            lv_obj_add_state(obj, lv_state_t.LV_STATE_DISABLED);
                     }
                 }
                 OnEnabledChanged(EventArgs.Empty);
@@ -4131,7 +4131,7 @@ namespace LVGLSharp.Forms
 
             if (BackColor != Color.Empty)
             {
-                lv_obj_set_style_bg_opa(obj, (byte)LV_OPA_COVER, 0);
+                lv_obj_set_style_bg_opa(obj, (byte)_lv_opacity_level_t.LV_OPA_COVER, 0);
                 lv_obj_set_style_bg_color(obj, lv_color_make(BackColor.R, BackColor.G, BackColor.B), 0);
             }
 

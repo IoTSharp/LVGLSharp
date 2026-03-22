@@ -14,7 +14,7 @@ using static LVGLSharp.Runtime.Windows.Win32Api;
 
 namespace LVGLSharp.Runtime.Windows
 {
-    public unsafe class Win32View : IView
+    public unsafe class Win32View : ViewLifetimeBase, IView
     {
         static MSG msg;
         static int Width;
@@ -453,111 +453,119 @@ namespace LVGLSharp.Runtime.Windows
 
         public void Open()
         {
-            if (g_running)
+            if (!TryBeginOpen())
             {
                 return;
             }
 
-            LvglNativeLibraryResolver.EnsureRegistered();
-            g_running = true;
-            startTick = Environment.TickCount;
-
-            wndProcDelegate = MyWndProc;
-            wndProcPtr = Marshal.GetFunctionPointerForDelegate(wndProcDelegate);
-
-            wc = new WNDCLASSEX
+            try
             {
-                cbSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEX)),
-                style = 0,
-                lpfnWndProc = wndProcPtr,
-                cbClsExtra = 0,
-                cbWndExtra = 0,
-                hInstance = GetModuleHandle(null),
-                hIcon = IntPtr.Zero,
-                hCursor = LoadCursor(IntPtr.Zero, (IntPtr)32512),
-                hbrBackground = IntPtr.Zero,
-                lpszMenuName = null,
-                lpszClassName = "LVGLSharpWin",
-                hIconSm = IntPtr.Zero
-            };
-            RegisterClassEx(ref wc);
+                LvglNativeLibraryResolver.EnsureRegistered();
+                g_running = true;
+                startTick = Environment.TickCount;
 
-            var windowRect = new RECT
-            {
-                left = 0,
-                top = 0,
-                right = Width,
-                bottom = Height,
-            };
+                wndProcDelegate = MyWndProc;
+                wndProcPtr = Marshal.GetFunctionPointerForDelegate(wndProcDelegate);
 
-            int windowStyle = _borderless ? WS_POPUP : WS_OVERLAPPEDWINDOW;
-            if (!_borderless)
-            {
-                AdjustWindowRect(ref windowRect, windowStyle, false);
+                wc = new WNDCLASSEX
+                {
+                    cbSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEX)),
+                    style = 0,
+                    lpfnWndProc = wndProcPtr,
+                    cbClsExtra = 0,
+                    cbWndExtra = 0,
+                    hInstance = GetModuleHandle(null),
+                    hIcon = IntPtr.Zero,
+                    hCursor = LoadCursor(IntPtr.Zero, (IntPtr)32512),
+                    hbrBackground = IntPtr.Zero,
+                    lpszMenuName = null,
+                    lpszClassName = "LVGLSharpWin",
+                    hIconSm = IntPtr.Zero
+                };
+                RegisterClassEx(ref wc);
+
+                var windowRect = new RECT
+                {
+                    left = 0,
+                    top = 0,
+                    right = Width,
+                    bottom = Height,
+                };
+
+                int windowStyle = _borderless ? WS_POPUP : WS_OVERLAPPEDWINDOW;
+                if (!_borderless)
+                {
+                    AdjustWindowRect(ref windowRect, windowStyle, false);
+                }
+
+                g_hwnd = CreateWindowExW(
+                    0, "LVGLSharpWin", _title,
+                    windowStyle,
+                    100,
+                    100,
+                    windowRect.right - windowRect.left,
+                    windowRect.bottom - windowRect.top,
+                    IntPtr.Zero, IntPtr.Zero, GetModuleHandle(null), IntPtr.Zero
+                );
+
+                ShowWindow(g_hwnd, 5);
+                UpdateWindow(g_hwnd);
+
+                lv_init();
+
+                lv_tick_set_cb(&my_tick);
+
+                g_display = lv_display_create(Width, Height);
+
+                // Mouse
+                _pointerInputDevice = lv_indev_create();
+                lv_indev_set_type(_pointerInputDevice, lv_indev_type_t.LV_INDEV_TYPE_POINTER);
+                lv_indev_set_read_cb(_pointerInputDevice, &MouseReadCb);
+
+                // Keyboard
+                _keyboardInputDevice = lv_indev_create();
+                lv_indev_set_type(_keyboardInputDevice, lv_indev_type_t.LV_INDEV_TYPE_KEYPAD);
+                lv_indev_set_read_cb(_keyboardInputDevice, &KeyboardReadCb);
+                KeyInputGroupObject = lv_group_create();
+                lv_indev_set_group(_keyboardInputDevice, KeyInputGroupObject);
+
+                g_lvbuf = Marshal.AllocHGlobal((int)g_bufSize);
+                lv_display_set_buffers(g_display, g_lvbuf.ToPointer(), null, g_bufSize, LV_DISPLAY_RENDER_MODE_FULL);
+                lv_display_set_flush_cb(g_display, &FlushCb);
+
+                RootObject = lv_scr_act();
+                lv_obj_set_flex_flow(RootObject, LV_FLEX_FLOW_COLUMN);
+                lv_obj_set_style_pad_all(RootObject, 10, 0);
+                lv_obj_remove_flag(RootObject, LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
+                lv_obj_set_scrollbar_mode(RootObject, LV_SCROLLBAR_MODE_OFF);
+                g_focusSink = lv_obj_create(RootObject);
+                lv_obj_set_size(g_focusSink, 1, 1);
+                lv_obj_add_flag(g_focusSink, lv_obj_flag_t.LV_OBJ_FLAG_HIDDEN | lv_obj_flag_t.LV_OBJ_FLAG_IGNORE_LAYOUT);
+
+                _fallbackFont = lv_obj_get_style_text_font(RootObject, LV_PART_MAIN);
+
+                _fontManager = new SixLaborsFontManager(SystemFonts.Get("Microsoft YaHei"), 12, GetDPI(), _fallbackFont, [
+                    61441, 61448, 61451, 61452, 61453, 61457, 61459, 61461, 61465, 61468,
+                    61473, 61478, 61479, 61480, 61502, 61507, 61512, 61515, 61516, 61517,
+                    61521, 61522, 61523, 61524, 61543, 61544, 61550, 61552, 61553, 61556,
+                    61559, 61560, 61561, 61563, 61587, 61589, 61636, 61637, 61639, 61641,
+                    61664, 61671, 61674, 61683, 61724, 61732, 61787, 61931, 62016, 62017,
+                    62018, 62019, 62020, 62087, 62099, 62189, 62212, 62810, 63426, 63650
+                ]);
+                _defaultFont = _fontManager.GetLvFontPtr();
+
+                _defaultFontStyle = (lv_style_t*)NativeMemory.Alloc((nuint)sizeof(lv_style_t));
+                NativeMemory.Clear(_defaultFontStyle, (nuint)sizeof(lv_style_t));
+                lv_style_init(_defaultFontStyle);
+                lv_style_set_text_font(_defaultFontStyle, _defaultFont);
+
+                lv_obj_add_style(RootObject, _defaultFontStyle, 0);
             }
-
-            g_hwnd = CreateWindowExW(
-                0, "LVGLSharpWin", _title,
-                windowStyle,
-                100,
-                100,
-                windowRect.right - windowRect.left,
-                windowRect.bottom - windowRect.top,
-                IntPtr.Zero, IntPtr.Zero, GetModuleHandle(null), IntPtr.Zero
-            );
-
-            ShowWindow(g_hwnd, 5);
-            UpdateWindow(g_hwnd);
-
-            lv_init();
-
-            lv_tick_set_cb(&my_tick);
-
-            g_display = lv_display_create(Width, Height);
-
-            // Mouse
-            _pointerInputDevice = lv_indev_create();
-            lv_indev_set_type(_pointerInputDevice, lv_indev_type_t.LV_INDEV_TYPE_POINTER);
-            lv_indev_set_read_cb(_pointerInputDevice, &MouseReadCb);
-
-            // Keyboard
-            _keyboardInputDevice = lv_indev_create();
-            lv_indev_set_type(_keyboardInputDevice, lv_indev_type_t.LV_INDEV_TYPE_KEYPAD);
-            lv_indev_set_read_cb(_keyboardInputDevice, &KeyboardReadCb);
-            KeyInputGroupObject = lv_group_create();
-            lv_indev_set_group(_keyboardInputDevice, KeyInputGroupObject);
-
-            g_lvbuf = Marshal.AllocHGlobal((int)g_bufSize);
-            lv_display_set_buffers(g_display, g_lvbuf.ToPointer(), null, g_bufSize, LV_DISPLAY_RENDER_MODE_FULL);
-            lv_display_set_flush_cb(g_display, &FlushCb);
-
-            RootObject = lv_scr_act();
-            lv_obj_set_flex_flow(RootObject, LV_FLEX_FLOW_COLUMN);
-            lv_obj_set_style_pad_all(RootObject, 10, 0);
-            lv_obj_remove_flag(RootObject, LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
-            lv_obj_set_scrollbar_mode(RootObject, LV_SCROLLBAR_MODE_OFF);
-            g_focusSink = lv_obj_create(RootObject);
-            lv_obj_set_size(g_focusSink, 1, 1);
-            lv_obj_add_flag(g_focusSink, lv_obj_flag_t.LV_OBJ_FLAG_HIDDEN | lv_obj_flag_t.LV_OBJ_FLAG_IGNORE_LAYOUT);
-
-            _fallbackFont = lv_obj_get_style_text_font(RootObject, LV_PART_MAIN);
-
-            _fontManager = new SixLaborsFontManager(SystemFonts.Get("Microsoft YaHei"), 12, GetDPI(), _fallbackFont, [
-                61441, 61448, 61451, 61452, 61453, 61457, 61459, 61461, 61465, 61468,
-                61473, 61478, 61479, 61480, 61502, 61507, 61512, 61515, 61516, 61517,
-                61521, 61522, 61523, 61524, 61543, 61544, 61550, 61552, 61553, 61556,
-                61559, 61560, 61561, 61563, 61587, 61589, 61636, 61637, 61639, 61641,
-                61664, 61671, 61674, 61683, 61724, 61732, 61787, 61931, 62016, 62017,
-                62018, 62019, 62020, 62087, 62099, 62189, 62212, 62810, 63426, 63650
-            ]);
-            _defaultFont = _fontManager.GetLvFontPtr();
-
-            _defaultFontStyle = (lv_style_t*)NativeMemory.Alloc((nuint)sizeof(lv_style_t));
-            NativeMemory.Clear(_defaultFontStyle, (nuint)sizeof(lv_style_t));
-            lv_style_init(_defaultFontStyle);
-            lv_style_set_text_font(_defaultFontStyle, _defaultFont);
-
-            lv_obj_add_style(RootObject, _defaultFontStyle, 0);
+            catch
+            {
+                MarkOpenFailed();
+                throw;
+            }
         }
         public void RunLoop(Action iteration)
         {
@@ -588,6 +596,12 @@ namespace LVGLSharp.Runtime.Windows
         public void Close()
         {
             if (!g_running && g_hwnd == IntPtr.Zero && g_display == null && g_lvbuf == IntPtr.Zero)
+            {
+                TryBeginClose();
+                return;
+            }
+
+            if (!TryBeginClose())
             {
                 return;
             }

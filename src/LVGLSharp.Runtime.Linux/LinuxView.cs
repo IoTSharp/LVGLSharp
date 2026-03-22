@@ -4,7 +4,7 @@ using System;
 
 namespace LVGLSharp.Runtime.Linux;
 
-public unsafe class LinuxView : IView
+public unsafe class LinuxView : ViewLifetimeBase, IView
 {
     private readonly IView _inner;
     private readonly LinuxHostEnvironment _environment;
@@ -51,7 +51,20 @@ public unsafe class LinuxView : IView
 
     public void Open()
     {
-        _inner.Open();
+        if (!TryBeginOpen())
+        {
+            return;
+        }
+
+        try
+        {
+            _inner.Open();
+        }
+        catch
+        {
+            MarkOpenFailed();
+            throw;
+        }
     }
 
     public void HandleEvents()
@@ -66,6 +79,11 @@ public unsafe class LinuxView : IView
 
     public void Close()
     {
+        if (!TryBeginClose())
+        {
+            return;
+        }
+
         _inner.Close();
     }
 
@@ -76,6 +94,6 @@ public unsafe class LinuxView : IView
 
     public void Dispose()
     {
-        _inner.Dispose();
+        Close();
     }
 }

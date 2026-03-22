@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace LVGLSharp.Runtime.Linux;
 
-public unsafe sealed partial class SdlView : IView
+public unsafe sealed partial class SdlView : ViewLifetimeBase, IView
 {
     private static SdlView? s_activeView;
 
@@ -41,8 +41,6 @@ public unsafe sealed partial class SdlView : IView
     private lv_group_t* _keyInputGroup;
     private GCHandle _selfHandle;
     private lv_obj_t* _focusedTextArea;
-    private bool _disposed;
-
     public SdlView(string title = "LVGLSharp SDL", int width = 800, int height = 600, float dpi = 96f, bool borderless = false)
     {
         _title = title;
@@ -67,12 +65,7 @@ public unsafe sealed partial class SdlView : IView
 
     public void Open()
     {
-        if (_disposed)
-        {
-            throw new ObjectDisposedException(nameof(SdlView));
-        }
-
-        if (_initialized)
+        if (!TryBeginOpen())
         {
             return;
         }
@@ -116,6 +109,7 @@ public unsafe sealed partial class SdlView : IView
         }
         catch
         {
+            MarkOpenFailed();
             Close();
             throw;
         }
@@ -152,11 +146,6 @@ public unsafe sealed partial class SdlView : IView
 
     public void Close()
     {
-        if (_disposed)
-        {
-            return;
-        }
-
         if (s_activeView == this)
         {
             s_activeView = null;
@@ -172,7 +161,12 @@ public unsafe sealed partial class SdlView : IView
             _root == null &&
             _keyInputGroup == null)
         {
-            _disposed = true;
+            TryBeginClose();
+            return;
+        }
+
+        if (!TryBeginClose())
+        {
             return;
         }
 
@@ -231,7 +225,6 @@ public unsafe sealed partial class SdlView : IView
         SdlNative.SDL_StopTextInput();
 
         _initialized = false;
-        _disposed = true;
     }
 
     public void RegisterTextInput(lv_obj_t* textArea)

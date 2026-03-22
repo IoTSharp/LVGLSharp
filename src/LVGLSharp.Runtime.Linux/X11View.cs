@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace LVGLSharp.Runtime.Linux;
 
-public unsafe partial class X11View : IView
+public unsafe partial class X11View : ViewLifetimeBase, IView
 {
     private const string X11Lib = "libX11.so.6";
 
@@ -389,7 +389,7 @@ public unsafe partial class X11View : IView
 
     public void Open()
     {
-        if (_initialized)
+        if (!TryBeginOpen())
         {
             return;
         }
@@ -434,6 +434,7 @@ public unsafe partial class X11View : IView
         }
         catch
         {
+            MarkOpenFailed();
             Close();
             throw;
         }
@@ -487,6 +488,12 @@ public unsafe partial class X11View : IView
             _xImage == IntPtr.Zero &&
             _frameBuffer == null &&
             _drawBuffer == null)
+        {
+            TryBeginClose();
+            return;
+        }
+
+        if (!TryBeginClose())
         {
             return;
         }

@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace LVGLSharp.Runtime.Linux;
 
-public unsafe sealed class WaylandView : IView
+public unsafe sealed class WaylandView : ViewLifetimeBase, IView
 {
     private static WaylandView? s_activeView;
     private static int s_startTick;
@@ -31,6 +31,7 @@ public unsafe sealed class WaylandView : IView
     private string? _fontDiagnosticSummary;
     private bool _initialized;
     private bool _running;
+    private bool _disposed;
 
     public WaylandView(
         string title = "LVGLSharp Wayland",
@@ -73,34 +74,37 @@ public unsafe sealed class WaylandView : IView
 
     public void Open()
     {
-        if (_disposed)
-        {
-            throw new ObjectDisposedException(nameof(WaylandView));
-        }
-
-        if (_initialized)
+        if (!TryBeginOpen())
         {
             return;
         }
 
-        _connection.Connect();
-
-        if (_fallbackView is not null)
+        try
         {
-            _fallbackView.Open();
+            _connection.Connect();
+
+            if (_fallbackView is not null)
+            {
+                _fallbackView.Open();
+                _running = true;
+                _initialized = true;
+                return;
+            }
+
+            InitializeLvgl();
+            _window.InitializeSurface(_connection);
+            _bufferPresenter.InitializeSharedMemory(_connection);
+            _inputSource.Initialize(_connection);
+            _connection.PumpEvents();
+            s_activeView = this;
             _running = true;
             _initialized = true;
-            return;
         }
-
-        InitializeLvgl();
-        _window.InitializeSurface(_connection);
-        _bufferPresenter.InitializeSharedMemory(_connection);
-        _inputSource.Initialize(_connection);
-        _connection.PumpEvents();
-        s_activeView = this;
-        _running = true;
-        _initialized = true;
+        catch
+        {
+            MarkOpenFailed();
+            throw;
+        }
     }
 
     public void HandleEvents()
@@ -159,11 +163,6 @@ public unsafe sealed class WaylandView : IView
 
     public void Close()
     {
-        if (_disposed)
-        {
-            return;
-        }
-
         if (s_activeView == this)
         {
             s_activeView = null;
@@ -173,9 +172,13 @@ public unsafe sealed class WaylandView : IView
 
         if (_fallbackView is not null)
         {
+            if (!TryBeginClose())
+            {
+                return;
+            }
+
             _fallbackView.Close();
             _initialized = false;
-            _disposed = true;
             return;
         }
 
@@ -186,7 +189,12 @@ public unsafe sealed class WaylandView : IView
             _wheelIndev == null &&
             _root == null)
         {
-            _disposed = true;
+            TryBeginClose();
+            return;
+        }
+
+        if (!TryBeginClose())
+        {
             return;
         }
 
@@ -231,7 +239,6 @@ public unsafe sealed class WaylandView : IView
         _window.Dispose();
         _connection.Dispose();
         _initialized = false;
-        _disposed = true;
     }
 
     public void RegisterTextInput(lv_obj_t* textArea)

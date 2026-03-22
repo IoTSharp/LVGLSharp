@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LVGLSharp.Runtime.Linux
 {
-public unsafe class FrameBufferView : IView
+public unsafe class FrameBufferView : ViewLifetimeBase, IView
     {
         static lv_display_t* g_display;
         static lv_indev_t* g_indev;
@@ -50,39 +50,52 @@ public unsafe class FrameBufferView : IView
 
         public void Open()
         {
+            if (!TryBeginOpen())
+            {
+                return;
+            }
+
             if (g_running)
             {
                 return;
             }
 
-            LvglNativeLibraryResolver.EnsureRegistered();
-            g_running = true;
-            startTick = Environment.TickCount;
-            lv_init();
-            lv_tick_set_cb(&my_tick);
-
-            g_display = lv_linux_fbdev_create();
-            fixed (byte* ptr = Encoding.ASCII.GetBytes($"{_fbdev}\0"))
-                lv_linux_fbdev_set_file(g_display, ptr);
-
-            fixed (byte* ptr = Encoding.ASCII.GetBytes($"{_indev}\0"))
-                g_indev = lv_evdev_create(lv_indev_type_t.LV_INDEV_TYPE_POINTER, ptr);
-
-            RootObject = lv_scr_act();
-
-            _fallbackFont = lv_obj_get_style_text_font(RootObject, LV_PART_MAIN);
-
-            var systemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
-            if (!string.IsNullOrWhiteSpace(systemFontPath))
+            try
             {
-                _fontManager = new SixLaborsFontManager(
-                    systemFontPath,
-                    12,
-                    _dpi,
-                    _fallbackFont,
-                    LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
+                LvglNativeLibraryResolver.EnsureRegistered();
+                g_running = true;
+                startTick = Environment.TickCount;
+                lv_init();
+                lv_tick_set_cb(&my_tick);
 
-                _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(RootObject, _fontManager.GetLvFontPtr());
+                g_display = lv_linux_fbdev_create();
+                fixed (byte* ptr = Encoding.ASCII.GetBytes($"{_fbdev}\0"))
+                    lv_linux_fbdev_set_file(g_display, ptr);
+
+                fixed (byte* ptr = Encoding.ASCII.GetBytes($"{_indev}\0"))
+                    g_indev = lv_evdev_create(lv_indev_type_t.LV_INDEV_TYPE_POINTER, ptr);
+
+                RootObject = lv_scr_act();
+
+                _fallbackFont = lv_obj_get_style_text_font(RootObject, LV_PART_MAIN);
+
+                var systemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
+                if (!string.IsNullOrWhiteSpace(systemFontPath))
+                {
+                    _fontManager = new SixLaborsFontManager(
+                        systemFontPath,
+                        12,
+                        _dpi,
+                        _fallbackFont,
+                        LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
+
+                    _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(RootObject, _fontManager.GetLvFontPtr());
+                }
+            }
+            catch
+            {
+                MarkOpenFailed();
+                throw;
             }
         }
 
@@ -100,11 +113,18 @@ public unsafe class FrameBufferView : IView
 
         public void RunLoop(Action iteration)
         {
-            while (g_running)
+            try
             {
-                HandleEvents();
-                iteration?.Invoke();
-                Thread.Sleep(5);
+                while (g_running)
+                {
+                    HandleEvents();
+                    iteration?.Invoke();
+                    Thread.Sleep(5);
+                }
+            }
+            finally
+            {
+                Close();
             }
         }
 
@@ -116,6 +136,12 @@ public unsafe class FrameBufferView : IView
         public void Close()
         {
             if (!g_running && g_display == null && g_indev == null && RootObject == null)
+            {
+                TryBeginClose();
+                return;
+            }
+
+            if (!TryBeginClose())
             {
                 return;
             }

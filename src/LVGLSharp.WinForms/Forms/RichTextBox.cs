@@ -26,6 +26,11 @@ namespace LVGLSharp.Forms
                 lv_obj_add_event_cb(obj, Form.SendTextAreaFocusCb, lv_event_code_t.LV_EVENT_FOCUSED, null);
             }
 
+            if (Form.SendTextAreaDefocusCb != null)
+            {
+                lv_obj_add_event_cb(obj, Form.SendTextAreaDefocusCb, lv_event_code_t.LV_EVENT_DEFOCUSED, null);
+            }
+
             if (Form.key_inputGroup != null)
             {
                 lv_group_add_obj(Form.key_inputGroup, obj);

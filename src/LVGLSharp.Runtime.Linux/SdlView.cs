@@ -40,7 +40,7 @@ public unsafe sealed partial class SdlView : IView
     private lv_obj_t* _root;
     private lv_group_t* _keyInputGroup;
     private GCHandle _selfHandle;
-    private lv_obj_t* _attachedTextArea;
+    private lv_obj_t* _focusedTextArea;
 
     public SdlView(string title = "LVGLSharp SDL", int width = 800, int height = 600, float dpi = 96f, bool borderless = false)
     {
@@ -52,15 +52,17 @@ public unsafe sealed partial class SdlView : IView
         _bufferPresenter = new SdlBufferPresenter(width, height, dpi);
     }
 
-    public static (int X, int Y) CurrentMousePosition => s_activeView?._inputSource.CurrentMousePosition ?? (0, 0);
+    public static (int X, int Y) CurrentMousePosition => SdlInputSource.LastMousePosition;
 
-    public static uint CurrentMouseButton => s_activeView?._inputSource.CurrentMouseButton ?? 0U;
+    public static uint CurrentMouseButton => SdlInputSource.LastMouseButton;
 
     public lv_obj_t* Root => _root;
 
     public lv_group_t* KeyInputGroup => _keyInputGroup;
 
-    public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => null;
+    public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => &HandleTextAreaFocused;
+
+    public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaDefocusCallback => &HandleTextAreaDefocused;
 
     public void Init()
     {
@@ -191,7 +193,7 @@ public unsafe sealed partial class SdlView : IView
 
         _root = null;
         _keyInputGroup = null;
-        _attachedTextArea = null;
+        _focusedTextArea = null;
         _inputSource.Reset();
         _hasPendingResize = false;
         _pendingWidth = 0;
@@ -210,15 +212,7 @@ public unsafe sealed partial class SdlView : IView
 
     public void AttachTextInput(lv_obj_t* textArea)
     {
-        _attachedTextArea = textArea;
-        if (textArea != null)
-        {
-            SdlNative.SDL_StartTextInput();
-        }
-        else
-        {
-            SdlNative.SDL_StopTextInput();
-        }
+        UpdateFocusedTextArea(textArea);
     }
 
     public override string ToString()
@@ -350,8 +344,10 @@ public unsafe sealed partial class SdlView : IView
 
     private void CommitPendingTextInput()
     {
+        CommitEditingKeys();
+
         var pendingText = _inputSource.ConsumePendingText();
-        if (string.IsNullOrEmpty(pendingText) || _attachedTextArea == null)
+        if (string.IsNullOrEmpty(pendingText) || _focusedTextArea == null)
         {
             return;
         }
@@ -359,7 +355,52 @@ public unsafe sealed partial class SdlView : IView
         var utf8Bytes = Encoding.UTF8.GetBytes(pendingText + "\0");
         fixed (byte* utf8Ptr = utf8Bytes)
         {
-            lv_textarea_add_text(_attachedTextArea, utf8Ptr);
+            lv_textarea_add_text(_focusedTextArea, utf8Ptr);
+        }
+    }
+
+    private void CommitEditingKeys()
+    {
+        if (_focusedTextArea == null)
+        {
+            return;
+        }
+
+        switch (_inputSource.ConsumeEditingKeyPress())
+        {
+            case (uint)LV_KEY_BACKSPACE:
+                lv_textarea_delete_char(_focusedTextArea);
+                break;
+            case (uint)LV_KEY_DEL:
+                lv_textarea_delete_char_forward(_focusedTextArea);
+                break;
+            case (uint)LV_KEY_LEFT:
+                lv_textarea_cursor_left(_focusedTextArea);
+                break;
+            case (uint)LV_KEY_RIGHT:
+                lv_textarea_cursor_right(_focusedTextArea);
+                break;
+            case (uint)LV_KEY_UP:
+                lv_textarea_cursor_up(_focusedTextArea);
+                break;
+            case (uint)LV_KEY_DOWN:
+                lv_textarea_cursor_down(_focusedTextArea);
+                break;
+            default:
+                return;
+        }
+    }
+
+    private void UpdateFocusedTextArea(lv_obj_t* textArea)
+    {
+        _focusedTextArea = textArea;
+        if (_focusedTextArea != null)
+        {
+            SdlNative.SDL_StartTextInput();
+        }
+        else
+        {
+            SdlNative.SDL_StopTextInput();
         }
     }
 
@@ -383,6 +424,31 @@ public unsafe sealed partial class SdlView : IView
 
         var userData = lv_indev_get_user_data(indev);
         return userData == null ? null : (SdlView?)GCHandle.FromIntPtr((IntPtr)userData).Target;
+    }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static void HandleTextAreaFocused(lv_event_t* e)
+    {
+        var target = lv_event_get_target_obj(e);
+        var view = s_activeView;
+        if (view is null)
+        {
+            return;
+        }
+
+        view.UpdateFocusedTextArea(target);
+    }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static void HandleTextAreaDefocused(lv_event_t* e)
+    {
+        var view = s_activeView;
+        if (view is null)
+        {
+            return;
+        }
+
+        view.UpdateFocusedTextArea(null);
     }
 
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]

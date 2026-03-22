@@ -7,10 +7,17 @@ namespace LVGLSharp.Runtime.Linux;
 internal sealed class SdlInputSource
 {
     private string? _pendingText;
+    private static (int X, int Y) s_lastMousePosition;
+    private static uint s_lastMouseButton;
+    private uint _lastDispatchedEditingKey;
 
     public (int X, int Y) CurrentMousePosition { get; private set; }
 
     public uint CurrentMouseButton { get; private set; }
+
+    public static (int X, int Y) LastMousePosition => s_lastMousePosition;
+
+    public static uint LastMouseButton => s_lastMouseButton;
 
     public bool IsMousePressed { get; private set; }
 
@@ -27,6 +34,23 @@ internal sealed class SdlInputSource
         return value;
     }
 
+    public uint ConsumeEditingKeyPress()
+    {
+        if (!IsKeyPressed)
+        {
+            _lastDispatchedEditingKey = 0;
+            return 0;
+        }
+
+        if (CurrentKey == _lastDispatchedEditingKey)
+        {
+            return 0;
+        }
+
+        _lastDispatchedEditingKey = CurrentKey;
+        return CurrentKey;
+    }
+
     public bool TryHandleEvent(SdlNative.SDL_Event sdlEvent, out bool closeRequested, out (int Width, int Height)? resize)
     {
         closeRequested = false;
@@ -39,16 +63,21 @@ internal sealed class SdlInputSource
                 return true;
             case SdlNative.SDL_MOUSEMOTION:
                 CurrentMousePosition = (sdlEvent.motion.x, sdlEvent.motion.y);
+                s_lastMousePosition = CurrentMousePosition;
                 return true;
             case SdlNative.SDL_MOUSEBUTTONDOWN:
                 IsMousePressed = true;
                 CurrentMouseButton = MapMouseButton(sdlEvent.button.button);
                 CurrentMousePosition = (sdlEvent.button.x, sdlEvent.button.y);
+                s_lastMousePosition = CurrentMousePosition;
+                s_lastMouseButton = CurrentMouseButton;
                 return true;
             case SdlNative.SDL_MOUSEBUTTONUP:
                 IsMousePressed = false;
                 CurrentMouseButton = 0;
                 CurrentMousePosition = (sdlEvent.button.x, sdlEvent.button.y);
+                s_lastMousePosition = CurrentMousePosition;
+                s_lastMouseButton = 0;
                 return true;
             case SdlNative.SDL_MOUSEWHEEL:
                 WheelDiff += sdlEvent.wheel.y;
@@ -59,6 +88,7 @@ internal sealed class SdlInputSource
                 return true;
             case SdlNative.SDL_KEYUP:
                 IsKeyPressed = false;
+                _lastDispatchedEditingKey = 0;
                 return true;
             case SdlNative.SDL_TEXTINPUT:
                 _pendingText = ReadTextInput(ref sdlEvent.text);
@@ -92,6 +122,9 @@ internal sealed class SdlInputSource
         IsKeyPressed = false;
         WheelDiff = 0;
         _pendingText = null;
+        _lastDispatchedEditingKey = 0;
+        s_lastMousePosition = (0, 0);
+        s_lastMouseButton = 0;
     }
 
     private static unsafe string? ReadTextInput(ref SdlNative.SDL_TextInputEvent textEvent)

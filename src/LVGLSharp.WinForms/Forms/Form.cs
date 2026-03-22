@@ -22,6 +22,7 @@ namespace LVGLSharp.Forms
         public static lv_obj_t* root { get; set; }
         public static lv_group_t* key_inputGroup { get; set; }
         public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCb { get; set; } = null;
+        public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaDefocusCb { get; set; } = null;
 
         protected override void OnHandleCreated(EventArgs e)
         {
@@ -62,6 +63,7 @@ namespace LVGLSharp.Forms
             root = _view.Root;
             key_inputGroup = _view.KeyInputGroup;
             SendTextAreaFocusCb = _view.SendTextAreaFocusCallback;
+            SendTextAreaDefocusCb = _view is LVGLSharp.Runtime.Linux.SdlView sdlView ? sdlView.SendTextAreaDefocusCallback : null;
             Application.CurrentStyleSet.Root.Apply(root);
 
             _lvglObjectHandle = (nint)root;

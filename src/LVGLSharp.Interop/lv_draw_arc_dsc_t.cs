@@ -19,11 +19,11 @@ namespace LVGLSharp.Interop
 
         public lv_point_t center;
 
-        [NativeTypeName("uint16_t")]
-        public ushort radius;
-
         [NativeTypeName("const void *")]
         public void* img_src;
+
+        [NativeTypeName("uint16_t")]
+        public ushort radius;
 
         [NativeTypeName("lv_opa_t")]
         public byte opa;

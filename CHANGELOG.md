@@ -23,10 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [9.3.0.5] - 2026-03-17
+## [9.5.0.5] - 2026-03-23
 
 ### 发布说明 / Release Notes
-- 这是基于初始版本持续整理后的正式发布说明版本，用于统一对外描述当前阶段能力，并匹配 `v9.3.0.5` 发布 tag。
+- 这是切换到 LVGL `release/v9.5`、统一运行时命名并清理旧 X11 宿主辅助代码后的发布说明版本，用于匹配 `v9.5.0.5` 发布 tag。
 - 本版本重点在于沉淀已经完成的功能边界、运行时结构、包职责以及发布路径，便于后续按 tag 进行持续发布。
 
 ### 新增 / Added
@@ -42,18 +42,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### 变更 / Changed
 - README 中补充当前发布版本、发布定位与自初始版本开始的发布记录入口说明。
-- 统一发布工作流示例版本、README 与 CHANGELOG 中的发布标识为 `9.3.0.5` / `v9.3.0.5`。
+- 统一发布工作流示例版本、README 与 CHANGELOG 中的发布标识为 `9.5.0.5` / `v9.5.0.5`。
 
 ### 修复 / Fixed
 - 无。
 
 ---
 
-## [9.3.0] - 初始版本 / Initial Release
+## [9.5.0] - 升级到 LVGL 9.5 / Upgrade to LVGL 9.5
 
 ### 新增 / Added
 - 项目初始化，基于 [imxcstar/LVGLSharp](https://github.com/imxcstar/LVGLSharp) 构建底层 LVGL .NET 封装。
-- 引入 LVGL 9.3 作为 git submodule。
+- 引入 LVGL 9.5 作为 git submodule。
 - 基础 `Control` 与 `Form` 类实现，支持 `Controls` 层级管理及 LVGL 对象创建。
 - 初步验证 NativeAOT 发布流程（win-x64、linux-arm）。
 

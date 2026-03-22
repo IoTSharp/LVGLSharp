@@ -15,5 +15,6 @@ namespace LVGLSharp.Interop
         LV_DRAW_TASK_TYPE_TRIANGLE,
         LV_DRAW_TASK_TYPE_MASK_RECTANGLE,
         LV_DRAW_TASK_TYPE_MASK_BITMAP,
+        LV_DRAW_TASK_TYPE_BLUR,
     }
 }

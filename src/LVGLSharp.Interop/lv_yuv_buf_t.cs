@@ -9,11 +9,11 @@ namespace LVGLSharp.Interop
         public lv_yuv_plane_t yuv;
 
         [FieldOffset(0)]
-        [NativeTypeName("__AnonymousRecord_lv_image_dsc_L112_C5")]
+        [NativeTypeName("__AnonymousRecord_lv_image_dsc_L117_C5")]
         public _planar_e__Struct planar;
 
         [FieldOffset(0)]
-        [NativeTypeName("__AnonymousRecord_lv_image_dsc_L117_C5")]
+        [NativeTypeName("__AnonymousRecord_lv_image_dsc_L122_C5")]
         public _semi_planar_e__Struct semi_planar;
 
         public partial struct _planar_e__Struct

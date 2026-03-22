@@ -35,7 +35,7 @@ namespace LVGLSharp.Interop
         public byte opa;
 
         [NativeBitfield("decor", offset: 0, length: 3)]
-        [NativeBitfield("blend_mode", offset: 3, length: 3)]
+        [NativeBitfield("blend_mode", offset: 3, length: 4)]
         public int _bitfield;
 
         [NativeTypeName("lv_text_decor_t : 3")]
@@ -54,19 +54,19 @@ namespace LVGLSharp.Interop
             }
         }
 
-        [NativeTypeName("lv_blend_mode_t : 3")]
+        [NativeTypeName("lv_blend_mode_t : 4")]
         public lv_blend_mode_t blend_mode
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             readonly get
             {
-                return (lv_blend_mode_t)((_bitfield << 26) >> 29);
+                return (lv_blend_mode_t)((_bitfield << 25) >> 28);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
-                _bitfield = (_bitfield & ~(0x7 << 3)) | (((int)(value) & 0x7) << 3);
+                _bitfield = (_bitfield & ~(0xF << 3)) | (((int)(value) & 0xF) << 3);
             }
         }
 

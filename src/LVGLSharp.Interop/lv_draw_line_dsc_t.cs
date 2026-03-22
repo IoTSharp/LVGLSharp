@@ -2,13 +2,18 @@ using System.Runtime.CompilerServices;
 
 namespace LVGLSharp.Interop
 {
-    public partial struct lv_draw_line_dsc_t
+    public unsafe partial struct lv_draw_line_dsc_t
     {
         public lv_draw_dsc_base_t @base;
 
         public lv_point_precise_t p1;
 
         public lv_point_precise_t p2;
+
+        public lv_point_precise_t* points;
+
+        [NativeTypeName("int32_t")]
+        public int point_cnt;
 
         public lv_color_t color;
 

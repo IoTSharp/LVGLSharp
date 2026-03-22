@@ -23,7 +23,7 @@
 	</ItemGroup>
    <ItemGroup Condition="'$(UseLVGLSharpForms)' == 'true'">
 		<ProjectReference Include="..\..\LVGLSharp.WinForms\LVGLSharp.Forms.csproj" />
-     <ProjectReference Include="..\..\LVGLSharp.Windows\LVGLSharp.Runtime.Windows.csproj" />
+		<ProjectReference Include="..\..\LVGLSharp.Runtime.Windows\LVGLSharp.Runtime.Windows.csproj" />
 		<ProjectReference Include="..\..\LVGLSharp.Runtime.Linux\LVGLSharp.Runtime.Linux.csproj" />
         <Using Include="LVGLSharp.Forms" />
 		<Using Include="LVGLSharp.Drawing" />
@@ -40,7 +40,7 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="LVGLSharp.Native" Version="9.3.0.5" />
+		<ProjectReference Include="..\..\LVGLSharp.Native\LVGLSharp.Native.csproj" />
 	</ItemGroup>
 
 </Project>

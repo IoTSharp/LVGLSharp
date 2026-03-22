@@ -44,12 +44,15 @@ namespace LVGLSharp.Interop
         [NativeTypeName("uint32_t")]
         public uint text_length;
 
-        [NativeTypeName("lv_opa_t")]
-        public byte opa;
-
         public lv_text_align_t align;
 
         public lv_base_dir_t bidi_dir;
+
+        [NativeTypeName("lv_opa_t")]
+        public byte opa;
+
+        [NativeTypeName("lv_opa_t")]
+        public byte outline_stroke_opa;
 
         [NativeBitfield("decor", offset: 0, length: 3)]
         [NativeBitfield("flag", offset: 3, length: 5)]
@@ -139,9 +142,6 @@ namespace LVGLSharp.Interop
         }
 
         public lv_draw_label_hint_t* hint;
-
-        [NativeTypeName("lv_opa_t")]
-        public byte outline_stroke_opa;
 
         public lv_color_t outline_stroke_color;
 

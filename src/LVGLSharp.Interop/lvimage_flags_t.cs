@@ -1,6 +1,6 @@
 namespace LVGLSharp.Interop
 {
-    public enum lvimage_flags_t
+    public enum lvimage_flags_t : uint
     {
         LV_IMAGE_FLAGS_PREMULTIPLIED = 0x0001,
         LV_IMAGE_FLAGS_COMPRESSED = 0x0008,

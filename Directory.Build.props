@@ -12,7 +12,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>lvgl;embedded;ui;winforms;cross-platform</PackageTags>
     <!-- Default version; overridden by CI via -p:Version=... -->
-    <Version>9.3.0</Version>
+    <Version>9.5.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">

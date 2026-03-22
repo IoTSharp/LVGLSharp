@@ -19,7 +19,7 @@
 	</ItemGroup>
    <ItemGroup Condition="'$(UseLVGLSharpForms)' == 'true'">
 		<ProjectReference Include="..\..\LVGLSharp.WinForms\LVGLSharp.Forms.csproj" />
-     <ProjectReference Include="..\..\LVGLSharp.Windows\LVGLSharp.Runtime.Windows.csproj" />
+		<ProjectReference Include="..\..\LVGLSharp.Runtime.Windows\LVGLSharp.Runtime.Windows.csproj" />
 		<ProjectReference Include="..\..\LVGLSharp.Runtime.Linux\LVGLSharp.Runtime.Linux.csproj" />
 		<Using Include="LVGLSharp.Forms" />
 		<Using Include="LVGLSharp.Drawing" />

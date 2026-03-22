@@ -163,7 +163,7 @@ namespace LVGLSharp.Interop
         }
 
         [return: NativeTypeName("int32_t")]
-        public static int lv_obj_get_style_space_left([NativeTypeName("const lv_obj_t *")] lv_obj_t* obj, [NativeTypeName("lv_part_t")] uint part)
+        public static int lv_obj_get_style_space_left([NativeTypeName("const lv_obj_t *")] lv_obj_t* obj, [NativeTypeName("lv_part_t")] lv_part_t part)
         {
             int padding = lv_obj_get_style_pad_left(obj, part);
             int border_width = lv_obj_get_style_border_width(obj, part);
@@ -173,7 +173,7 @@ namespace LVGLSharp.Interop
         }
 
         [return: NativeTypeName("int32_t")]
-        public static int lv_obj_get_style_space_right([NativeTypeName("const lv_obj_t *")] lv_obj_t* obj, [NativeTypeName("lv_part_t")] uint part)
+        public static int lv_obj_get_style_space_right([NativeTypeName("const lv_obj_t *")] lv_obj_t* obj, [NativeTypeName("lv_part_t")] lv_part_t part)
         {
             int padding = lv_obj_get_style_pad_right(obj, part);
             int border_width = lv_obj_get_style_border_width(obj, part);
@@ -183,7 +183,7 @@ namespace LVGLSharp.Interop
         }
 
         [return: NativeTypeName("int32_t")]
-        public static int lv_obj_get_style_space_top([NativeTypeName("const lv_obj_t *")] lv_obj_t* obj, [NativeTypeName("lv_part_t")] uint part)
+        public static int lv_obj_get_style_space_top([NativeTypeName("const lv_obj_t *")] lv_obj_t* obj, [NativeTypeName("lv_part_t")] lv_part_t part)
         {
             int padding = lv_obj_get_style_pad_top(obj, part);
             int border_width = lv_obj_get_style_border_width(obj, part);
@@ -193,7 +193,7 @@ namespace LVGLSharp.Interop
         }
 
         [return: NativeTypeName("int32_t")]
-        public static int lv_obj_get_style_space_bottom([NativeTypeName("const lv_obj_t *")] lv_obj_t* obj, [NativeTypeName("lv_part_t")] uint part)
+        public static int lv_obj_get_style_space_bottom([NativeTypeName("const lv_obj_t *")] lv_obj_t* obj, [NativeTypeName("lv_part_t")] lv_part_t part)
         {
             int padding = lv_obj_get_style_pad_bottom(obj, part);
             int border_width = lv_obj_get_style_border_width(obj, part);

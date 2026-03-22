@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{02EA681E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialPort", "src\Demos\SerialPort\SerialPort.csproj", "{D371C54A-E3C9-40EB-BCBD-9FEDB246AE76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVGLSharp.Runtime.Windows", "src\LVGLSharp.Windows\LVGLSharp.Runtime.Windows.csproj", "{91F173AD-9AF0-F87F-FEF3-7E4742BABCB3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVGLSharp.Runtime.Windows", "src\LVGLSharp.Runtime.Windows\LVGLSharp.Runtime.Windows.csproj", "{91F173AD-9AF0-F87F-FEF3-7E4742BABCB3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVGLSharp.Runtime.Linux", "src\LVGLSharp.Runtime.Linux\LVGLSharp.Runtime.Linux.csproj", "{8836E179-4FC7-4EAD-AD1B-91BFA30DD3F7}"
 EndProject

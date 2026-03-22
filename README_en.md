@@ -10,11 +10,11 @@
 
 ## 📢 Current Release
 
-- **Version**: `9.3.0.5`
-- **Release Tag**: `v9.3.0.5`
+- **Version**: `9.5.0.5`
+- **Release Tag**: `v9.5.0.5`
 - **Release Positioning**: the first fully documented release derived from the initial project baseline, consolidating the current capabilities, package layout, and release notes.
 
-### 9.3.0.5 Highlights
+### 9.5.0.5 Highlights
 
 - Continues the initial LVGL-backed WinForms compatibility direction and documents the now-available controls, runtime hosts, and packaging layout.
 - Clarifies the responsibilities of `LVGLSharp.Forms`, `LVGLSharp.Core`, the platform runtime packages, and `LVGLSharp.Native`.
@@ -140,7 +140,7 @@ src/
 ├── LVGLSharp.Interop/      # LVGL P/Invoke auto-generated bindings
 ├── LVGLSharp.Native/       # Platform-native libraries
 ├── LVGLSharp.Core/         # Shared core library
-├── LVGLSharp.Windows/      # Windows platform runtime
+├── LVGLSharp.Runtime.Windows/ # Windows platform runtime
 ├── LVGLSharp.Runtime.Linux/# Linux platform runtime
 └── Demos/
     ├── WinFormsDemo/       # Baseline WinForms / LVGLSharp.Forms comparison demo

@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决�
 		.github\workflows\nuget-publish.yml = .github\workflows\nuget-publish.yml
 		README.md = README.md
 		README_en.md = README_en.md
+		docs\Roadmap.md = docs\Roadmap.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVGLSharp.Native", "src\LVGLSharp.Native\LVGLSharp.Native.csproj", "{2B32AEB2-CD15-67F8-4EA3-47A795FBCB12}"

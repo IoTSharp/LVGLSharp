@@ -363,6 +363,9 @@ public unsafe partial class X11View : IView
     private lv_font_t* _fallbackFont;
     private lv_style_t* _defaultFontStyle;
     private SixLaborsFontManager? _fontManager;
+    private string? _resolvedSystemFontPath;
+    private string? _fontDiagnosticSummary;
+    private string? _fontGlyphDiagnosticSummary;
 
     public X11View(string title = "LVGLSharp X11", int width = 800, int height = 600, float dpi = 96f, string? displayName = null, bool borderless = false)
     {
@@ -407,12 +410,14 @@ public unsafe partial class X11View : IView
             key_inputGroup = lv_group_create();
             lv_indev_set_group(_keyboardIndev, key_inputGroup);
             _fallbackFont = lv_obj_get_style_text_font(root, LV_PART_MAIN);
+            _fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
+            _fontGlyphDiagnosticSummary = LinuxSystemFontResolver.GetGlyphDiagnosticSummary();
 
-            var systemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
-            if (!string.IsNullOrWhiteSpace(systemFontPath))
+            _resolvedSystemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
+            if (!string.IsNullOrWhiteSpace(_resolvedSystemFontPath))
             {
                 _fontManager = new SixLaborsFontManager(
-                    systemFontPath,
+                    _resolvedSystemFontPath,
                     12,
                     _dpi,
                     _fallbackFont,
@@ -554,6 +559,9 @@ public unsafe partial class X11View : IView
 
         _fontManager?.Dispose();
         _fontManager = null;
+        _resolvedSystemFontPath = null;
+        _fontDiagnosticSummary = null;
+        _fontGlyphDiagnosticSummary = null;
 
         root = null;
         SendTextAreaFocusCb = null;
@@ -561,6 +569,13 @@ public unsafe partial class X11View : IView
         _keyPressed = false;
         _wheelDiff = 0;
         _initialized = false;
+    }
+
+    public override string ToString()
+    {
+        string connectedDisplay = _requestedDisplayName ?? "<default>";
+
+        return $"Title={_title}, Display={connectedDisplay}, Window={_window != 0}:{_width}x{_height}, Running={_running}, Initialized={_initialized}, LvDisplay={_lvDisplay != null}, Root={root != null}, KeyGroup={key_inputGroup != null}, FontPath={_resolvedSystemFontPath ?? "<none>"}, FontDiag={_fontDiagnosticSummary ?? "<unresolved>"}, GlyphDiag={_fontGlyphDiagnosticSummary ?? "<unresolved>"}";
     }
 
     private void InitializeWindow()

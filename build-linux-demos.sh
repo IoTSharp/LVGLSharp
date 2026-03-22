@@ -144,6 +144,10 @@ if [[ -f "$NUGET_CONFIG_PATH" ]]; then
     NUGET_CONFIG_OPTION=(--configfile "$NUGET_CONFIG_PATH")
 fi
 
+LINUX_NUGET_PACKAGES="${HOME}/.nuget/packages"
+export NUGET_PACKAGES="$LINUX_NUGET_PACKAGES"
+export NUGET_FALLBACK_PACKAGES=""
+
 if ((CLEAN)); then
     rm -rf "$DIST_DIR" "$LVGL_BUILD_DIR"
 fi
@@ -188,7 +192,10 @@ publish_demo() {
         -r "$RID" \
         --force-evaluate \
         "${NUGET_CONFIG_OPTION[@]}" \
-        -p:EnableWindowsTargeting=true
+        -p:EnableWindowsTargeting=true \
+        -p:RestorePackagesPath="$LINUX_NUGET_PACKAGES" \
+        -p:NuGetPackageFolders="$LINUX_NUGET_PACKAGES" \
+        -p:RestoreFallbackFolders=
 
     dotnet publish "$project_path" \
         -f "$target_framework" \
@@ -197,7 +204,10 @@ publish_demo() {
         -o "$publish_dir" \
         --no-restore \
         "${NUGET_CONFIG_OPTION[@]}" \
-        -p:EnableWindowsTargeting=true
+        -p:EnableWindowsTargeting=true \
+        -p:RestorePackagesPath="$LINUX_NUGET_PACKAGES" \
+        -p:NuGetPackageFolders="$LINUX_NUGET_PACKAGES" \
+        -p:RestoreFallbackFolders=
 
     [[ -f "$executable_path" ]] || fail "missing published executable: $executable_path"
 

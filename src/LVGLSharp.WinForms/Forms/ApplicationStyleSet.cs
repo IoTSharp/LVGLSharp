@@ -3,6 +3,31 @@ using LVGLSharp.Interop;
 
 namespace LVGLSharp.Forms
 {
+    internal static unsafe class ApplicationFontStyleHelper
+    {
+        internal static void ApplyActiveTextFont(lv_obj_t* obj, uint selector = 0)
+        {
+            if (obj == null)
+            {
+                return;
+            }
+
+            var root = lv_scr_act();
+            if (root == null)
+            {
+                return;
+            }
+
+            var font = lv_obj_get_style_text_font(root, LV_PART_MAIN);
+            if (font == null)
+            {
+                return;
+            }
+
+            lv_obj_set_style_text_font(obj, font, selector);
+        }
+    }
+
     internal enum ApplicationStyleMode
     {
         WinForms,
@@ -84,6 +109,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
+            ApplicationFontStyleHelper.ApplyActiveTextFont(obj);
             lv_obj_set_style_text_color(obj, LvglStyleColorConverter.ToLvColor(TextColor), 0);
             lv_obj_set_style_text_letter_space(obj, LetterSpacing, 0);
         }
@@ -116,6 +142,10 @@ namespace LVGLSharp.Forms
 
             var indicatorSelector = LvglStyleSelector.ForPart(LV_PART_INDICATOR);
             var checkedIndicatorSelector = LvglStyleSelector.ForPartAndState(LV_PART_INDICATOR, LV_STATE_CHECKED);
+
+            ApplicationFontStyleHelper.ApplyActiveTextFont(obj);
+            ApplicationFontStyleHelper.ApplyActiveTextFont(obj, indicatorSelector);
+            ApplicationFontStyleHelper.ApplyActiveTextFont(obj, checkedIndicatorSelector);
 
             lv_obj_set_style_bg_opa(obj, (byte)LV_OPA_TRANSP, 0);
             lv_obj_set_style_text_color(obj, LvglStyleColorConverter.ToLvColor(TextColor), 0);
@@ -168,6 +198,9 @@ namespace LVGLSharp.Forms
 
             var itemSelector = LvglStyleSelector.ForPart(LV_PART_ITEMS);
 
+            ApplicationFontStyleHelper.ApplyActiveTextFont(obj);
+            ApplicationFontStyleHelper.ApplyActiveTextFont(obj, itemSelector);
+
             lv_obj_set_style_bg_opa(obj, BackgroundOpacity, 0);
             lv_obj_set_style_bg_color(obj, LvglStyleColorConverter.ToLvColor(BackgroundColor), 0);
             lv_obj_set_style_border_width(obj, BorderWidth, 0);
@@ -219,6 +252,9 @@ namespace LVGLSharp.Forms
             var itemSelector = LvglStyleSelector.ForPart(LV_PART_ITEMS);
             var selectedSelector = LvglStyleSelector.ForPart(LV_PART_SELECTED);
 
+            ApplicationFontStyleHelper.ApplyActiveTextFont(obj);
+            ApplicationFontStyleHelper.ApplyActiveTextFont(obj, indicatorSelector);
+
             lv_obj_set_style_bg_opa(obj, BackgroundOpacity, 0);
             lv_obj_set_style_bg_color(obj, LvglStyleColorConverter.ToLvColor(BackgroundColor), 0);
             lv_obj_set_style_border_width(obj, BorderWidth, 0);
@@ -234,6 +270,10 @@ namespace LVGLSharp.Forms
             {
                 return;
             }
+
+            ApplicationFontStyleHelper.ApplyActiveTextFont(list);
+            ApplicationFontStyleHelper.ApplyActiveTextFont(list, itemSelector);
+            ApplicationFontStyleHelper.ApplyActiveTextFont(list, selectedSelector);
 
             lv_obj_set_style_bg_opa(list, ListBackgroundOpacity, 0);
             lv_obj_set_style_bg_color(list, LvglStyleColorConverter.ToLvColor(ListBackgroundColor), 0);
@@ -277,6 +317,11 @@ namespace LVGLSharp.Forms
             var selectedSelector = LvglStyleSelector.ForPart(LV_PART_SELECTED);
             var focusedSelector = LvglStyleSelector.ForPartAndState(0, LV_STATE_FOCUSED);
             var unfocusedCursorSelector = LvglStyleSelector.ForPart(LV_PART_CURSOR);
+            var placeholderSelector = LvglStyleSelector.ForPart(LV_PART_TEXTAREA_PLACEHOLDER);
+
+            ApplicationFontStyleHelper.ApplyActiveTextFont(obj);
+            ApplicationFontStyleHelper.ApplyActiveTextFont(obj, selectedSelector);
+            ApplicationFontStyleHelper.ApplyActiveTextFont(obj, placeholderSelector);
 
             lv_obj_set_style_bg_opa(obj, BackgroundOpacity, 0);
             lv_obj_set_style_bg_color(obj, LvglStyleColorConverter.ToLvColor(BackgroundColor), 0);
@@ -399,6 +444,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
+            ApplicationFontStyleHelper.ApplyActiveTextFont(label);
             lv_obj_set_style_bg_opa(button, BackgroundOpacity, 0);
             lv_obj_set_style_bg_color(button, LvglStyleColorConverter.ToLvColor(BackgroundColor), 0);
             lv_obj_set_style_border_width(button, BorderWidth, 0);

@@ -65,6 +65,18 @@ dotnet --info
 
 如果没有，请在 WSL 内按 .NET 官方安装方式安装对应 SDK。
 
+### 3.1 WSL 下的 NuGet fallback 路径说明
+
+如果你的 Windows 侧全局 NuGet 配置里带有仅 Windows 可见的 fallback package folder，WSL 中直接 `restore/publish` 可能会因为类似 `C:\Program Files\...` 的路径而失败。
+
+本仓库现在提供了 `NuGet.Wsl.Config`，并且 `build-linux-demos.sh` 会自动使用它来清理这类 Windows-only fallback 配置。
+
+如果你手工在 WSL 中执行 `dotnet restore` 或 `dotnet publish`，也建议显式带上：
+
+```bash
+--configfile /mnt/d/source/LVGLSharp/NuGet.Wsl.Config
+```
+
 ### 4. 安装 Linux 原生依赖
 
 本仓库的 Linux demo 发布脚本依赖 `cmake` 等工具。在 Ubuntu / Debian 下：
@@ -73,6 +85,20 @@ dotnet --info
 sudo apt-get update
 sudo apt-get install -y cmake ninja-build
 ```
+
+### 4.1 如果 WSL 下中文乱码
+
+如果 `WSLg / Wayland` 路径下中文标签、按钮或标题出现乱码，不要先怀疑字符串编码。对当前仓库来说，更常见的原因是 `WSL` 里没有真正可用的 `CJK` 字体。
+
+建议先在 `WSL` 中安装中文字体包：
+
+```bash
+sudo apt-get update
+sudo apt-get install -y fonts-noto-cjk fonts-wqy-zenhei
+fc-list :lang=zh | head
+```
+
+如果 `fc-list :lang=zh` 仍为空，就说明当前 `WSL` 里依然没有被 `fontconfig` 正确识别的中文字体，`PictureBoxDemo` 这类界面仍可能退回到 `DejaVu Sans` 等非中文字体，继续表现为乱码或缺字。
 
 ## 运行 demo 的推荐方式
 
@@ -170,6 +196,66 @@ cd /mnt/d/source/LVGLSharp/dist/linux-x64/PictureBoxDemo
 - `Assets/` 是否已复制到输出目录
 - 如果图像未显示，优先检查当前路径和图片资源是否存在
 
+#### Wayland / WSLg 验证建议
+
+`PictureBoxDemo` 更适合拿来验证：
+
+- 图片首帧是否真正提交到 `Wayland` surface
+- 窗口首次 resize 后图片区域是否还能继续出图
+- 鼠标焦点进入后交互是否正常
+
+如果出现黑屏或空白，不要先把原因归到图片资源本身，优先按下面顺序排查：
+
+1. 首帧提交是否发生
+2. resize 后首帧是否重新触发
+3. 输入焦点是否已正确进入窗口
+4. `root invalidate` 是否在需要时补发
+
+#### Wayland / WSLg 实测进展
+
+当前已经在本机 `WSLg` 环境下继续跑过 `PictureBoxDemo` 的发布与启动链路：
+
+- `build-linux-demos.sh PictureBoxDemo` 已可在 `WSL` 下完成发布
+- `PictureBoxDemo` 进程已能在 `WSLg` 下启动
+- 在 Windows 侧进程窗口标题观测中，已看到 `PictureBox 演示程序 - LVGLSharp [WSLg::0]` 窗口标题，说明 `Wayland/WSLg` 路径已进入真实窗口创建阶段
+- `WaylandView` 现已补上 Linux 系统字体回退，`PictureBoxDemo` 的中文控件文本不再因缺少 CJK 字体而影响截图验证
+
+如果仍然怀疑是字体路径命中错误，可以直接看 `WaylandView.ToString()` 中新增的两段诊断：
+
+- `FontPath=...`
+- `FontDiag=...`
+
+它们会告诉你当前真实选中的字体文件，以及是否因为找不到真正的 `CJK` 字体而退回到通用字体，例如 `DejaVu Sans`。
+
+#### Wayland / WSLg 截图演示
+
+下面这张图片已经作为仓库内的截图资源落地，可直接作为当前 `PictureBoxDemo` 在 `WSLg / Wayland` 路径下的实测样例：
+
+![PictureBoxDemo 在 WSLg / Wayland 下的实测截图](./images/wslg-pictureboxdemo-wayland.png)
+
+下面这张图片对应窗口放大后的再次抓图，可作为 `resize` 后首帧仍然可见的辅助样例：
+
+![PictureBoxDemo 在 WSLg / Wayland 下 resize 后的实测截图](./images/wslg-pictureboxdemo-wayland-resized.png)
+
+现阶段建议把 `PictureBoxDemo` 当作图片链路专项验证 demo：
+
+- 重点看图片首帧是否提交
+- 重点看 resize 后图片区域是否立即恢复
+- 如果内容仍异常，再回到首帧提交、输入焦点和 `root invalidate` 继续排查
+
+#### 当前针对画面问题的判断
+
+基于本轮实机验证，当前可以先得到下面的结论：
+
+- 首帧显示：已经进入可截图状态，说明首帧并非完全黑屏
+- resize 后首帧：在放大窗口后再次抓图仍能得到有效画面，当前未见 resize 后整窗空白
+- 焦点推进：窗口切到前台后，继续执行按钮交互仍能得到有效画面，当前未观察到焦点进入即黑屏的问题
+- 缩放 / 旋转：本轮已经对 `PictureBoxDemo` 做过真实按钮交互验证，缩放和旋转操作后的窗口截图哈希均发生变化，说明按钮响应和画面刷新链路当前是工作的
+- 按钮刷新稳定性：在前后台切换后继续触发按钮操作，截图结果仍持续变化，当前没有看到“焦点回来后按钮失效或不刷新”的证据
+- `root invalidate`：结合首帧、resize 后以及交互后的持续可见结果，当前没有证据表明还需要为 `PictureBoxDemo` 额外补一轮新的 `root invalidate` 修复
+
+也就是说，`PictureBoxDemo` 现阶段已经从“链路可启动”推进到了“可以做真实画面验证”。后续如果还发现局部区域不刷新、首图偶发缺失或 resize 后局部残影，再优先回到这四项继续深挖。
+
 ### `SmartWatchDemo`
 
 适合验证多页整屏界面、首屏加载、动态 UI 刷新、复杂布局切换。
@@ -193,6 +279,37 @@ cd /mnt/d/source/LVGLSharp/dist/linux-x64/SmartWatchDemo
 
 - 如果出现黑屏，不要只看标题栏，优先确认实际 viewport 是否有像素内容
 - 优先确认是否是控件树创建阶段卡住，而不是先怀疑字体问题
+
+#### Wayland / WSLg 实测结果
+
+本仓库已经在 `WSLg/Wayland` 下对 `SmartWatchDemo` 做过一轮真实启动验证，当前结论是：
+
+- 进程可以在 `WSLg` 下正常启动并持续存活
+- 当前窗口不是“只有标题栏出来”，而是已经能看到实际像素内容
+- 首页内容已经进入真实渲染阶段，可见中部手表区域、四周按钮与底部状态文本
+
+#### Wayland / WSLg 截图演示
+
+下面这张图片已经作为仓库内的截图资源落地，可直接作为当前 `Wayland/WSLg` 路径的实测演示样例：
+
+![SmartWatchDemo 在 WSLg / Wayland 下的实测截图](./images/wslg-smartwatchdemo-wayland.png)
+
+结合本次实测截图，可以把当前状态理解为：
+
+- `Wayland` 原生窗口创建链路已打通
+- `wl_shm` 渲染链路已进入可见输出阶段
+- `SmartWatchDemo [WSLg::0]` 已能作为 Wayland 路径的截图演示样例
+
+也就是说，当前 `SmartWatchDemo` 更像是“内容已显示，但还要继续打磨首帧/resize/焦点细节”，而不是“窗口完全黑屏”。
+
+如果后续在 `WSLg` 下再次看到空白或局部异常，优先继续检查：
+
+1. 首帧提交
+2. resize 后首帧
+3. 输入焦点
+4. `root invalidate`
+
+推荐把 `SmartWatchDemo` 作为当前 Wayland 路径的首选截图演示，把 `PictureBoxDemo` 作为图片链路和 resize 行为的补充验证 demo。
 
 ### `MusicDemo`
 
@@ -428,6 +545,22 @@ ls
 - 是否是控件树创建阶段卡住
 - 是否首页挂载内容过多
 - 是否隐藏页或大布局在启动阶段一次性挂载
+
+如果当前是在 `Wayland / WSLg` 路径下，还应额外确认：
+
+- 是否已经发生首帧 `flush`
+- `wl_buffer release` 之后是否触发了补发重绘
+- resize 后是否重新设置了 `lv_display` 分辨率与 buffers
+- 焦点进入后是否有后续输入与重绘推进
+
+### 2.1 中文乱码或缺字
+
+优先排查：
+
+- `fc-list :lang=zh` 是否能列出中文字体
+- 是否已经安装 `fonts-noto-cjk` 或 `fonts-wqy-zenhei`
+- `WaylandView.ToString()` 里的 `FontPath` 是否落回了 `DejaVu Sans` 一类的通用字体
+- `FontDiag` 是否提示 `NoCjkFontFound`
 
 ### 3. Visual Studio 里不会配 WSL 启动调试
 

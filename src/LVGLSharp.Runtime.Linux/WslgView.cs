@@ -16,5 +16,5 @@ public unsafe class WslgView : X11View
         _diagnosticSummary = LinuxEnvironmentDetector.GetWslgDiagnosticSummary(displayName);
     }
 
-    public override string ToString() => _diagnosticSummary;
+    public override string ToString() => $"{_diagnosticSummary}, {base.ToString()}";
 }

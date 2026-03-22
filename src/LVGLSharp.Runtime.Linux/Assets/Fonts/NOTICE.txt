@@ -1,0 +1,5 @@
+Embedded font asset: `NotoSansSC-Regular.otf`
+Source: Windows-installed `Noto Sans SC` font package on the development machine.
+Intended use: Linux/WSLg fallback for Chinese UI text rendering.
+Expected license: SIL Open Font License 1.1.
+Before external redistribution, verify the packaged font file and license metadata match the upstream font release used by the repository.

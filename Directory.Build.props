@@ -17,6 +17,8 @@
 
   <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
     <RestoreFallbackFolders></RestoreFallbackFolders>
+    <RestorePackagesPath>$(HOME)/.nuget/packages</RestorePackagesPath>
+    <NuGetPackageFolders>$(RestorePackagesPath)</NuGetPackageFolders>
   </PropertyGroup>
 
   <!-- Include the repo-level README in every NuGet package. -->

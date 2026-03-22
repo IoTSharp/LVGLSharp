@@ -406,7 +406,7 @@ namespace LVGLSharp.Forms
             UpdateLvglText();
         }
 
-        protected override void DispatchLvglEvent(lv_event_code_t code)
+        protected override unsafe void DispatchLvglEvent(lv_event_code_t code, lv_event_t* lvglEvent)
         {
             if (code == LV_EVENT_VALUE_CHANGED)
             {
@@ -414,7 +414,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            base.DispatchLvglEvent(code);
+            base.DispatchLvglEvent(code, lvglEvent);
         }
 
         private unsafe void SyncTextFromLvgl()

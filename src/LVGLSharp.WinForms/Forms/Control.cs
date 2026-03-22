@@ -2155,6 +2155,16 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public PreProcessControlState PreProcessControlMessage(ref Message msg)
         {
+            if (_lvglObjectHandle == 0)
+            {
+                return PreProcessControlState.MessageNotNeeded;
+            }
+
+            if (PreProcessMessage(ref msg))
+            {
+                return PreProcessControlState.MessageProcessed;
+            }
+
             return PreProcessControlState.MessageNotNeeded;
         }
         //
@@ -2172,7 +2182,7 @@ namespace LVGLSharp.Forms
         //     true if the message was processed by the control; otherwise, false.
         public virtual bool PreProcessMessage(ref Message msg)
         {
-            return true;
+            return ProcessKeyMessage(ref msg);
         }
         //
         // ժҪ:
@@ -4028,11 +4038,11 @@ namespace LVGLSharp.Forms
             if (userData == null) return;
             var gcHandle = GCHandle.FromIntPtr(new IntPtr(userData));
             if (gcHandle.IsAllocated && gcHandle.Target is Control ctrl)
-                ctrl.DispatchLvglEvent(lv_event_get_code(e));
+                ctrl.DispatchLvglEvent(lv_event_get_code(e), e);
         }
 
         /// <summary>Dispatches an LVGL event code to the appropriate On* method(s).</summary>
-        protected virtual void DispatchLvglEvent(Interop.lv_event_code_t code)
+        protected virtual unsafe void DispatchLvglEvent(Interop.lv_event_code_t code, Interop.lv_event_t* lvglEvent)
         {
             MouseEventArgs mouseEventArgs = CreateMouseEventArgs(code);
 
@@ -4068,9 +4078,19 @@ namespace LVGLSharp.Forms
                     OnLeave(EventArgs.Empty);
                     break;
                 case LV_EVENT_KEY:
-                    // LVGL fires LV_EVENT_KEY on key press; no separate key-up event is available
-                    OnKeyDown(new KeyEventArgs());
-                    OnKeyPress(new KeyPressEventArgs());
+                    uint lvglKey = lv_event_get_key(lvglEvent);
+                    var keyMessage = new Message(
+                        Handle,
+                        0x0100,
+                        (nuint)lvglKey,
+                        0);
+
+                    var preprocessState = PreProcessControlMessage(ref keyMessage);
+                    if (preprocessState == PreProcessControlState.MessageNotNeeded)
+                    {
+                        OnKeyDown(new KeyEventArgs());
+                        OnKeyPress(new KeyPressEventArgs());
+                    }
                     break;
                 case LV_EVENT_SIZE_CHANGED:
                     OnResize(EventArgs.Empty);

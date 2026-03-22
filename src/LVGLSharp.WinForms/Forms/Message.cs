@@ -1,12 +1,8 @@
 ﻿namespace LVGLSharp.Forms
 {
-    public class Message
+    public struct Message
     {
-        public Message()
-        {
-
-        }
-        public Message(nint hWnd, uint msg, nuint wParam, nint lParam):this()
+        public Message(nint hWnd, uint msg, nuint wParam, nint lParam)
         {
             this.hWnd = hWnd;
             this.msg = msg;

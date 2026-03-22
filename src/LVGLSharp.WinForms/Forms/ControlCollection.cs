@@ -27,7 +27,21 @@ namespace LVGLSharp.Forms
             _owner = owner;
         }
 
-        public Control? this[int index] { get => _ctls[index]; set => _ctls[index] = value; }
+        Control IList<Control>.this[int index]
+        {
+            get => _ctls[index];
+            set => _ctls[index] = value;
+        }
+
+        public Control? this[int index]
+        {
+            get => index >= 0 && index < _ctls.Count ? _ctls[index] : null;
+            set
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                _ctls[index] = value;
+            }
+        }
 
         public int Count => _ctls.Count;
 
@@ -42,11 +56,13 @@ namespace LVGLSharp.Forms
             ArgumentNullException.ThrowIfNull(item);
 
             _ctls.Add(item);
-            _owner?.HandleChildAdded(item);
 
-            if (_owner?._lvglObjectHandle != 0 && item._lvglObjectHandle == 0)
+            var owner = _owner;
+            owner?.HandleChildAdded(item);
+
+            if (owner is not null && owner._lvglObjectHandle != 0 && item._lvglObjectHandle == 0)
             {
-                item.CreateLvglObject(_owner._lvglObjectHandle);
+                item.CreateLvglObject(owner._lvglObjectHandle);
             }
         }
 
@@ -64,7 +80,10 @@ namespace LVGLSharp.Forms
         {
             foreach (var control in _ctls)
             {
-                _owner?.HandleChildRemoved(control);
+                if (_owner is not null)
+                {
+                    _owner.HandleChildRemoved(control);
+                }
             }
 
             _ctls.Clear();

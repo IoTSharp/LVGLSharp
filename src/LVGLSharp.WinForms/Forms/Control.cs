@@ -8,6 +8,11 @@ namespace LVGLSharp.Forms
 {
     public class Control : Component, IComponent, IDisposable
     {
+        static Control()
+        {
+            DefaultFont = new Font("Segoe UI", 9F);
+        }
+
         private int _layoutSuspendCount;
         private bool _layoutPending;
         private Control? _layoutAffectedControl;
@@ -30,6 +35,14 @@ namespace LVGLSharp.Forms
             Margin = new Padding(3);
             Padding = Padding.Empty;
             Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            WindowTarget = NullViewTarget.Instance;
+            ProductName = string.Empty;
+            ProductVersion = string.Empty;
+            LayoutEngine = new LayoutEngine();
+            CompanyName = string.Empty;
+            DataBindings = new ControlBindingsCollection();
+            DefaultCursor = new Cursor();
+            CreateParams = new CreateParams();
         }
         //
         // 摘要:
@@ -135,7 +148,7 @@ namespace LVGLSharp.Forms
         //   T:System.ArgumentException:
         //     The default font or the regional alternative fonts are not installed on the client
         //     computer.
-        public static Font DefaultFont { get; }
+        public static Font DefaultFont { get; private set; }
         //
         // 摘要:
         //     Gets the default foreground color of the control.
@@ -529,7 +542,7 @@ namespace LVGLSharp.Forms
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [SRDescriptionAttribute("ControlProductNameDescr")]
-        public string ProductName { get; }
+        public string ProductName { get; private set; }
         //
         // 摘要:
         //     Gets the version of the assembly containing the control.
@@ -540,7 +553,7 @@ namespace LVGLSharp.Forms
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [SRDescriptionAttribute("ControlProductVersionDescr")]
-        public string ProductVersion { get; }
+        public string ProductVersion { get; private set; }
         //
         // 摘要:
         //     Gets a value indicating whether the control is currently re-creating its handle.
@@ -1048,7 +1061,7 @@ namespace LVGLSharp.Forms
         //     The System.Windows.Forms.Layout.LayoutEngine for the control's contents.
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public virtual LayoutEngine LayoutEngine { get; }
+        public virtual LayoutEngine LayoutEngine { get; protected set; }
         //
         // 摘要:
         //     This property is not relevant for this class.
@@ -1237,7 +1250,7 @@ namespace LVGLSharp.Forms
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [SRDescriptionAttribute("ControlCompanyNameDescr")]
-        public string CompanyName { get; }
+        public string CompanyName { get; private set; }
         //
         // 摘要:
         //     Gets a value indicating whether the base System.Windows.Forms.Control class is
@@ -1355,7 +1368,7 @@ namespace LVGLSharp.Forms
         [RefreshProperties(RefreshProperties.All)]
         [SRCategoryAttribute("CatData")]
         [SRDescriptionAttribute("ControlBindingsDescr")]
-        public ControlBindingsCollection DataBindings { get; }
+        public ControlBindingsCollection DataBindings { get; private set; }
         //
         // 摘要:
         //     Gets the rectangle that represents the client area of the control.
@@ -1411,7 +1424,7 @@ namespace LVGLSharp.Forms
         // 返回结果:
         //     An object of type System.Windows.Forms.Cursor representing the current default
         //     cursor.
-        protected virtual Cursor DefaultCursor { get; }
+        protected virtual Cursor DefaultCursor { get; private set; }
         //
         // 摘要:
         //     Gets the length and height, in pixels, that is specified as the default minimum
@@ -1443,7 +1456,7 @@ namespace LVGLSharp.Forms
         // 返回结果:
         //     A System.Windows.Forms.CreateParams that contains the required creation parameters
         //     when the handle to the control is created.
-        protected virtual CreateParams CreateParams { get; }
+        protected virtual CreateParams CreateParams { get; private set; }
         //
         // 摘要:
         //     Determines if events can be raised on the control.
@@ -1940,7 +1953,30 @@ namespace LVGLSharp.Forms
         // 摘要:
         //     Occurs when the System.Windows.Forms.Control.ImeMode property has changed.
 #pragma warning disable CS0067
-        public event EventHandler ImeModeChanged;
+        public event EventHandler? ImeModeChanged;
+
+        private sealed class NullViewTarget : IViewTarget
+        {
+            public static readonly NullViewTarget Instance = new();
+
+            public unsafe lv_obj_t* Root => null;
+
+            public unsafe lv_group_t* KeyInputGroup => null;
+
+            public unsafe delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => null;
+
+            public void Open() { }
+
+            public void HandleEvents() { }
+
+            public void RunLoop(Action iteration) { }
+
+            public void Close() { }
+
+            public unsafe void RegisterTextInput(lv_obj_t* textArea) { }
+
+            public void Dispose() { }
+        }
 #pragma warning restore CS0067
 
 
@@ -1978,7 +2014,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            if (Parent?._lvglObjectHandle != 0)
+            if (Parent is not null && Parent._lvglObjectHandle != 0)
             {
                 CreateLvglObject(Parent._lvglObjectHandle);
             }
@@ -2010,7 +2046,7 @@ namespace LVGLSharp.Forms
                 }
             }
 
-            return null;
+            return this as Form;
         }
         //
         // 摘要:
@@ -2119,7 +2155,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public PreProcessControlState PreProcessControlMessage(ref Message msg)
         {
-            return default;
+            return PreProcessControlState.MessageNotNeeded;
         }
         //
         // 摘要:

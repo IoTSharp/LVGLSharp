@@ -69,7 +69,7 @@ namespace LVGLSharp.Forms
             }
         }
 
-        public ContextMenuStrip? ContextMenuStrip
+        public new ContextMenuStrip? ContextMenuStrip
         {
             get => _defaultContextMenu;
             set => _defaultContextMenu = value;

@@ -1,6 +1,8 @@
 ﻿namespace LVGLSharp.Forms
 {
-    public class LeftRightAlignment
+    public enum LeftRightAlignment
     {
+        Left = 0,
+        Right = 1,
     }
 }

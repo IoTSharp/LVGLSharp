@@ -1,6 +1,4 @@
-using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace LVGLSharp.Interop
 {
@@ -18,23 +16,10 @@ namespace LVGLSharp.Interop
 
         public lv_grad_dsc_t grad;
 
+        [InlineArray(3)]
         public partial struct _p_e__FixedBuffer
         {
             public lv_point_precise_t e0;
-            public lv_point_precise_t e1;
-            public lv_point_precise_t e2;
-
-            public ref lv_point_precise_t this[int index]
-            {
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get
-                {
-                    return ref AsSpan()[index];
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public Span<lv_point_precise_t> AsSpan() => MemoryMarshal.CreateSpan(ref e0, 3);
         }
     }
 }

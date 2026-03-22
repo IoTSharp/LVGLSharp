@@ -8,6 +8,11 @@ namespace LVGLSharp.Forms
 {
     public class Control : Component, IComponent, IDisposable
     {
+        static Control()
+        {
+            DefaultFont = new Font("Segoe UI", 9F);
+        }
+
         private int _layoutSuspendCount;
         private bool _layoutPending;
         private Control? _layoutAffectedControl;
@@ -30,6 +35,14 @@ namespace LVGLSharp.Forms
             Margin = new Padding(3);
             Padding = Padding.Empty;
             Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            WindowTarget = NullViewTarget.Instance;
+            ProductName = string.Empty;
+            ProductVersion = string.Empty;
+            LayoutEngine = new LayoutEngine();
+            CompanyName = string.Empty;
+            DataBindings = new ControlBindingsCollection();
+            DefaultCursor = new Cursor();
+            CreateParams = new CreateParams();
         }
         //
         // 摘要:
@@ -135,7 +148,7 @@ namespace LVGLSharp.Forms
         //   T:System.ArgumentException:
         //     The default font or the regional alternative fonts are not installed on the client
         //     computer.
-        public static Font DefaultFont { get; }
+        public static Font DefaultFont { get; private set; }
         //
         // 摘要:
         //     Gets the default foreground color of the control.
@@ -529,7 +542,7 @@ namespace LVGLSharp.Forms
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [SRDescriptionAttribute("ControlProductNameDescr")]
-        public string ProductName { get; }
+        public string ProductName { get; private set; }
         //
         // 摘要:
         //     Gets the version of the assembly containing the control.
@@ -540,7 +553,7 @@ namespace LVGLSharp.Forms
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [SRDescriptionAttribute("ControlProductVersionDescr")]
-        public string ProductVersion { get; }
+        public string ProductVersion { get; private set; }
         //
         // 摘要:
         //     Gets a value indicating whether the control is currently re-creating its handle.
@@ -833,9 +846,9 @@ namespace LVGLSharp.Forms
                     if (obj != null)
                     {
                         if (_enabled)
-                            lv_obj_remove_state(obj, (ushort)0x0080 /* LV_STATE_DISABLED */);
+                            lv_obj_remove_state(obj, lv_state_t.LV_STATE_DISABLED);
                         else
-                            lv_obj_add_state(obj, (ushort)0x0080 /* LV_STATE_DISABLED */);
+                            lv_obj_add_state(obj, lv_state_t.LV_STATE_DISABLED);
                     }
                 }
                 OnEnabledChanged(EventArgs.Empty);
@@ -1048,7 +1061,7 @@ namespace LVGLSharp.Forms
         //     The System.Windows.Forms.Layout.LayoutEngine for the control's contents.
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public virtual LayoutEngine LayoutEngine { get; }
+        public virtual LayoutEngine LayoutEngine { get; protected set; }
         //
         // 摘要:
         //     This property is not relevant for this class.
@@ -1237,7 +1250,7 @@ namespace LVGLSharp.Forms
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [SRDescriptionAttribute("ControlCompanyNameDescr")]
-        public string CompanyName { get; }
+        public string CompanyName { get; private set; }
         //
         // 摘要:
         //     Gets a value indicating whether the base System.Windows.Forms.Control class is
@@ -1355,7 +1368,7 @@ namespace LVGLSharp.Forms
         [RefreshProperties(RefreshProperties.All)]
         [SRCategoryAttribute("CatData")]
         [SRDescriptionAttribute("ControlBindingsDescr")]
-        public ControlBindingsCollection DataBindings { get; }
+        public ControlBindingsCollection DataBindings { get; private set; }
         //
         // 摘要:
         //     Gets the rectangle that represents the client area of the control.
@@ -1411,7 +1424,7 @@ namespace LVGLSharp.Forms
         // 返回结果:
         //     An object of type System.Windows.Forms.Cursor representing the current default
         //     cursor.
-        protected virtual Cursor DefaultCursor { get; }
+        protected virtual Cursor DefaultCursor { get; private set; }
         //
         // 摘要:
         //     Gets the length and height, in pixels, that is specified as the default minimum
@@ -1443,7 +1456,7 @@ namespace LVGLSharp.Forms
         // 返回结果:
         //     A System.Windows.Forms.CreateParams that contains the required creation parameters
         //     when the handle to the control is created.
-        protected virtual CreateParams CreateParams { get; }
+        protected virtual CreateParams CreateParams { get; private set; }
         //
         // 摘要:
         //     Determines if events can be raised on the control.
@@ -1560,6 +1573,12 @@ namespace LVGLSharp.Forms
         [SRCategoryAttribute("CatKey")]
         [SRDescriptionAttribute("ControlOnKeyDownDescr")]
         public event KeyEventHandler? KeyDown;
+        //
+        // 摘要:
+        //     Occurs before a key event when a key is pressed while the control has focus.
+        [SRCategoryAttribute("CatKey")]
+        [SRDescriptionAttribute("ControlOnPreviewKeyDownDescr")]
+        public event EventHandler<PreviewKeyDownEventArgs>? PreviewKeyDown;
         //
         // 摘要:
         //     Occurs when the control receives focus.
@@ -1940,7 +1959,30 @@ namespace LVGLSharp.Forms
         // 摘要:
         //     Occurs when the System.Windows.Forms.Control.ImeMode property has changed.
 #pragma warning disable CS0067
-        public event EventHandler ImeModeChanged;
+        public event EventHandler? ImeModeChanged;
+
+        private sealed class NullViewTarget : IViewTarget
+        {
+            public static readonly NullViewTarget Instance = new();
+
+            public unsafe lv_obj_t* Root => null;
+
+            public unsafe lv_group_t* KeyInputGroup => null;
+
+            public unsafe delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => null;
+
+            public void Open() { }
+
+            public void HandleEvents() { }
+
+            public void RunLoop(Action iteration) { }
+
+            public void Close() { }
+
+            public unsafe void RegisterTextInput(lv_obj_t* textArea) { }
+
+            public void Dispose() { }
+        }
 #pragma warning restore CS0067
 
 
@@ -1978,7 +2020,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            if (Parent?._lvglObjectHandle != 0)
+            if (Parent is not null && Parent._lvglObjectHandle != 0)
             {
                 CreateLvglObject(Parent._lvglObjectHandle);
             }
@@ -2010,7 +2052,7 @@ namespace LVGLSharp.Forms
                 }
             }
 
-            return null;
+            return this as Form;
         }
         //
         // 摘要:
@@ -2119,7 +2161,48 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public PreProcessControlState PreProcessControlMessage(ref Message msg)
         {
-            return default;
+            if (_lvglObjectHandle == 0)
+            {
+                return PreProcessControlState.MessageNotNeeded;
+            }
+
+            if (PreProcessMessage(ref msg))
+            {
+                return PreProcessControlState.MessageProcessed;
+            }
+
+            return PreProcessControlState.MessageNotNeeded;
+        }
+
+        protected internal static Keys TranslateLvglKey(uint lvglKey)
+        {
+            Keys key = lvglKey switch
+            {
+                (uint)lv_key_t.LV_KEY_LEFT => Keys.Left,
+                (uint)lv_key_t.LV_KEY_RIGHT => Keys.Right,
+                (uint)lv_key_t.LV_KEY_UP => Keys.Up,
+                (uint)lv_key_t.LV_KEY_DOWN => Keys.Down,
+                (uint)lv_key_t.LV_KEY_BACKSPACE => Keys.Back,
+                (uint)lv_key_t.LV_KEY_DEL => Keys.Delete,
+                (uint)lv_key_t.LV_KEY_ENTER => Keys.Enter,
+                (uint)lv_key_t.LV_KEY_ESC => Keys.Escape,
+                (uint)lv_key_t.LV_KEY_NEXT => Keys.Tab,
+                _ => lvglKey <= 0xFFFF ? (Keys)lvglKey : Keys.None,
+            };
+
+            return key | LVGLSharp.Forms.ModifierKeys.Current;
+        }
+
+        protected internal static char TranslateLvglKeyChar(uint lvglKey)
+        {
+            return lvglKey switch
+            {
+                (uint)lv_key_t.LV_KEY_ENTER => '\n',
+                (uint)lv_key_t.LV_KEY_BACKSPACE => '\b',
+                (uint)lv_key_t.LV_KEY_NEXT => '\t',
+                _ when lvglKey >= 32 && lvglKey <= 126 => (char)lvglKey,
+                _ => '\0',
+            };
         }
         //
         // 摘要:
@@ -2136,7 +2219,7 @@ namespace LVGLSharp.Forms
         //     true if the message was processed by the control; otherwise, false.
         public virtual bool PreProcessMessage(ref Message msg)
         {
-            return true;
+            return ProcessKeyMessage(ref msg);
         }
         //
         // 摘要:
@@ -3276,7 +3359,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnPreviewKeyDown(PreviewKeyDownEventArgs e)
         {
-
+            PreviewKeyDown?.Invoke(this, e);
         }
         //
         // 摘要:
@@ -3464,9 +3547,52 @@ namespace LVGLSharp.Forms
         //
         // 返回结果:
         //     true if the key was processed by the control; otherwise, false.
-        protected virtual bool ProcessDialogKey(Keys keyData)
+        protected virtual unsafe bool ProcessDialogKey(Keys keyData)
         {
-            return true;
+            if (_lvglObjectHandle == 0 || Form.KeyInputGroupObject == null)
+            {
+                return false;
+            }
+
+            Keys keyCode = keyData & ~Keys.Modifiers;
+            switch (keyCode)
+            {
+                case Keys.Tab:
+                    if ((keyData & Keys.Shift) == Keys.Shift)
+                    {
+                        lv_group_focus_prev(Form.KeyInputGroupObject);
+                    }
+                    else
+                    {
+                        lv_group_focus_next(Form.KeyInputGroupObject);
+                    }
+
+                    return true;
+
+                case Keys.Left:
+                case Keys.Up:
+                    lv_group_focus_prev(Form.KeyInputGroupObject);
+                    return true;
+
+                case Keys.Right:
+                case Keys.Down:
+                    lv_group_focus_next(Form.KeyInputGroupObject);
+                    return true;
+
+                case Keys.Enter:
+                    if (CanFocus)
+                    {
+                        Focus();
+                    }
+
+                    return false;
+
+                case Keys.Escape:
+                    return false;
+
+                default:
+                    return false;
+            }
         }
         //
         // 摘要:
@@ -3481,7 +3607,26 @@ namespace LVGLSharp.Forms
         //     true if the message was processed by the control; otherwise, false.
         protected virtual bool ProcessKeyEventArgs(ref Message m)
         {
-            return false;
+            Keys keyData = TranslateLvglKey((uint)m.wParam);
+            var keyEventArgs = new KeyEventArgs(keyData);
+            OnKeyDown(keyEventArgs);
+
+            if (!keyEventArgs.SuppressKeyPress)
+            {
+                char keyChar = TranslateLvglKeyChar((uint)m.wParam);
+                if (keyChar != '\0')
+                {
+                    var keyPressEventArgs = new KeyPressEventArgs(keyChar);
+                    OnKeyPress(keyPressEventArgs);
+
+                    if (keyPressEventArgs.Handled)
+                    {
+                        keyEventArgs.Handled = true;
+                    }
+                }
+            }
+
+            return keyEventArgs.Handled || keyEventArgs.SuppressKeyPress;
         }
         //
         // 摘要:
@@ -3496,7 +3641,14 @@ namespace LVGLSharp.Forms
         //     true if the message was processed by the control; otherwise, false.
         protected virtual bool ProcessKeyPreview(ref Message m)
         {
-            return false;
+            Keys keyData = TranslateLvglKey((uint)m.wParam);
+            var previewArgs = new PreviewKeyDownEventArgs(keyData)
+            {
+                IsInputKey = IsInputKey(keyData)
+            };
+
+            OnPreviewKeyDown(previewArgs);
+            return previewArgs.IsInputKey;
         }
 
         //
@@ -3884,7 +4036,26 @@ namespace LVGLSharp.Forms
         //     true if the message was processed by the control; otherwise, false.
         protected internal virtual bool ProcessKeyMessage(ref Message m)
         {
-            return false;
+            Keys keyData = TranslateLvglKey((uint)m.wParam);
+
+            if (ProcessCmdKey(ref m, keyData))
+            {
+                return true;
+            }
+
+            bool treatAsInputKey = ProcessKeyPreview(ref m);
+
+            if (treatAsInputKey)
+            {
+                return ProcessKeyEventArgs(ref m);
+            }
+
+            if (IsInputKey(keyData))
+            {
+                return ProcessKeyEventArgs(ref m);
+            }
+
+            return ProcessDialogKey(keyData);
         }
         //
         // 摘要:
@@ -3992,11 +4163,11 @@ namespace LVGLSharp.Forms
             if (userData == null) return;
             var gcHandle = GCHandle.FromIntPtr(new IntPtr(userData));
             if (gcHandle.IsAllocated && gcHandle.Target is Control ctrl)
-                ctrl.DispatchLvglEvent(lv_event_get_code(e));
+                ctrl.DispatchLvglEvent(lv_event_get_code(e), e);
         }
 
         /// <summary>Dispatches an LVGL event code to the appropriate On* method(s).</summary>
-        protected virtual void DispatchLvglEvent(Interop.lv_event_code_t code)
+        protected virtual unsafe void DispatchLvglEvent(Interop.lv_event_code_t code, Interop.lv_event_t* lvglEvent)
         {
             MouseEventArgs mouseEventArgs = CreateMouseEventArgs(code);
 
@@ -4032,9 +4203,29 @@ namespace LVGLSharp.Forms
                     OnLeave(EventArgs.Empty);
                     break;
                 case LV_EVENT_KEY:
-                    // LVGL fires LV_EVENT_KEY on key press; no separate key-up event is available
-                    OnKeyDown(new KeyEventArgs());
-                    OnKeyPress(new KeyPressEventArgs());
+                    uint lvglKey = lv_event_get_key(lvglEvent);
+                    Keys translatedKey = TranslateLvglKey(lvglKey);
+                    var keyMessage = new Message(
+                        Handle,
+                        0x0100,
+                        (nuint)lvglKey,
+                        0);
+
+                    var preprocessState = PreProcessControlMessage(ref keyMessage);
+                    if (preprocessState == PreProcessControlState.MessageNotNeeded)
+                    {
+                        var keyEventArgs = new KeyEventArgs(translatedKey);
+                        OnKeyDown(keyEventArgs);
+
+                        if (!keyEventArgs.SuppressKeyPress)
+                        {
+                            char keyChar = TranslateLvglKeyChar(lvglKey);
+                            if (keyChar != '\0')
+                            {
+                                OnKeyPress(new KeyPressEventArgs(keyChar));
+                            }
+                        }
+                    }
                     break;
                 case LV_EVENT_SIZE_CHANGED:
                     OnResize(EventArgs.Empty);
@@ -4131,7 +4322,7 @@ namespace LVGLSharp.Forms
 
             if (BackColor != Color.Empty)
             {
-                lv_obj_set_style_bg_opa(obj, (byte)LV_OPA_COVER, 0);
+                lv_obj_set_style_bg_opa(obj, (byte)_lv_opacity_level_t.LV_OPA_COVER, 0);
                 lv_obj_set_style_bg_color(obj, lv_color_make(BackColor.R, BackColor.G, BackColor.B), 0);
             }
 

@@ -13,6 +13,15 @@ namespace LVGLSharp.Runtime.Linux
 {
 public unsafe class FrameBufferView : ViewLifetimeBase
     {
+        [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_fbdev_create")]
+        private static extern lv_display_t* lv_linux_fbdev_create_native();
+
+        [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_fbdev_set_file")]
+        private static extern lv_result_t lv_linux_fbdev_set_file_native(lv_display_t* disp, byte* file);
+
+        [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_evdev_create")]
+        private static extern lv_indev_t* lv_evdev_create_native(lv_indev_type_t indev_type, byte* dev_path);
+
         static lv_display_t* g_display;
         static lv_indev_t* g_indev;
         static bool g_running;
@@ -61,16 +70,16 @@ public unsafe class FrameBufferView : ViewLifetimeBase
             lv_init();
             lv_tick_set_cb(&my_tick);
 
-            g_display = lv_linux_fbdev_create();
+            g_display = lv_linux_fbdev_create_native();
             fixed (byte* ptr = Encoding.ASCII.GetBytes($"{_fbdev}\0"))
-                lv_linux_fbdev_set_file(g_display, ptr);
+                _ = lv_linux_fbdev_set_file_native(g_display, ptr);
 
             fixed (byte* ptr = Encoding.ASCII.GetBytes($"{_indev}\0"))
-                g_indev = lv_evdev_create(lv_indev_type_t.LV_INDEV_TYPE_POINTER, ptr);
+                g_indev = lv_evdev_create_native(lv_indev_type_t.LV_INDEV_TYPE_POINTER, ptr);
 
             RootObject = lv_scr_act();
 
-            _fallbackFont = lv_obj_get_style_text_font(RootObject, LV_PART_MAIN);
+            _fallbackFont = lv_obj_get_style_text_font(RootObject, lv_part_t.LV_PART_MAIN);
 
             var systemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
             if (!string.IsNullOrWhiteSpace(systemFontPath))

@@ -9,13 +9,6 @@ namespace LVGLSharp.Interop
         [NativeTypeName("int32_t")]
         public int radius;
 
-        [NativeTypeName("lv_opa_t")]
-        public byte bg_opa;
-
-        public lv_color_t bg_color;
-
-        public lv_grad_dsc_t bg_grad;
-
         [NativeTypeName("const void *")]
         public void* bg_image_src;
 
@@ -33,13 +26,29 @@ namespace LVGLSharp.Interop
         [NativeTypeName("uint8_t")]
         public byte bg_image_tiled;
 
+        [NativeTypeName("lv_opa_t")]
+        public byte bg_opa;
+
+        [NativeTypeName("lv_opa_t")]
+        public byte border_opa;
+
+        [NativeTypeName("lv_opa_t")]
+        public byte outline_opa;
+
+        [NativeTypeName("lv_opa_t")]
+        public byte shadow_opa;
+
+        public lv_color_t bg_color;
+
+        public lv_grad_dsc_t bg_grad;
+
+        [NativeTypeName("const lv_image_colorkey_t *")]
+        public lv_image_colorkey_t* bg_image_colorkey;
+
         public lv_color_t border_color;
 
         [NativeTypeName("int32_t")]
         public int border_width;
-
-        [NativeTypeName("lv_opa_t")]
-        public byte border_opa;
 
         [NativeBitfield("border_side", offset: 0, length: 5)]
         [NativeBitfield("border_post", offset: 5, length: 1)]
@@ -85,9 +94,6 @@ namespace LVGLSharp.Interop
         [NativeTypeName("int32_t")]
         public int outline_pad;
 
-        [NativeTypeName("lv_opa_t")]
-        public byte outline_opa;
-
         public lv_color_t shadow_color;
 
         [NativeTypeName("int32_t")]
@@ -101,8 +107,5 @@ namespace LVGLSharp.Interop
 
         [NativeTypeName("int32_t")]
         public int shadow_spread;
-
-        [NativeTypeName("lv_opa_t")]
-        public byte shadow_opa;
     }
 }

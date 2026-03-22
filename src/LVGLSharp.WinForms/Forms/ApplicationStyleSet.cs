@@ -18,7 +18,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            var font = lv_obj_get_style_text_font(root, LV_PART_MAIN);
+            var font = lv_obj_get_style_text_font(root, (uint)lv_part_t.LV_PART_MAIN);
             if (font == null)
             {
                 return;
@@ -140,14 +140,14 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            var indicatorSelector = LvglStyleSelector.ForPart(LV_PART_INDICATOR);
-            var checkedIndicatorSelector = LvglStyleSelector.ForPartAndState(LV_PART_INDICATOR, LV_STATE_CHECKED);
+            var indicatorSelector = LvglStyleSelector.ForPart(lv_part_t.LV_PART_INDICATOR);
+            var checkedIndicatorSelector = LvglStyleSelector.ForPartAndState(lv_part_t.LV_PART_INDICATOR, lv_state_t.LV_STATE_CHECKED);
 
             ApplicationFontStyleHelper.ApplyActiveTextFont(obj);
             ApplicationFontStyleHelper.ApplyActiveTextFont(obj, indicatorSelector);
             ApplicationFontStyleHelper.ApplyActiveTextFont(obj, checkedIndicatorSelector);
 
-            lv_obj_set_style_bg_opa(obj, (byte)LV_OPA_TRANSP, 0);
+            lv_obj_set_style_bg_opa(obj, (byte)_lv_opacity_level_t.LV_OPA_TRANSP, 0);
             lv_obj_set_style_text_color(obj, LvglStyleColorConverter.ToLvColor(TextColor), 0);
             lv_obj_set_style_pad_column(obj, TextGap, 0);
             lv_obj_set_style_anim_duration(obj, AnimationDuration, 0);
@@ -196,7 +196,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            var itemSelector = LvglStyleSelector.ForPart(LV_PART_ITEMS);
+            var itemSelector = LvglStyleSelector.ForPart(lv_part_t.LV_PART_ITEMS);
 
             ApplicationFontStyleHelper.ApplyActiveTextFont(obj);
             ApplicationFontStyleHelper.ApplyActiveTextFont(obj, itemSelector);
@@ -248,9 +248,9 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            var indicatorSelector = LvglStyleSelector.ForPart(LV_PART_INDICATOR);
-            var itemSelector = LvglStyleSelector.ForPart(LV_PART_ITEMS);
-            var selectedSelector = LvglStyleSelector.ForPart(LV_PART_SELECTED);
+            var indicatorSelector = LvglStyleSelector.ForPart(lv_part_t.LV_PART_INDICATOR);
+            var itemSelector = LvglStyleSelector.ForPart(lv_part_t.LV_PART_ITEMS);
+            var selectedSelector = LvglStyleSelector.ForPart(lv_part_t.LV_PART_SELECTED);
 
             ApplicationFontStyleHelper.ApplyActiveTextFont(obj);
             ApplicationFontStyleHelper.ApplyActiveTextFont(obj, indicatorSelector);
@@ -313,11 +313,11 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            var cursorSelector = LvglStyleSelector.ForPartAndState(LV_PART_CURSOR, LV_STATE_FOCUSED);
-            var selectedSelector = LvglStyleSelector.ForPart(LV_PART_SELECTED);
-            var focusedSelector = LvglStyleSelector.ForPartAndState(0, LV_STATE_FOCUSED);
-            var unfocusedCursorSelector = LvglStyleSelector.ForPart(LV_PART_CURSOR);
-            var placeholderSelector = LvglStyleSelector.ForPart(LV_PART_TEXTAREA_PLACEHOLDER);
+            var cursorSelector = LvglStyleSelector.ForPartAndState(lv_part_t.LV_PART_CURSOR, lv_state_t.LV_STATE_FOCUSED);
+            var selectedSelector = LvglStyleSelector.ForPart(lv_part_t.LV_PART_SELECTED);
+            var focusedSelector = LvglStyleSelector.ForPartAndState((uint)0, lv_state_t.LV_STATE_FOCUSED);
+            var unfocusedCursorSelector = LvglStyleSelector.ForPart(lv_part_t.LV_PART_CURSOR);
+            var placeholderSelector = (uint)LV_PART_TEXTAREA_PLACEHOLDER;
 
             ApplicationFontStyleHelper.ApplyActiveTextFont(obj);
             ApplicationFontStyleHelper.ApplyActiveTextFont(obj, selectedSelector);
@@ -332,9 +332,9 @@ namespace LVGLSharp.Forms
             lv_obj_set_style_pad_ver(obj, VerticalPadding, 0);
             lv_obj_set_style_text_color(obj, LvglStyleColorConverter.ToLvColor(TextColor), 0);
 
-            lv_obj_set_style_bg_opa(obj, (byte)LV_OPA_TRANSP, unfocusedCursorSelector);
+            lv_obj_set_style_bg_opa(obj, (byte)_lv_opacity_level_t.LV_OPA_TRANSP, unfocusedCursorSelector);
             lv_obj_set_style_width(obj, 0, unfocusedCursorSelector);
-            lv_obj_set_style_bg_opa(obj, (byte)LV_OPA_COVER, cursorSelector);
+            lv_obj_set_style_bg_opa(obj, (byte)_lv_opacity_level_t.LV_OPA_COVER, cursorSelector);
             lv_obj_set_style_bg_color(obj, LvglStyleColorConverter.ToLvColor(CursorColor), cursorSelector);
             lv_obj_set_style_width(obj, CursorWidth, cursorSelector);
 
@@ -345,7 +345,7 @@ namespace LVGLSharp.Forms
             lv_obj_set_style_outline_width(obj, 0, focusedSelector);
             lv_obj_set_style_outline_pad(obj, 0, focusedSelector);
             lv_obj_set_style_shadow_width(obj, 0, focusedSelector);
-            lv_obj_set_style_shadow_opa(obj, (byte)LV_OPA_TRANSP, focusedSelector);
+            lv_obj_set_style_shadow_opa(obj, (byte)_lv_opacity_level_t.LV_OPA_TRANSP, focusedSelector);
         }
     }
 
@@ -366,7 +366,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            var indicatorSelector = LvglStyleSelector.ForPart(LV_PART_INDICATOR);
+            var indicatorSelector = LvglStyleSelector.ForPart(lv_part_t.LV_PART_INDICATOR);
 
             lv_obj_set_style_bg_opa(obj, BackgroundOpacity, 0);
             lv_obj_set_style_bg_color(obj, LvglStyleColorConverter.ToLvColor(BackgroundColor), 0);
@@ -402,8 +402,8 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            var indicatorSelector = LvglStyleSelector.ForPart(LV_PART_INDICATOR);
-            var knobSelector = LvglStyleSelector.ForPart(LV_PART_KNOB);
+            var indicatorSelector = LvglStyleSelector.ForPart(lv_part_t.LV_PART_INDICATOR);
+            var knobSelector = LvglStyleSelector.ForPart(lv_part_t.LV_PART_KNOB);
 
             lv_obj_set_style_bg_opa(obj, BackgroundOpacity, 0);
             lv_obj_set_style_bg_color(obj, LvglStyleColorConverter.ToLvColor(BackgroundColor), 0);
@@ -487,7 +487,7 @@ namespace LVGLSharp.Forms
             button: new ButtonControlStyle(
                 UseThemeDefaults: false,
                 BackgroundColor: new Color(240, 240, 240),
-                BackgroundOpacity: (byte)LV_OPA_COVER,
+                BackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 BorderColor: new Color(173, 173, 173),
                 BorderWidth: 1,
                 Radius: 4,
@@ -503,10 +503,10 @@ namespace LVGLSharp.Forms
                 IndicatorBorderWidth: 1,
                 IndicatorBorderColor: new Color(122, 122, 122),
                 IndicatorBackgroundColor: new Color(255, 255, 255),
-                IndicatorBackgroundOpacity: (byte)LV_OPA_COVER,
+                IndicatorBackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 CheckedIndicatorBorderColor: new Color(0, 120, 215),
                 CheckedIndicatorBackgroundColor: new Color(0, 120, 215),
-                CheckedIndicatorBackgroundOpacity: (byte)LV_OPA_COVER,
+                CheckedIndicatorBackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 CheckedMarkColor: new Color(255, 255, 255),
                 TextGap: 8,
                 OutlineWidth: 1,
@@ -520,10 +520,10 @@ namespace LVGLSharp.Forms
                 IndicatorBorderWidth: 1,
                 IndicatorBorderColor: new Color(122, 122, 122),
                 IndicatorBackgroundColor: new Color(255, 255, 255),
-                IndicatorBackgroundOpacity: (byte)LV_OPA_COVER,
+                IndicatorBackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 CheckedIndicatorBorderColor: new Color(0, 120, 215),
                 CheckedIndicatorBackgroundColor: new Color(0, 120, 215),
-                CheckedIndicatorBackgroundOpacity: (byte)LV_OPA_COVER,
+                CheckedIndicatorBackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 CheckedMarkColor: new Color(0, 120, 215),
                 TextGap: 8,
                 OutlineWidth: 1,
@@ -536,7 +536,7 @@ namespace LVGLSharp.Forms
             listBox: new ListControlStyle(
                 UseThemeDefaults: false,
                 BackgroundColor: new Color(255, 255, 255),
-                BackgroundOpacity: (byte)LV_OPA_COVER,
+                BackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 BorderColor: new Color(122, 122, 122),
                 BorderWidth: 1,
                 Radius: 2,
@@ -545,14 +545,14 @@ namespace LVGLSharp.Forms
                 ItemSpacing: 1,
                 TextColor: new Color(0, 0, 0),
                 ItemBackgroundColor: new Color(255, 255, 255),
-                ItemBackgroundOpacity: (byte)LV_OPA_TRANSP,
+                ItemBackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_TRANSP,
                 ItemBorderColor: new Color(255, 255, 255),
                 ItemBorderWidth: 0,
                 ItemRadius: 0),
             comboBox: new ComboBoxControlStyle(
                 UseThemeDefaults: false,
                 BackgroundColor: new Color(255, 255, 255),
-                BackgroundOpacity: (byte)LV_OPA_COVER,
+                BackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 BorderColor: new Color(122, 122, 122),
                 BorderWidth: 1,
                 Radius: 2,
@@ -561,18 +561,18 @@ namespace LVGLSharp.Forms
                 TextColor: new Color(0, 0, 0),
                 AnimationDuration: 0,
                 ListBackgroundColor: new Color(255, 255, 255),
-                ListBackgroundOpacity: (byte)LV_OPA_COVER,
+                ListBackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 ListBorderColor: new Color(122, 122, 122),
                 ListBorderWidth: 1,
                 ListRadius: 2,
                 ListItemTextColor: new Color(0, 0, 0),
                 SelectedItemBackgroundColor: new Color(0, 120, 215),
-                SelectedItemBackgroundOpacity: (byte)LV_OPA_COVER,
+                SelectedItemBackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 SelectedItemTextColor: new Color(255, 255, 255)),
             textBox: new TextInputControlStyle(
                 UseThemeDefaults: false,
                 BackgroundColor: new Color(255, 255, 255),
-                BackgroundOpacity: (byte)LV_OPA_COVER,
+                BackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 BorderColor: new Color(122, 122, 122),
                 BorderWidth: 1,
                 Radius: 2,
@@ -582,12 +582,12 @@ namespace LVGLSharp.Forms
                 CursorColor: new Color(0, 120, 215),
                 CursorWidth: 1,
                 SelectionBackgroundColor: new Color(0, 120, 215),
-                SelectionBackgroundOpacity: (byte)LV_OPA_COVER,
+                SelectionBackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 SelectionTextColor: new Color(255, 255, 255)),
             richTextBox: new TextInputControlStyle(
                 UseThemeDefaults: false,
                 BackgroundColor: new Color(255, 255, 255),
-                BackgroundOpacity: (byte)LV_OPA_COVER,
+                BackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 BorderColor: new Color(122, 122, 122),
                 BorderWidth: 1,
                 Radius: 2,
@@ -597,35 +597,35 @@ namespace LVGLSharp.Forms
                 CursorColor: new Color(0, 120, 215),
                 CursorWidth: 1,
                 SelectionBackgroundColor: new Color(0, 120, 215),
-                SelectionBackgroundOpacity: (byte)LV_OPA_COVER,
+                SelectionBackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 SelectionTextColor: new Color(255, 255, 255)),
             progressBar: new ProgressBarControlStyle(
                 UseThemeDefaults: false,
                 BackgroundColor: new Color(230, 230, 230),
-                BackgroundOpacity: (byte)LV_OPA_COVER,
+                BackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 BorderColor: new Color(173, 173, 173),
                 BorderWidth: 1,
                 Radius: 2,
                 IndicatorBackgroundColor: new Color(0, 120, 215),
-                IndicatorBackgroundOpacity: (byte)LV_OPA_COVER),
+                IndicatorBackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER),
             trackBar: new TrackBarControlStyle(
                 UseThemeDefaults: false,
                 BackgroundColor: new Color(214, 214, 214),
-                BackgroundOpacity: (byte)LV_OPA_COVER,
+                BackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 BorderColor: new Color(214, 214, 214),
                 BorderWidth: 0,
                 Radius: LV_RADIUS_CIRCLE,
                 IndicatorBackgroundColor: new Color(0, 120, 215),
-                IndicatorBackgroundOpacity: (byte)LV_OPA_COVER,
+                IndicatorBackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 KnobBackgroundColor: new Color(255, 255, 255),
-                KnobBackgroundOpacity: (byte)LV_OPA_COVER,
+                KnobBackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_COVER,
                 KnobBorderColor: new Color(122, 122, 122),
                 KnobBorderWidth: 1,
                 KnobSize: 16,
                 KnobRadius: LV_RADIUS_CIRCLE),
             root: new ContainerControlStyle(PaddingAll: 0),
             groupBox: new ContainerControlStyle(PaddingAll: 4),
-            transparentPanel: new ContainerControlStyle(PaddingAll: 0, BorderWidth: 0, BackgroundOpacity: (byte)LV_OPA_TRANSP),
+            transparentPanel: new ContainerControlStyle(PaddingAll: 0, BorderWidth: 0, BackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_TRANSP),
             layoutPanel: new ContainerControlStyle(PaddingAll: 0));
 
         private static readonly ApplicationStyleSet s_lvgl = new(
@@ -770,7 +770,7 @@ namespace LVGLSharp.Forms
                 KnobRadius: default),
             root: new ContainerControlStyle(PaddingAll: 0),
             groupBox: new ContainerControlStyle(PaddingAll: 4),
-            transparentPanel: new ContainerControlStyle(PaddingAll: 0, BorderWidth: 0, BackgroundOpacity: (byte)LV_OPA_TRANSP),
+            transparentPanel: new ContainerControlStyle(PaddingAll: 0, BorderWidth: 0, BackgroundOpacity: (byte)_lv_opacity_level_t.LV_OPA_TRANSP),
             layoutPanel: new ContainerControlStyle(PaddingAll: 0));
 
         public static ApplicationStyleSet Get(ApplicationStyleMode mode)
@@ -789,14 +789,19 @@ namespace LVGLSharp.Forms
 
     internal static class LvglStyleSelector
     {
-        public static uint ForPart(int part)
+        public static uint ForPart(lv_part_t part)
         {
             return (uint)part;
         }
 
-        public static uint ForPartAndState(int part, int state)
+        public static uint ForPartAndState(lv_part_t part, lv_state_t state)
         {
-            return (uint)(part | state);
+            return (uint)part | (uint)state;
+        }
+
+        public static uint ForPartAndState(uint part, lv_state_t state)
+        {
+            return part | (uint)state;
         }
     }
 }

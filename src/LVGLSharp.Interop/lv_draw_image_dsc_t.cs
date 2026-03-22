@@ -92,6 +92,9 @@ namespace LVGLSharp.Interop
             }
         }
 
+        [NativeTypeName("const lv_image_colorkey_t *")]
+        public lv_image_colorkey_t* colorkey;
+
         public lv_draw_image_sup_t* sup;
 
         public lv_area_t image_area;

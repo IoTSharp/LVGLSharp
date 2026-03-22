@@ -125,7 +125,7 @@ unsafe class Program
                         serialPort.Read(buffer, 0, bytesToRead);
 
                         string text;
-                        if (lv_obj_has_state(hexSwitch, LV_STATE_CHECKED))
+                        if (lv_obj_has_state(hexSwitch, lv_state_t.LV_STATE_CHECKED))
                         {
                             text = BitConverter.ToString(buffer).Replace("-", " ") + "\n";
                         }

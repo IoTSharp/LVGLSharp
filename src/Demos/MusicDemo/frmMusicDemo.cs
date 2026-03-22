@@ -704,7 +704,6 @@ public sealed class frmMusicDemo : Form
             string candidate = Path.Combine(
                 currentDirectory,
                 "libs",
-                "lv_port_linux",
                 "lvgl",
                 "demos",
                 "music",

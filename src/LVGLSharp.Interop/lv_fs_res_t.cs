@@ -14,6 +14,7 @@ namespace LVGLSharp.Interop
         LV_FS_RES_NOT_IMP,
         LV_FS_RES_OUT_OF_MEM,
         LV_FS_RES_INV_PARAM,
+        LV_FS_RES_DRIVE_LETTER_ALREADY_USED,
         LV_FS_RES_UNKNOWN,
     }
 }

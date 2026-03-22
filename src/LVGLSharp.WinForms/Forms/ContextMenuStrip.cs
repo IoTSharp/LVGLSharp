@@ -136,7 +136,7 @@ namespace LVGLSharp.Forms
                 
                 if (!item.Enabled)
                 {
-                    lv_obj_add_state(btn, 0x0080); // LV_STATE_DISABLED
+                    lv_obj_add_state(btn, lv_state_t.LV_STATE_DISABLED);
                     lv_obj_set_style_text_color(label, lv_color_hex(0x999999), 0); // 禁用时使用深灰色
                 }
 

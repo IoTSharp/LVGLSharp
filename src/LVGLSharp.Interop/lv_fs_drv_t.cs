@@ -11,6 +11,9 @@ namespace LVGLSharp.Interop
         [NativeTypeName("bool (*)(lv_fs_drv_t *)")]
         public delegate* unmanaged[Cdecl]<lv_fs_drv_t*, c_bool1> ready_cb;
 
+        [NativeTypeName("void (*)(lv_fs_drv_t *)")]
+        public delegate* unmanaged[Cdecl]<lv_fs_drv_t*, void> remove_cb;
+
         [NativeTypeName("void *(*)(lv_fs_drv_t *, const char *, lv_fs_mode_t)")]
         public delegate* unmanaged[Cdecl]<lv_fs_drv_t*, byte*, lv_fs_mode_t, void*> open_cb;
 

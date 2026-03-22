@@ -5,10 +5,10 @@ namespace LVGLSharp.Interop
         [NativeTypeName("uint16_t")]
         public ushort year;
 
-        [NativeTypeName("int8_t")]
-        public sbyte month;
+        [NativeTypeName("uint8_t")]
+        public byte month;
 
-        [NativeTypeName("int8_t")]
-        public sbyte day;
+        [NativeTypeName("uint8_t")]
+        public byte day;
     }
 }

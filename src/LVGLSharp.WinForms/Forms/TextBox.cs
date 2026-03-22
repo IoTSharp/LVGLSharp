@@ -69,7 +69,7 @@ namespace LVGLSharp.Forms
             }
         }
 
-        public ContextMenuStrip? ContextMenuStrip
+        public new ContextMenuStrip? ContextMenuStrip
         {
             get => _defaultContextMenu;
             set => _defaultContextMenu = value;
@@ -356,15 +356,12 @@ namespace LVGLSharp.Forms
             if (gcHandle.IsAllocated && gcHandle.Target is TextBox textBox)
             {
                 uint key = lv_event_get_key(e);
-                textBox.HandleKeyPress(key);
+                textBox.HandleShortcutKeyPress(key);
             }
         }
 
-        private void HandleKeyPress(uint lvglKey)
+        private void HandleShortcutKeyPress(uint lvglKey)
         {
-            // TODO: 将 LVGL 键码映射到 Keys 枚举
-            // LVGL 使用 ASCII 值，需要检测修饰键
-            
             bool isCtrlPressed = LVGLSharp.Forms.ModifierKeys.IsControlPressed;
             
             if (isCtrlPressed)
@@ -406,7 +403,7 @@ namespace LVGLSharp.Forms
             UpdateLvglText();
         }
 
-        protected override void DispatchLvglEvent(lv_event_code_t code)
+        protected override unsafe void DispatchLvglEvent(lv_event_code_t code, lv_event_t* lvglEvent)
         {
             if (code == LV_EVENT_VALUE_CHANGED)
             {
@@ -414,7 +411,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            base.DispatchLvglEvent(code);
+            base.DispatchLvglEvent(code, lvglEvent);
         }
 
         private unsafe void SyncTextFromLvgl()

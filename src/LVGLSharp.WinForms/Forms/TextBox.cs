@@ -248,19 +248,19 @@ namespace LVGLSharp.Forms
             lv_textarea_set_text_selection(obj, new c_bool1(true));
             lv_textarea_set_one_line(obj, !Multiline);
             
-            if (Form.SendTextAreaFocusCb != null)
+            if (Form.SendTextAreaFocusCallback != null)
             {
-                lv_obj_add_event_cb(obj, Form.SendTextAreaFocusCb, lv_event_code_t.LV_EVENT_FOCUSED, null);
+                lv_obj_add_event_cb(obj, Form.SendTextAreaFocusCallback, lv_event_code_t.LV_EVENT_FOCUSED, null);
             }
 
-            if (Form.SendTextAreaDefocusCb != null)
+            if (Form.SendTextAreaDefocusCallback != null)
             {
-                lv_obj_add_event_cb(obj, Form.SendTextAreaDefocusCb, lv_event_code_t.LV_EVENT_DEFOCUSED, null);
+                lv_obj_add_event_cb(obj, Form.SendTextAreaDefocusCallback, lv_event_code_t.LV_EVENT_DEFOCUSED, null);
             }
 
-            if (Form.key_inputGroup != null)
+            if (Form.KeyInputGroupObject != null)
             {
-                lv_group_add_obj(Form.key_inputGroup, obj);
+                lv_group_add_obj(Form.KeyInputGroupObject, obj);
             }
 
             AddKeyEventCallback();
@@ -311,7 +311,7 @@ namespace LVGLSharp.Forms
 
                 // Pointer presses do not automatically update the keypad focus group on X11.
                 // Focus the textarea explicitly so subsequent key events are delivered here.
-                if (Form.key_inputGroup != null)
+                if (Form.KeyInputGroupObject != null)
                 {
                     lv_group_focus_obj(target);
                 }

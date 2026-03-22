@@ -19,10 +19,10 @@ namespace LVGLSharp.Forms
 
         public FormBorderStyle FormBorderStyle { get; set; } = FormBorderStyle.Sizable;
 
-        public static lv_obj_t* root { get; set; }
-        public static lv_group_t* key_inputGroup { get; set; }
-        public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCb { get; set; } = null;
-        public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaDefocusCb { get; set; } = null;
+        public static lv_obj_t* RootObject { get; set; }
+        public static lv_group_t* KeyInputGroupObject { get; set; }
+        public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback { get; set; } = null;
+        public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaDefocusCallback { get; set; } = null;
 
         protected override void OnHandleCreated(EventArgs e)
         {
@@ -60,13 +60,13 @@ namespace LVGLSharp.Forms
             _view = WindowHostFactory.Create(windowOptions);
             _view.Open();
 
-            root = _view.Root;
-            key_inputGroup = _view.KeyInputGroup;
-            SendTextAreaFocusCb = _view.SendTextAreaFocusCallback;
-            SendTextAreaDefocusCb = null;
-            Application.CurrentStyleSet.Root.Apply(root);
+            RootObject = _view.Root;
+            KeyInputGroupObject = _view.KeyInputGroup;
+            SendTextAreaFocusCallback = _view.SendTextAreaFocusCallback;
+            SendTextAreaDefocusCallback = null;
+            Application.CurrentStyleSet.Root.Apply(RootObject);
 
-            _lvglObjectHandle = (nint)root;
+            _lvglObjectHandle = (nint)RootObject;
             Handle = _lvglObjectHandle;
             OnHandleCreated(EventArgs.Empty);
             Application.RegisterOpenForm(this);
@@ -77,9 +77,9 @@ namespace LVGLSharp.Forms
             }
             OnLoad(EventArgs.Empty);
 
-            if (root != null)
+            if (RootObject != null)
             {
-                lv_obj_invalidate(root);
+                lv_obj_invalidate(RootObject);
             }
         }
 
@@ -129,8 +129,13 @@ namespace LVGLSharp.Forms
                 return;
             }
 
+            _view?.Close();
             _view?.Dispose();
             _view = null;
+            RootObject = null;
+            KeyInputGroupObject = null;
+            SendTextAreaFocusCallback = null;
+            SendTextAreaDefocusCallback = null;
             Application.UnregisterOpenForm(this);
             base.DestroyHandle();
         }

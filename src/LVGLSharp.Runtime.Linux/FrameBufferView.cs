@@ -15,17 +15,17 @@ public unsafe class FrameBufferView : IView
     {
         static lv_display_t* g_display;
         static lv_indev_t* g_indev;
-        static bool g_running = true;
+        static bool g_running;
         static byte[] _timeBuf = new byte[32];
         static int startTick;
 
-        public static lv_obj_t* root { get; set; }
-        public static lv_group_t* key_inputGroup { get; set; } = null;
-        public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCb { get; set; } = null;
+        public static lv_obj_t* RootObject { get; set; }
+        public static lv_group_t* KeyInputGroupObject { get; set; } = null;
+        public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallbackCore { get; set; } = null;
 
-        public lv_obj_t* Root => root;
-        public lv_group_t* KeyInputGroup => key_inputGroup;
-        public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCb;
+        public lv_obj_t* Root => RootObject;
+        public lv_group_t* KeyInputGroup => KeyInputGroupObject;
+        public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCallbackCore;
 
         private lv_font_t* _fallbackFont;
         private lv_style_t* _defaultFontStyle;
@@ -50,7 +50,13 @@ public unsafe class FrameBufferView : IView
 
         public void Open()
         {
+            if (g_running)
+            {
+                return;
+            }
+
             LvglNativeLibraryResolver.EnsureRegistered();
+            g_running = true;
             startTick = Environment.TickCount;
             lv_init();
             lv_tick_set_cb(&my_tick);
@@ -62,9 +68,9 @@ public unsafe class FrameBufferView : IView
             fixed (byte* ptr = Encoding.ASCII.GetBytes($"{_indev}\0"))
                 g_indev = lv_evdev_create(lv_indev_type_t.LV_INDEV_TYPE_POINTER, ptr);
 
-            root = lv_scr_act();
+            RootObject = lv_scr_act();
 
-            _fallbackFont = lv_obj_get_style_text_font(root, LV_PART_MAIN);
+            _fallbackFont = lv_obj_get_style_text_font(RootObject, LV_PART_MAIN);
 
             var systemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
             if (!string.IsNullOrWhiteSpace(systemFontPath))
@@ -76,7 +82,7 @@ public unsafe class FrameBufferView : IView
                     _fallbackFont,
                     LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
 
-                _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(root, _fontManager.GetLvFontPtr());
+                _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(RootObject, _fontManager.GetLvFontPtr());
             }
         }
 
@@ -109,7 +115,30 @@ public unsafe class FrameBufferView : IView
 
         public void Close()
         {
+            if (!g_running && g_display == null && g_indev == null && RootObject == null)
+            {
+                return;
+            }
+
             g_running = false;
+
+            if (g_indev != null)
+            {
+                lv_indev_delete(g_indev);
+                g_indev = null;
+            }
+
+            if (g_display != null)
+            {
+                lv_display_delete(g_display);
+                g_display = null;
+            }
+
+            _fontManager?.Dispose();
+            _fontManager = null;
+            RootObject = null;
+            KeyInputGroupObject = null;
+            SendTextAreaFocusCallbackCore = null;
         }
 
         public void Dispose()

@@ -25,18 +25,18 @@ unsafe class Program
     static List<string> serialPorts = [];
     static List<string> bauds = ["9600", "19200", "38400", "57600", "115200"];
 
-    static lv_obj_t* root;
-    static lv_group_t* key_inputGroup = null;
-    static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCb = null;
+    static lv_obj_t* rootObject;
+    static lv_group_t* keyInputGroup = null;
+    static delegate* unmanaged[Cdecl]<lv_event_t*, void> sendTextAreaFocusCallback = null;
 
     static void Main(string[] args)
     {
         view = CreateView();
         view.Open();
 
-        root = view.Root;
-        key_inputGroup = view.KeyInputGroup;
-        SendTextAreaFocusCb = view.SendTextAreaFocusCallback;
+        rootObject = view.Root;
+        keyInputGroup = view.KeyInputGroup;
+        sendTextAreaFocusCallback = view.SendTextAreaFocusCallback;
 
         InitUI();
 
@@ -176,11 +176,11 @@ unsafe class Program
 
     static void InitUI()
     {
-        lv_obj_set_flex_flow(root, LV_FLEX_FLOW_COLUMN);
-        lv_obj_set_style_pad_all(root, 10, 0);
+        lv_obj_set_flex_flow(rootObject, LV_FLEX_FLOW_COLUMN);
+        lv_obj_set_style_pad_all(rootObject, 10, 0);
 
         // 顶部工具行容器
-        var toolbar = lv_obj_create(root);
+        var toolbar = lv_obj_create(rootObject);
         lv_obj_set_height(toolbar, 100);
         lv_obj_set_width(toolbar, 670);
         lv_obj_set_flex_flow(toolbar, LV_FLEX_FLOW_ROW);
@@ -228,7 +228,7 @@ unsafe class Program
         lv_obj_set_height(btn_label, 20);
 
         // 接收区容器
-        var recv_container = lv_obj_create(root);
+        var recv_container = lv_obj_create(rootObject);
         lv_obj_set_height(recv_container, 190);
         lv_obj_set_width(recv_container, 670);
         lv_obj_set_flex_flow(recv_container, LV_FLEX_FLOW_ROW);
@@ -236,8 +236,8 @@ unsafe class Program
 
         // 接收区
         recv_textarea = lv_textarea_create(recv_container);
-        if (key_inputGroup != null)
-            lv_group_add_obj(key_inputGroup, recv_textarea);
+        if (keyInputGroup != null)
+            lv_group_add_obj(keyInputGroup, recv_textarea);
         lv_obj_set_flex_grow(recv_textarea, 1);
         lv_obj_set_height(recv_textarea, 150);
         fixed (byte* utf8Ptr = Encoding.UTF8.GetBytes("接收的数据..."))
@@ -259,7 +259,7 @@ unsafe class Program
         lv_obj_set_height(switch_label, 50);
 
         // 发送区容器
-        var send_container = lv_obj_create(root);
+        var send_container = lv_obj_create(rootObject);
         lv_obj_set_height(send_container, 90);
         lv_obj_set_width(send_container, 670);
         lv_obj_set_flex_flow(send_container, LV_FLEX_FLOW_ROW);
@@ -270,10 +270,10 @@ unsafe class Program
         lv_obj_set_flex_grow(send_textarea, 1);
         fixed (byte* utf8Ptr = Encoding.UTF8.GetBytes("输入的数据..."))
             lv_textarea_set_placeholder_text(send_textarea, utf8Ptr);
-        if (SendTextAreaFocusCb != null)
-            lv_obj_add_event_cb(send_textarea, SendTextAreaFocusCb, lv_event_code_t.LV_EVENT_FOCUSED, null);
-        if (key_inputGroup != null)
-            lv_group_add_obj(key_inputGroup, send_textarea);
+        if (sendTextAreaFocusCallback != null)
+            lv_obj_add_event_cb(send_textarea, sendTextAreaFocusCallback, lv_event_code_t.LV_EVENT_FOCUSED, null);
+        if (keyInputGroup != null)
+            lv_group_add_obj(keyInputGroup, send_textarea);
         lv_obj_set_height(send_textarea, 50);
 
         view?.RegisterTextInput(send_textarea);

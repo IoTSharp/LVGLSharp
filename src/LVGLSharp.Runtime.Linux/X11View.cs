@@ -377,15 +377,15 @@ public unsafe partial class X11View : IView
         _borderless = borderless;
     }
 
-    public static lv_obj_t* root { get; private set; }
-    public static lv_group_t* key_inputGroup { get; private set; }
-    public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCb { get; private set; }
+    public static lv_obj_t* RootObject { get; private set; }
+    public static lv_group_t* KeyInputGroupObject { get; private set; }
+    public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallbackCore { get; private set; }
     public static (int X, int Y) CurrentMousePosition => s_activeView is null ? (0, 0) : (s_activeView._mouseX, s_activeView._mouseY);
     public static uint CurrentMouseButton => s_activeView?._mouseButton ?? 0U;
 
-    public lv_obj_t* Root => root;
-    public lv_group_t* KeyInputGroup => key_inputGroup;
-    public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCb;
+    public lv_obj_t* Root => RootObject;
+    public lv_group_t* KeyInputGroup => KeyInputGroupObject;
+    public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCallbackCore;
 
     public void Open()
     {
@@ -406,10 +406,10 @@ public unsafe partial class X11View : IView
             InitializeWindow();
             InitializeLvgl();
 
-            root = lv_scr_act();
-            key_inputGroup = lv_group_create();
-            lv_indev_set_group(_keyboardIndev, key_inputGroup);
-            _fallbackFont = lv_obj_get_style_text_font(root, LV_PART_MAIN);
+            RootObject = lv_scr_act();
+            KeyInputGroupObject = lv_group_create();
+            lv_indev_set_group(_keyboardIndev, KeyInputGroupObject);
+            _fallbackFont = lv_obj_get_style_text_font(RootObject, LV_PART_MAIN);
             _fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
             _fontGlyphDiagnosticSummary = LinuxSystemFontResolver.GetGlyphDiagnosticSummary();
 
@@ -423,10 +423,10 @@ public unsafe partial class X11View : IView
                     _fallbackFont,
                     LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
 
-                _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(root, _fontManager.GetLvFontPtr());
+                _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(RootObject, _fontManager.GetLvFontPtr());
             }
 
-            SendTextAreaFocusCb = null;
+            SendTextAreaFocusCallbackCore = null;
             s_activeView = this;
             _running = true;
             _lastPresentTick = (ulong)Environment.TickCount64;
@@ -509,10 +509,10 @@ public unsafe partial class X11View : IView
             _wheelIndev = null;
         }
 
-        if (key_inputGroup != null)
+        if (KeyInputGroupObject != null)
         {
-            lv_group_delete(key_inputGroup);
-            key_inputGroup = null;
+            lv_group_delete(KeyInputGroupObject);
+            KeyInputGroupObject = null;
         }
 
         if (_lvDisplay != null)
@@ -563,8 +563,8 @@ public unsafe partial class X11View : IView
         _fontDiagnosticSummary = null;
         _fontGlyphDiagnosticSummary = null;
 
-        root = null;
-        SendTextAreaFocusCb = null;
+        RootObject = null;
+        SendTextAreaFocusCallbackCore = null;
         _lastKey = 0;
         _keyPressed = false;
         _wheelDiff = 0;
@@ -580,7 +580,7 @@ public unsafe partial class X11View : IView
     {
         string connectedDisplay = _requestedDisplayName ?? "<default>";
 
-        return $"Title={_title}, Display={connectedDisplay}, Window={_window != 0}:{_width}x{_height}, Running={_running}, Initialized={_initialized}, LvDisplay={_lvDisplay != null}, Root={root != null}, KeyGroup={key_inputGroup != null}, FontPath={_resolvedSystemFontPath ?? "<none>"}, FontDiag={_fontDiagnosticSummary ?? "<unresolved>"}, GlyphDiag={_fontGlyphDiagnosticSummary ?? "<unresolved>"}";
+        return $"Title={_title}, Display={connectedDisplay}, Window={_window != 0}:{_width}x{_height}, Running={_running}, Initialized={_initialized}, LvDisplay={_lvDisplay != null}, Root={RootObject != null}, KeyGroup={KeyInputGroupObject != null}, FontPath={_resolvedSystemFontPath ?? "<none>"}, FontDiag={_fontDiagnosticSummary ?? "<unresolved>"}, GlyphDiag={_fontGlyphDiagnosticSummary ?? "<unresolved>"}";
     }
 
     private void InitializeWindow()

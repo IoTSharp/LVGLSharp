@@ -25,7 +25,7 @@ namespace LVGLSharp.Runtime.Windows
         static lv_obj_t* g_focusSink;
 
         static uint g_bufSize = 1024 * 1024 * 4;
-        static bool g_running = true;
+        static bool g_running;
         static lv_obj_t* label;
         static int startTick;
         static int mouseX = 0, mouseY = 0;
@@ -41,14 +41,14 @@ namespace LVGLSharp.Runtime.Windows
         static volatile int mouseWheelDelta = 0;
         static ConcurrentQueue<uint> key_queue = new ConcurrentQueue<uint>();
 
-        public static lv_obj_t* root { get; set; }
-        public static lv_group_t* key_inputGroup { get; set; }
-        public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCb { get; set; } = &HandleSendTextAreaFocusCb;
+        public static lv_obj_t* RootObject { get; set; }
+        public static lv_group_t* KeyInputGroupObject { get; set; }
+        public static delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallbackCore { get; set; } = &HandleSendTextAreaFocusCb;
         public static uint CurrentMouseButton => mouseButton;
         public static (int X, int Y) CurrentMousePosition => (mouseX, mouseY);
-        public lv_obj_t* Root => root;
-        public lv_group_t* KeyInputGroup => key_inputGroup;
-        public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCb;
+        public lv_obj_t* Root => RootObject;
+        public lv_group_t* KeyInputGroup => KeyInputGroupObject;
+        public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCallbackCore;
 
 
         static BITMAPINFO _bmi = new BITMAPINFO
@@ -160,12 +160,12 @@ namespace LVGLSharp.Runtime.Windows
 
         static unsafe lv_obj_t* GetFocusedTextInput()
         {
-            if (key_inputGroup == null)
+            if (KeyInputGroupObject == null)
             {
                 return null;
             }
 
-            var inputObj = lv_group_get_focused(key_inputGroup);
+            var inputObj = lv_group_get_focused(KeyInputGroupObject);
             return inputObj == g_focusSink ? null : inputObj;
         }
 
@@ -307,12 +307,12 @@ namespace LVGLSharp.Runtime.Windows
 
         static unsafe void ResetTextInputFocus(int x, int y)
         {
-            if (key_inputGroup == null || g_focusSink == null)
+            if (KeyInputGroupObject == null || g_focusSink == null)
             {
                 return;
             }
 
-            var focusedObj = lv_group_get_focused(key_inputGroup);
+            var focusedObj = lv_group_get_focused(KeyInputGroupObject);
             if (focusedObj == null || focusedObj == g_focusSink || IsPointInsideObject(focusedObj, x, y))
             {
                 return;
@@ -453,7 +453,13 @@ namespace LVGLSharp.Runtime.Windows
 
         public void Open()
         {
+            if (g_running)
+            {
+                return;
+            }
+
             LvglNativeLibraryResolver.EnsureRegistered();
+            g_running = true;
             startTick = Environment.TickCount;
 
             wndProcDelegate = MyWndProc;
@@ -518,23 +524,23 @@ namespace LVGLSharp.Runtime.Windows
             kbd_indev = lv_indev_create();
             lv_indev_set_type(kbd_indev, lv_indev_type_t.LV_INDEV_TYPE_KEYPAD);
             lv_indev_set_read_cb(kbd_indev, &KeyboardReadCb);
-            key_inputGroup = lv_group_create();
-            lv_indev_set_group(kbd_indev, key_inputGroup);
+            KeyInputGroupObject = lv_group_create();
+            lv_indev_set_group(kbd_indev, KeyInputGroupObject);
 
             g_lvbuf = Marshal.AllocHGlobal((int)g_bufSize);
             lv_display_set_buffers(g_display, g_lvbuf.ToPointer(), null, g_bufSize, LV_DISPLAY_RENDER_MODE_FULL);
             lv_display_set_flush_cb(g_display, &FlushCb);
 
-            root = lv_scr_act();
-            lv_obj_set_flex_flow(root, LV_FLEX_FLOW_COLUMN);
-            lv_obj_set_style_pad_all(root, 10, 0);
-            lv_obj_remove_flag(root, LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
-            lv_obj_set_scrollbar_mode(root, LV_SCROLLBAR_MODE_OFF);
-            g_focusSink = lv_obj_create(root);
+            RootObject = lv_scr_act();
+            lv_obj_set_flex_flow(RootObject, LV_FLEX_FLOW_COLUMN);
+            lv_obj_set_style_pad_all(RootObject, 10, 0);
+            lv_obj_remove_flag(RootObject, LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
+            lv_obj_set_scrollbar_mode(RootObject, LV_SCROLLBAR_MODE_OFF);
+            g_focusSink = lv_obj_create(RootObject);
             lv_obj_set_size(g_focusSink, 1, 1);
             lv_obj_add_flag(g_focusSink, lv_obj_flag_t.LV_OBJ_FLAG_HIDDEN | lv_obj_flag_t.LV_OBJ_FLAG_IGNORE_LAYOUT);
 
-            _fallbackFont = lv_obj_get_style_text_font(root, LV_PART_MAIN);
+            _fallbackFont = lv_obj_get_style_text_font(RootObject, LV_PART_MAIN);
 
             _fontManager = new SixLaborsFontManager(SystemFonts.Get("Microsoft YaHei"), 12, GetDPI(), _fallbackFont, [
                 61441, 61448, 61451, 61452, 61453, 61457, 61459, 61461, 61465, 61468,
@@ -551,23 +557,27 @@ namespace LVGLSharp.Runtime.Windows
             lv_style_init(_defaultFontStyle);
             lv_style_set_text_font(_defaultFontStyle, _defaultFont);
 
-            lv_obj_add_style(root, _defaultFontStyle, 0);
+            lv_obj_add_style(RootObject, _defaultFontStyle, 0);
         }
         public void RunLoop(Action iteration)
         {
-            while (g_running)
+            try
             {
-                bool hadMessages = ProcessEventsCore();
-            iteration?.Invoke();
-
-                if (!hadMessages)
+                while (g_running)
                 {
-                    Thread.Sleep(1);
+                    bool hadMessages = ProcessEventsCore();
+                    iteration?.Invoke();
+
+                    if (!hadMessages)
+                    {
+                        Thread.Sleep(1);
+                    }
                 }
             }
-
-            g_running = false;
-            Marshal.FreeHGlobal(g_lvbuf);
+            finally
+            {
+                Close();
+            }
         }
 
         public void HandleEvents()
@@ -577,12 +587,61 @@ namespace LVGLSharp.Runtime.Windows
 
         public void Close()
         {
+            if (!g_running && g_hwnd == IntPtr.Zero && g_display == null && g_lvbuf == IntPtr.Zero)
+            {
+                return;
+            }
+
             g_running = false;
+
+            if (kbd_indev != null)
+            {
+                lv_indev_delete(kbd_indev);
+                kbd_indev = null;
+            }
+
+            if (indev != null)
+            {
+                lv_indev_delete(indev);
+                indev = null;
+            }
+
+            if (KeyInputGroupObject != null)
+            {
+                lv_group_delete(KeyInputGroupObject);
+                KeyInputGroupObject = null;
+            }
+
+            if (g_display != null)
+            {
+                lv_display_delete(g_display);
+                g_display = null;
+            }
+
+            if (g_lvbuf != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(g_lvbuf);
+                g_lvbuf = IntPtr.Zero;
+            }
+
+            if (_defaultFontStyle != null)
+            {
+                lv_style_reset(_defaultFontStyle);
+                NativeMemory.Free(_defaultFontStyle);
+                _defaultFontStyle = null;
+            }
+
+            _fontManager?.Dispose();
 
             if (g_hwnd != IntPtr.Zero)
             {
-             //   DestroyWindow(g_hwnd);
+                DestroyWindow(g_hwnd);
+                g_hwnd = IntPtr.Zero;
             }
+
+            RootObject = null;
+            SendTextAreaFocusCallbackCore = &HandleSendTextAreaFocusCb;
+            g_focusSink = null;
         }
 
         public void RegisterTextInput(lv_obj_t* textArea)

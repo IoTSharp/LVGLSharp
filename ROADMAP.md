@@ -106,6 +106,7 @@
 - 第一版优先在 `LVGLSharp.Runtime.Linux` 中提供 `SdlView`
 - 第一版以单宿主闭环为主，先保证 `Form.Show()`、`Application.Run()`、基础交互可用
 - 在首版验证稳定前，不强行替换现有默认 Linux 宿主优先级
+- 当前可通过环境变量显式启用 SDL 宿主：`LVGLSHARP_LINUX_HOST=sdl` 或 `LVGLSHARP_USE_SDL=1`
 
 #### `DrmView` 最小可交付版本
 - 能在无桌面环境下完成显示初始化

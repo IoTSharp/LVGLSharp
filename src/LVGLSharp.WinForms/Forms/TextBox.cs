@@ -356,15 +356,12 @@ namespace LVGLSharp.Forms
             if (gcHandle.IsAllocated && gcHandle.Target is TextBox textBox)
             {
                 uint key = lv_event_get_key(e);
-                textBox.HandleKeyPress(key);
+                textBox.HandleShortcutKeyPress(key);
             }
         }
 
-        private void HandleKeyPress(uint lvglKey)
+        private void HandleShortcutKeyPress(uint lvglKey)
         {
-            // TODO: 将 LVGL 键码映射到 Keys 枚举
-            // LVGL 使用 ASCII 值，需要检测修饰键
-            
             bool isCtrlPressed = LVGLSharp.Forms.ModifierKeys.IsControlPressed;
             
             if (isCtrlPressed)

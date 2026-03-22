@@ -2167,6 +2167,37 @@ namespace LVGLSharp.Forms
 
             return PreProcessControlState.MessageNotNeeded;
         }
+
+        protected internal static Keys TranslateLvglKey(uint lvglKey)
+        {
+            Keys key = lvglKey switch
+            {
+                (uint)lv_key_t.LV_KEY_LEFT => Keys.Left,
+                (uint)lv_key_t.LV_KEY_RIGHT => Keys.Right,
+                (uint)lv_key_t.LV_KEY_UP => Keys.Up,
+                (uint)lv_key_t.LV_KEY_DOWN => Keys.Down,
+                (uint)lv_key_t.LV_KEY_BACKSPACE => Keys.Back,
+                (uint)lv_key_t.LV_KEY_DEL => Keys.Delete,
+                (uint)lv_key_t.LV_KEY_ENTER => Keys.Enter,
+                (uint)lv_key_t.LV_KEY_ESC => Keys.Escape,
+                (uint)lv_key_t.LV_KEY_NEXT => Keys.Tab,
+                _ => lvglKey <= 0xFFFF ? (Keys)lvglKey : Keys.None,
+            };
+
+            return key | LVGLSharp.Forms.ModifierKeys.Current;
+        }
+
+        protected internal static char TranslateLvglKeyChar(uint lvglKey)
+        {
+            return lvglKey switch
+            {
+                (uint)lv_key_t.LV_KEY_ENTER => '\n',
+                (uint)lv_key_t.LV_KEY_BACKSPACE => '\b',
+                (uint)lv_key_t.LV_KEY_NEXT => '\t',
+                _ when lvglKey >= 32 && lvglKey <= 126 => (char)lvglKey,
+                _ => '\0',
+            };
+        }
         //
         // ժҪ:
         //     Preprocesses keyboard or input messages within the message loop before they are
@@ -3527,7 +3558,26 @@ namespace LVGLSharp.Forms
         //     true if the message was processed by the control; otherwise, false.
         protected virtual bool ProcessKeyEventArgs(ref Message m)
         {
-            return false;
+            Keys keyData = TranslateLvglKey((uint)m.wParam);
+            var previewArgs = new PreviewKeyDownEventArgs(keyData)
+            {
+                IsInputKey = IsInputKey(keyData)
+            };
+            OnPreviewKeyDown(previewArgs);
+
+            var keyEventArgs = new KeyEventArgs(keyData);
+            OnKeyDown(keyEventArgs);
+
+            if (!keyEventArgs.SuppressKeyPress)
+            {
+                char keyChar = TranslateLvglKeyChar((uint)m.wParam);
+                if (keyChar != '\0')
+                {
+                    OnKeyPress(new KeyPressEventArgs(keyChar));
+                }
+            }
+
+            return keyEventArgs.Handled || keyEventArgs.SuppressKeyPress;
         }
         //
         // ժҪ:
@@ -3542,7 +3592,7 @@ namespace LVGLSharp.Forms
         //     true if the message was processed by the control; otherwise, false.
         protected virtual bool ProcessKeyPreview(ref Message m)
         {
-            return false;
+            return ProcessKeyEventArgs(ref m);
         }
 
         //
@@ -3930,7 +3980,24 @@ namespace LVGLSharp.Forms
         //     true if the message was processed by the control; otherwise, false.
         protected internal virtual bool ProcessKeyMessage(ref Message m)
         {
-            return false;
+            Keys keyData = TranslateLvglKey((uint)m.wParam);
+
+            if (ProcessCmdKey(ref m, keyData))
+            {
+                return true;
+            }
+
+            if (ProcessKeyPreview(ref m))
+            {
+                return true;
+            }
+
+            if (IsInputKey(keyData))
+            {
+                return ProcessKeyEventArgs(ref m);
+            }
+
+            return ProcessDialogKey(keyData);
         }
         //
         // ժҪ:
@@ -4079,6 +4146,7 @@ namespace LVGLSharp.Forms
                     break;
                 case LV_EVENT_KEY:
                     uint lvglKey = lv_event_get_key(lvglEvent);
+                    Keys translatedKey = TranslateLvglKey(lvglKey);
                     var keyMessage = new Message(
                         Handle,
                         0x0100,
@@ -4088,8 +4156,17 @@ namespace LVGLSharp.Forms
                     var preprocessState = PreProcessControlMessage(ref keyMessage);
                     if (preprocessState == PreProcessControlState.MessageNotNeeded)
                     {
-                        OnKeyDown(new KeyEventArgs());
-                        OnKeyPress(new KeyPressEventArgs());
+                        var keyEventArgs = new KeyEventArgs(translatedKey);
+                        OnKeyDown(keyEventArgs);
+
+                        if (!keyEventArgs.SuppressKeyPress)
+                        {
+                            char keyChar = TranslateLvglKeyChar(lvglKey);
+                            if (keyChar != '\0')
+                            {
+                                OnKeyPress(new KeyPressEventArgs(keyChar));
+                            }
+                        }
                     }
                     break;
                 case LV_EVENT_SIZE_CHANGED:

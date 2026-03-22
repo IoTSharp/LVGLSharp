@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace LVGLSharp.Runtime.Linux;
 
-public unsafe sealed partial class SdlView : ViewLifetimeBase, IView
+public unsafe sealed partial class SdlView : ViewLifetimeBase
 {
     private static SdlView? s_activeView;
 
@@ -55,21 +55,16 @@ public unsafe sealed partial class SdlView : ViewLifetimeBase, IView
 
     public static uint CurrentMouseButton => SdlInputSource.LastMouseButton;
 
-    public lv_obj_t* Root => _root;
+    public override lv_obj_t* Root => _root;
 
-    public lv_group_t* KeyInputGroup => _keyInputGroup;
+    public override lv_group_t* KeyInputGroup => _keyInputGroup;
 
-    public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => &HandleTextAreaFocused;
+    public override delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => &HandleTextAreaFocused;
 
     public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaDefocusCallback => &HandleTextAreaDefocused;
 
-    public void Open()
+    protected override void OnOpenCore()
     {
-        if (!TryBeginOpen())
-        {
-            return;
-        }
-
         LvglNativeLibraryResolver.EnsureRegistered();
 
         if (!lv_is_initialized())
@@ -77,45 +72,36 @@ public unsafe sealed partial class SdlView : ViewLifetimeBase, IView
             lv_init();
         }
 
-        try
+        InitializeSdl();
+        InitializeLvgl();
+
+        _root = lv_scr_act();
+        _keyInputGroup = lv_group_create();
+        lv_indev_set_group(_keyboardIndev, _keyInputGroup);
+        _fallbackFont = lv_obj_get_style_text_font(_root, LV_PART_MAIN);
+        _fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
+        _fontGlyphDiagnosticSummary = LinuxSystemFontResolver.GetGlyphDiagnosticSummary();
+
+        _resolvedSystemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
+        if (!string.IsNullOrWhiteSpace(_resolvedSystemFontPath))
         {
-            InitializeSdl();
-            InitializeLvgl();
+            _fontManager = new SixLaborsFontManager(
+                _resolvedSystemFontPath,
+                12,
+                _dpi,
+                _fallbackFont,
+                LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
 
-            _root = lv_scr_act();
-            _keyInputGroup = lv_group_create();
-            lv_indev_set_group(_keyboardIndev, _keyInputGroup);
-            _fallbackFont = lv_obj_get_style_text_font(_root, LV_PART_MAIN);
-            _fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
-            _fontGlyphDiagnosticSummary = LinuxSystemFontResolver.GetGlyphDiagnosticSummary();
-
-            _resolvedSystemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
-            if (!string.IsNullOrWhiteSpace(_resolvedSystemFontPath))
-            {
-                _fontManager = new SixLaborsFontManager(
-                    _resolvedSystemFontPath,
-                    12,
-                    _dpi,
-                    _fallbackFont,
-                    LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
-
-                _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(_root, _fontManager.GetLvFontPtr());
-            }
-
-            s_activeView = this;
-            _running = true;
-            _lastPresentTick = (ulong)Environment.TickCount64;
-            _initialized = true;
+            _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(_root, _fontManager.GetLvFontPtr());
         }
-        catch
-        {
-            MarkOpenFailed();
-            Close();
-            throw;
-        }
+
+        s_activeView = this;
+        _running = true;
+        _lastPresentTick = (ulong)Environment.TickCount64;
+        _initialized = true;
     }
 
-    public void HandleEvents()
+    public override void HandleEvents()
     {
         if (!_initialized)
         {
@@ -128,23 +114,16 @@ public unsafe sealed partial class SdlView : ViewLifetimeBase, IView
         PresentFrame();
     }
 
-    public void RunLoop(Action iteration)
+    protected override void RunLoopCore(Action iteration)
     {
-        try
+        while (_running)
         {
-            while (_running)
-            {
-                HandleEvents();
-                iteration?.Invoke();
-            }
-        }
-        finally
-        {
-            Close();
+            HandleEvents();
+            iteration?.Invoke();
         }
     }
 
-    public void Close()
+    protected override void OnCloseCore()
     {
         if (s_activeView == this)
         {
@@ -227,15 +206,20 @@ public unsafe sealed partial class SdlView : ViewLifetimeBase, IView
         _initialized = false;
     }
 
-    public void RegisterTextInput(lv_obj_t* textArea)
+    protected override bool CanSkipClose() =>
+        !_initialized &&
+        _lvDisplay == null &&
+        _mouseIndev == null &&
+        _keyboardIndev == null &&
+        _wheelIndev == null &&
+        _root == null &&
+        _keyInputGroup == null;
+
+    public override void RegisterTextInput(lv_obj_t* textArea)
     {
         UpdateFocusedTextArea(textArea);
     }
 
-    public void Dispose()
-    {
-        Close();
-    }
 
     public override string ToString()
     {

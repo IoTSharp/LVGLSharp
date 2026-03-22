@@ -4,7 +4,7 @@ using System;
 
 namespace LVGLSharp.Runtime.Linux;
 
-public unsafe class LinuxView : ViewLifetimeBase, IView
+public unsafe class LinuxView : ViewLifetimeBase
 {
     private readonly IView _inner;
     private readonly LinuxHostEnvironment _environment;
@@ -30,9 +30,9 @@ public unsafe class LinuxView : ViewLifetimeBase, IView
         s_activeView = this;
     }
 
-    public lv_obj_t* Root => _inner.Root;
-    public lv_group_t* KeyInputGroup => _inner.KeyInputGroup;
-    public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => _inner.SendTextAreaFocusCallback;
+    public override lv_obj_t* Root => _inner.Root;
+    public override lv_group_t* KeyInputGroup => _inner.KeyInputGroup;
+    public override delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => _inner.SendTextAreaFocusCallback;
     public static (int X, int Y) CurrentMousePosition => s_activeView?._inner switch
     {
         X11View => X11View.CurrentMousePosition,
@@ -49,51 +49,30 @@ public unsafe class LinuxView : ViewLifetimeBase, IView
         _ => 0U,
     };
 
-    public void Open()
+    protected override void OnOpenCore()
     {
-        if (!TryBeginOpen())
-        {
-            return;
-        }
-
-        try
-        {
-            _inner.Open();
-        }
-        catch
-        {
-            MarkOpenFailed();
-            throw;
-        }
+        _inner.Open();
     }
 
-    public void HandleEvents()
+    public override void HandleEvents()
     {
         _inner.HandleEvents();
     }
 
-    public void RunLoop(Action iteration)
+    protected override void RunLoopCore(Action iteration)
     {
         _inner.RunLoop(iteration);
     }
 
-    public void Close()
+    protected override void OnCloseCore()
     {
-        if (!TryBeginClose())
-        {
-            return;
-        }
-
         _inner.Close();
     }
 
-    public void RegisterTextInput(lv_obj_t* textArea)
+    public override void RegisterTextInput(lv_obj_t* textArea)
     {
         _inner.RegisterTextInput(textArea);
     }
 
-    public void Dispose()
-    {
-        Close();
-    }
+    protected override bool CanSkipClose() => false;
 }

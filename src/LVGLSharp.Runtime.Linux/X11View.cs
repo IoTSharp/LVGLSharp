@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace LVGLSharp.Runtime.Linux;
 
-public unsafe partial class X11View : ViewLifetimeBase, IView
+public unsafe partial class X11View : ViewLifetimeBase
 {
     private const string X11Lib = "libX11.so.6";
 
@@ -383,17 +383,12 @@ public unsafe partial class X11View : ViewLifetimeBase, IView
     public static (int X, int Y) CurrentMousePosition => s_activeView is null ? (0, 0) : (s_activeView._mouseX, s_activeView._mouseY);
     public static uint CurrentMouseButton => s_activeView?._mouseButton ?? 0U;
 
-    public lv_obj_t* Root => RootObject;
-    public lv_group_t* KeyInputGroup => KeyInputGroupObject;
-    public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCallbackCore;
+    public override lv_obj_t* Root => RootObject;
+    public override lv_group_t* KeyInputGroup => KeyInputGroupObject;
+    public override delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => SendTextAreaFocusCallbackCore;
 
-    public void Open()
+    protected override void OnOpenCore()
     {
-        if (!TryBeginOpen())
-        {
-            return;
-        }
-
         LvglNativeLibraryResolver.EnsureRegistered();
 
         if (!lv_is_initialized())
@@ -401,67 +396,51 @@ public unsafe partial class X11View : ViewLifetimeBase, IView
             lv_init();
         }
 
-        try
+        InitializeWindow();
+        InitializeLvgl();
+
+        RootObject = lv_scr_act();
+        KeyInputGroupObject = lv_group_create();
+        lv_indev_set_group(_keyboardIndev, KeyInputGroupObject);
+        _fallbackFont = lv_obj_get_style_text_font(RootObject, LV_PART_MAIN);
+        _fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
+        _fontGlyphDiagnosticSummary = LinuxSystemFontResolver.GetGlyphDiagnosticSummary();
+
+        _resolvedSystemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
+        if (!string.IsNullOrWhiteSpace(_resolvedSystemFontPath))
         {
-            InitializeWindow();
-            InitializeLvgl();
+            _fontManager = new SixLaborsFontManager(
+                _resolvedSystemFontPath,
+                12,
+                _dpi,
+                _fallbackFont,
+                LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
 
-            RootObject = lv_scr_act();
-            KeyInputGroupObject = lv_group_create();
-            lv_indev_set_group(_keyboardIndev, KeyInputGroupObject);
-            _fallbackFont = lv_obj_get_style_text_font(RootObject, LV_PART_MAIN);
-            _fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
-            _fontGlyphDiagnosticSummary = LinuxSystemFontResolver.GetGlyphDiagnosticSummary();
-
-            _resolvedSystemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
-            if (!string.IsNullOrWhiteSpace(_resolvedSystemFontPath))
-            {
-                _fontManager = new SixLaborsFontManager(
-                    _resolvedSystemFontPath,
-                    12,
-                    _dpi,
-                    _fallbackFont,
-                    LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
-
-                _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(RootObject, _fontManager.GetLvFontPtr());
-            }
-
-            SendTextAreaFocusCallbackCore = null;
-            s_activeView = this;
-            _running = true;
-            _lastPresentTick = (ulong)Environment.TickCount64;
-            _initialized = true;
+            _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(RootObject, _fontManager.GetLvFontPtr());
         }
-        catch
-        {
-            MarkOpenFailed();
-            Close();
-            throw;
-        }
+
+        SendTextAreaFocusCallbackCore = null;
+        s_activeView = this;
+        _running = true;
+        _lastPresentTick = (ulong)Environment.TickCount64;
+        _initialized = true;
     }
 
-    public void RegisterTextInput(lv_obj_t* textArea)
+    public override void RegisterTextInput(lv_obj_t* textArea)
     {
         // X11 host 暂时只提供硬件键盘路径。
     }
 
-    public void RunLoop(Action iteration)
+    protected override void RunLoopCore(Action iteration)
     {
-        try
+        while (_running)
         {
-            while (_running)
-            {
-                HandleEvents();
-                iteration?.Invoke();
-            }
-        }
-        finally
-        {
-            Close();
+            HandleEvents();
+            iteration?.Invoke();
         }
     }
 
-    public void HandleEvents()
+    public override void HandleEvents()
     {
         if (!_initialized)
         {
@@ -472,7 +451,7 @@ public unsafe partial class X11View : ViewLifetimeBase, IView
         PresentFrame();
     }
 
-    public void Close()
+    protected override void OnCloseCore()
     {
         if (s_activeView == this)
         {
@@ -480,23 +459,6 @@ public unsafe partial class X11View : ViewLifetimeBase, IView
         }
 
         _running = false;
-
-        if (!_initialized &&
-            _display == IntPtr.Zero &&
-            _window == 0 &&
-            _gc == IntPtr.Zero &&
-            _xImage == IntPtr.Zero &&
-            _frameBuffer == null &&
-            _drawBuffer == null)
-        {
-            TryBeginClose();
-            return;
-        }
-
-        if (!TryBeginClose())
-        {
-            return;
-        }
 
         if (_mouseIndev != null)
         {
@@ -578,10 +540,15 @@ public unsafe partial class X11View : ViewLifetimeBase, IView
         _initialized = false;
     }
 
-    public void Dispose()
-    {
-        Close();
-    }
+    protected override bool CanSkipClose() =>
+        !_initialized &&
+        _display == IntPtr.Zero &&
+        _window == 0 &&
+        _gc == IntPtr.Zero &&
+        _xImage == IntPtr.Zero &&
+        _frameBuffer == null &&
+        _drawBuffer == null;
+
 
     public override string ToString()
     {

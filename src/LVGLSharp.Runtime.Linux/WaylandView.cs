@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace LVGLSharp.Runtime.Linux;
 
-public unsafe sealed class WaylandView : ViewLifetimeBase, IView
+public unsafe sealed class WaylandView : ViewLifetimeBase
 {
     private static WaylandView? s_activeView;
     private static int s_startTick;
@@ -66,48 +66,35 @@ public unsafe sealed class WaylandView : ViewLifetimeBase, IView
 
     public static uint CurrentMouseButton => s_activeView?._inputSource.CurrentMouseButton ?? 0U;
 
-    public lv_obj_t* Root => _fallbackView is not null ? _fallbackView.Root : _root;
+    public override lv_obj_t* Root => _fallbackView is not null ? _fallbackView.Root : _root;
 
-    public lv_group_t* KeyInputGroup => _fallbackView is not null ? _fallbackView.KeyInputGroup : _keyInputGroup;
+    public override lv_group_t* KeyInputGroup => _fallbackView is not null ? _fallbackView.KeyInputGroup : _keyInputGroup;
 
-    public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => _fallbackView is not null ? _fallbackView.SendTextAreaFocusCallback : null;
+    public override delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => _fallbackView is not null ? _fallbackView.SendTextAreaFocusCallback : null;
 
-    public void Open()
+    protected override void OnOpenCore()
     {
-        if (!TryBeginOpen())
+        _connection.Connect();
+
+        if (_fallbackView is not null)
         {
+            _fallbackView.Open();
+            _running = true;
+            _initialized = true;
             return;
         }
 
-        try
-        {
-            _connection.Connect();
-
-            if (_fallbackView is not null)
-            {
-                _fallbackView.Open();
-                _running = true;
-                _initialized = true;
-                return;
-            }
-
-            InitializeLvgl();
-            _window.InitializeSurface(_connection);
-            _bufferPresenter.InitializeSharedMemory(_connection);
-            _inputSource.Initialize(_connection);
-            _connection.PumpEvents();
-            s_activeView = this;
-            _running = true;
-            _initialized = true;
-        }
-        catch
-        {
-            MarkOpenFailed();
-            throw;
-        }
+        InitializeLvgl();
+        _window.InitializeSurface(_connection);
+        _bufferPresenter.InitializeSharedMemory(_connection);
+        _inputSource.Initialize(_connection);
+        _connection.PumpEvents();
+        s_activeView = this;
+        _running = true;
+        _initialized = true;
     }
 
-    public void HandleEvents()
+    public override void HandleEvents()
     {
         if (_fallbackView is not null)
         {
@@ -131,7 +118,7 @@ public unsafe sealed class WaylandView : ViewLifetimeBase, IView
         lv_timer_handler();
     }
 
-    public void RunLoop(Action iteration)
+    protected override void RunLoopCore(Action iteration)
     {
         if (_fallbackView is not null)
         {
@@ -139,29 +126,21 @@ public unsafe sealed class WaylandView : ViewLifetimeBase, IView
             return;
         }
 
-        try
+        while (_running)
         {
-            while (_running)
+            HandleEvents();
+
+            if (_window.IsCloseRequested)
             {
-                HandleEvents();
-
-                if (_window.IsCloseRequested)
-                {
-                    Close();
-                    break;
-                }
-
-                iteration?.Invoke();
-                Thread.Sleep(5);
+                break;
             }
-        }
-        finally
-        {
-            Close();
+
+            iteration?.Invoke();
+            Thread.Sleep(5);
         }
     }
 
-    public void Close()
+    protected override void OnCloseCore()
     {
         if (s_activeView == this)
         {
@@ -172,29 +151,8 @@ public unsafe sealed class WaylandView : ViewLifetimeBase, IView
 
         if (_fallbackView is not null)
         {
-            if (!TryBeginClose())
-            {
-                return;
-            }
-
             _fallbackView.Close();
             _initialized = false;
-            return;
-        }
-
-        if (!_initialized &&
-            _lvDisplay == null &&
-            _mouseIndev == null &&
-            _keyboardIndev == null &&
-            _wheelIndev == null &&
-            _root == null)
-        {
-            TryBeginClose();
-            return;
-        }
-
-        if (!TryBeginClose())
-        {
             return;
         }
 
@@ -241,15 +199,20 @@ public unsafe sealed class WaylandView : ViewLifetimeBase, IView
         _initialized = false;
     }
 
-    public void RegisterTextInput(lv_obj_t* textArea)
+    protected override bool CanSkipClose() =>
+        _fallbackView is null &&
+        !_initialized &&
+        _lvDisplay == null &&
+        _mouseIndev == null &&
+        _keyboardIndev == null &&
+        _wheelIndev == null &&
+        _root == null;
+
+    public override void RegisterTextInput(lv_obj_t* textArea)
     {
         _fallbackView?.RegisterTextInput(textArea);
     }
 
-    public void Dispose()
-    {
-        Close();
-    }
 
     public override string ToString() => _fallbackView is null
         ? $"{_diagnosticSummary}, Mode=WaylandSkeleton, Connected={_connection.IsConnected}, Compositor={_connection.HasCompositor}, Shm={_connection.HasSharedMemory}, XdgWmBase={_connection.HasXdgWmBase}, NativeSurface={_window.IsNativeSurfaceInitialized}, XdgSurface={_window.IsXdgSurfaceInitialized}, XdgToplevel={_window.IsXdgToplevelInitialized}, Configure={_window.HasReceivedConfigure}:{_window.LastConfigureSerial}, Ack={_window.HasAcknowledgedConfigure}, Pong={_window.HasRespondedToPing}:{_window.LastPingSerial}, ToplevelSize={_window.LastConfiguredWidth}x{_window.LastConfiguredHeight}, Close={_window.IsCloseRequested}, ShmBuffer={_bufferPresenter.HasSharedMemoryBuffer}:{_bufferPresenter.IsBufferReleased}:{_bufferPresenter.BufferReleaseCount}, Seat={_connection.HasSeat}:{_connection.SeatVersion}, FontPath={_resolvedSystemFontPath ?? "<none>"}, FontDiag={_fontDiagnosticSummary ?? "<unresolved>"}"

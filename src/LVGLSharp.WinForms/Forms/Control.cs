@@ -3573,7 +3573,13 @@ namespace LVGLSharp.Forms
                 char keyChar = TranslateLvglKeyChar((uint)m.wParam);
                 if (keyChar != '\0')
                 {
-                    OnKeyPress(new KeyPressEventArgs(keyChar));
+                    var keyPressEventArgs = new KeyPressEventArgs(keyChar);
+                    OnKeyPress(keyPressEventArgs);
+
+                    if (keyPressEventArgs.Handled)
+                    {
+                        keyEventArgs.Handled = true;
+                    }
                 }
             }
 
@@ -3994,9 +4000,11 @@ namespace LVGLSharp.Forms
                 return true;
             }
 
-            if (ProcessKeyPreview(ref m))
+            bool treatAsInputKey = ProcessKeyPreview(ref m);
+
+            if (treatAsInputKey)
             {
-                return true;
+                return ProcessKeyEventArgs(ref m);
             }
 
             if (IsInputKey(keyData))

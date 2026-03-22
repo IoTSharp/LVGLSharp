@@ -33,41 +33,41 @@ namespace WinFormsDemo
         private void InitializeComponent()
         {
             toolbar = new FlowLayoutPanel();
-            port_label = new Label();
+            portLabel = new Label();
             portDropdown = new ComboBox();
             refreshButton = new Button();
-            baud_label = new Label();
+            baudLabel = new Label();
             baudDropdown = new ComboBox();
             openButton = new Button();
             tpMain = new TableLayoutPanel();
-            flowLayoutPanel1 = new FlowLayoutPanel();
-            textBox1 = new TextBox();
+            sendPanel = new FlowLayoutPanel();
+            sendInputTextBox = new TextBox();
             sendButton = new Button();
-            button2 = new Button();
-            checkBox1 = new CheckBox();
-            pictureBox1 = new PictureBox();
-            radioButton1 = new RadioButton();
-            button3 = new Button();
-            button4 = new Button();
-            checkBox2 = new CheckBox();
-            recv_container = new FlowLayoutPanel();
+            fillSampleButton = new Button();
+            appendNewLineCheckBox = new CheckBox();
+            previewPictureBox = new PictureBox();
+            zoomPreviewRadioButton = new RadioButton();
+            loadLogoButton = new Button();
+            clearLogoButton = new Button();
+            stretchPreviewCheckBox = new CheckBox();
+            receivePanel = new FlowLayoutPanel();
             receiveTextArea = new TextBox();
-            button1 = new Button();
+            copyReceiveButton = new Button();
             clearButton = new Button();
             hexSwitch = new CheckBox();
             toolbar.SuspendLayout();
             tpMain.SuspendLayout();
-            flowLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            recv_container.SuspendLayout();
+            sendPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)previewPictureBox).BeginInit();
+            receivePanel.SuspendLayout();
             SuspendLayout();
             // 
             // toolbar
             // 
-            toolbar.Controls.Add(port_label);
+            toolbar.Controls.Add(portLabel);
             toolbar.Controls.Add(portDropdown);
             toolbar.Controls.Add(refreshButton);
-            toolbar.Controls.Add(baud_label);
+            toolbar.Controls.Add(baudLabel);
             toolbar.Controls.Add(baudDropdown);
             toolbar.Controls.Add(openButton);
             toolbar.Location = new Point(3, 3);
@@ -75,14 +75,14 @@ namespace WinFormsDemo
             toolbar.Size = new Size(771, 49);
             toolbar.TabIndex = 0;
             // 
-            // port_label
+            // portLabel
             // 
-            port_label.Location = new Point(3, 0);
-            port_label.Name = "port_label";
-            port_label.Size = new Size(100, 50);
-            port_label.TabIndex = 0;
-            port_label.Text = "串口";
-            port_label.TextAlign = ContentAlignment.MiddleCenter;
+            portLabel.Location = new Point(3, 0);
+            portLabel.Name = "portLabel";
+            portLabel.Size = new Size(100, 50);
+            portLabel.TabIndex = 0;
+            portLabel.Text = "串口";
+            portLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // portDropdown
             // 
@@ -106,14 +106,14 @@ namespace WinFormsDemo
             refreshButton.Text = "刷新串口";
             refreshButton.UseVisualStyleBackColor = true;
             // 
-            // baud_label
+            // baudLabel
             // 
-            baud_label.Location = new Point(382, 0);
-            baud_label.Name = "baud_label";
-            baud_label.Size = new Size(100, 49);
-            baud_label.TabIndex = 3;
-            baud_label.Text = "波特率";
-            baud_label.TextAlign = ContentAlignment.MiddleCenter;
+            baudLabel.Location = new Point(382, 0);
+            baudLabel.Name = "baudLabel";
+            baudLabel.Size = new Size(100, 49);
+            baudLabel.TabIndex = 3;
+            baudLabel.Text = "波特率";
+            baudLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // baudDropdown
             // 
@@ -137,9 +137,9 @@ namespace WinFormsDemo
             // 
             tpMain.ColumnCount = 1;
             tpMain.ColumnStyles.Add(new ColumnStyle());
-            tpMain.Controls.Add(flowLayoutPanel1, 0, 2);
+            tpMain.Controls.Add(sendPanel, 0, 2);
             tpMain.Controls.Add(toolbar, 0, 0);
-            tpMain.Controls.Add(recv_container, 3, 1);
+            tpMain.Controls.Add(receivePanel, 3, 1);
             tpMain.Dock = DockStyle.Fill;
             tpMain.Location = new Point(0, 0);
             tpMain.Name = "tpMain";
@@ -150,31 +150,31 @@ namespace WinFormsDemo
             tpMain.Size = new Size(800, 441);
             tpMain.TabIndex = 1;
             // 
-            // flowLayoutPanel1
+            // sendPanel
             // 
-            flowLayoutPanel1.Controls.Add(textBox1);
-            flowLayoutPanel1.Controls.Add(sendButton);
-            flowLayoutPanel1.Controls.Add(button2);
-            flowLayoutPanel1.Controls.Add(checkBox1);
-            flowLayoutPanel1.Controls.Add(pictureBox1);
-            flowLayoutPanel1.Controls.Add(radioButton1);
-            flowLayoutPanel1.Controls.Add(button3);
-            flowLayoutPanel1.Controls.Add(button4);
-            flowLayoutPanel1.Controls.Add(checkBox2);
-            flowLayoutPanel1.Dock = DockStyle.Fill;
-            flowLayoutPanel1.Location = new Point(3, 243);
-            flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(794, 195);
-            flowLayoutPanel1.TabIndex = 2;
+            sendPanel.Controls.Add(sendInputTextBox);
+            sendPanel.Controls.Add(sendButton);
+            sendPanel.Controls.Add(fillSampleButton);
+            sendPanel.Controls.Add(appendNewLineCheckBox);
+            sendPanel.Controls.Add(previewPictureBox);
+            sendPanel.Controls.Add(zoomPreviewRadioButton);
+            sendPanel.Controls.Add(loadLogoButton);
+            sendPanel.Controls.Add(clearLogoButton);
+            sendPanel.Controls.Add(stretchPreviewCheckBox);
+            sendPanel.Dock = DockStyle.Fill;
+            sendPanel.Location = new Point(3, 243);
+            sendPanel.Name = "sendPanel";
+            sendPanel.Size = new Size(794, 195);
+            sendPanel.TabIndex = 2;
             // 
-            // textBox1
+            // sendInputTextBox
             // 
-            textBox1.Location = new Point(3, 3);
-            textBox1.Multiline = true;
-            textBox1.Name = "textBox1";
-            textBox1.PlaceholderText = "输入的数据";
-            textBox1.Size = new Size(570, 50);
-            textBox1.TabIndex = 0;
+            sendInputTextBox.Location = new Point(3, 3);
+            sendInputTextBox.Multiline = true;
+            sendInputTextBox.Name = "sendInputTextBox";
+            sendInputTextBox.PlaceholderText = "输入的数据";
+            sendInputTextBox.Size = new Size(570, 50);
+            sendInputTextBox.TabIndex = 0;
             // 
             // sendButton
             // 
@@ -186,84 +186,84 @@ namespace WinFormsDemo
             sendButton.UseVisualStyleBackColor = true;
             sendButton.Click += send_btn_Click;
             // 
-            // button2
+            // fillSampleButton
             // 
-            button2.Location = new Point(691, 3);
-            button2.Name = "button2";
-            button2.Size = new Size(75, 23);
-            button2.TabIndex = 4;
-            button2.Text = "button2";
-            button2.UseVisualStyleBackColor = true;
+            fillSampleButton.Location = new Point(691, 3);
+            fillSampleButton.Name = "fillSampleButton";
+            fillSampleButton.Size = new Size(75, 23);
+            fillSampleButton.TabIndex = 4;
+            fillSampleButton.Text = "button2";
+            fillSampleButton.UseVisualStyleBackColor = true;
             // 
-            // checkBox1
+            // appendNewLineCheckBox
             // 
-            checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(3, 59);
-            checkBox1.Name = "checkBox1";
-            checkBox1.Size = new Size(89, 21);
-            checkBox1.TabIndex = 5;
-            checkBox1.Text = "checkBox1";
-            checkBox1.UseVisualStyleBackColor = true;
+            appendNewLineCheckBox.AutoSize = true;
+            appendNewLineCheckBox.Location = new Point(3, 59);
+            appendNewLineCheckBox.Name = "appendNewLineCheckBox";
+            appendNewLineCheckBox.Size = new Size(89, 21);
+            appendNewLineCheckBox.TabIndex = 5;
+            appendNewLineCheckBox.Text = "checkBox1";
+            appendNewLineCheckBox.UseVisualStyleBackColor = true;
             // 
-            // pictureBox1
+            // previewPictureBox
             // 
-            pictureBox1.Location = new Point(98, 59);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(100, 50);
-            pictureBox1.TabIndex = 6;
-            pictureBox1.TabStop = false;
+            previewPictureBox.Location = new Point(98, 59);
+            previewPictureBox.Name = "previewPictureBox";
+            previewPictureBox.Size = new Size(100, 50);
+            previewPictureBox.TabIndex = 6;
+            previewPictureBox.TabStop = false;
             // 
-            // radioButton1
+            // zoomPreviewRadioButton
             // 
-            radioButton1.AutoSize = true;
-            radioButton1.Location = new Point(204, 59);
-            radioButton1.Name = "radioButton1";
-            radioButton1.Size = new Size(102, 21);
-            radioButton1.TabIndex = 7;
-            radioButton1.TabStop = true;
-            radioButton1.Text = "radioButton1";
-            radioButton1.UseVisualStyleBackColor = true;
+            zoomPreviewRadioButton.AutoSize = true;
+            zoomPreviewRadioButton.Location = new Point(204, 59);
+            zoomPreviewRadioButton.Name = "zoomPreviewRadioButton";
+            zoomPreviewRadioButton.Size = new Size(102, 21);
+            zoomPreviewRadioButton.TabIndex = 7;
+            zoomPreviewRadioButton.TabStop = true;
+            zoomPreviewRadioButton.Text = "radioButton1";
+            zoomPreviewRadioButton.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // loadLogoButton
             // 
-            button3.Location = new Point(312, 59);
-            button3.Name = "button3";
-            button3.Size = new Size(75, 23);
-            button3.TabIndex = 8;
-            button3.Text = "button3";
-            button3.UseVisualStyleBackColor = true;
+            loadLogoButton.Location = new Point(312, 59);
+            loadLogoButton.Name = "loadLogoButton";
+            loadLogoButton.Size = new Size(75, 23);
+            loadLogoButton.TabIndex = 8;
+            loadLogoButton.Text = "button3";
+            loadLogoButton.UseVisualStyleBackColor = true;
             // 
-            // button4
+            // clearLogoButton
             // 
-            button4.Location = new Point(393, 59);
-            button4.Name = "button4";
-            button4.Size = new Size(75, 23);
-            button4.TabIndex = 9;
-            button4.Text = "button4";
-            button4.UseVisualStyleBackColor = true;
+            clearLogoButton.Location = new Point(393, 59);
+            clearLogoButton.Name = "clearLogoButton";
+            clearLogoButton.Size = new Size(75, 23);
+            clearLogoButton.TabIndex = 9;
+            clearLogoButton.Text = "button4";
+            clearLogoButton.UseVisualStyleBackColor = true;
             // 
-            // checkBox2
+            // stretchPreviewCheckBox
             // 
-            checkBox2.AutoSize = true;
-            checkBox2.Location = new Point(474, 59);
-            checkBox2.Name = "checkBox2";
-            checkBox2.Size = new Size(89, 21);
-            checkBox2.TabIndex = 10;
-            checkBox2.Text = "checkBox2";
-            checkBox2.UseVisualStyleBackColor = true;
+            stretchPreviewCheckBox.AutoSize = true;
+            stretchPreviewCheckBox.Location = new Point(474, 59);
+            stretchPreviewCheckBox.Name = "stretchPreviewCheckBox";
+            stretchPreviewCheckBox.Size = new Size(89, 21);
+            stretchPreviewCheckBox.TabIndex = 10;
+            stretchPreviewCheckBox.Text = "checkBox2";
+            stretchPreviewCheckBox.UseVisualStyleBackColor = true;
             // 
-            // recv_container
+            // receivePanel
             // 
-            tpMain.SetColumnSpan(recv_container, 3);
-            recv_container.Controls.Add(receiveTextArea);
-            recv_container.Controls.Add(button1);
-            recv_container.Controls.Add(clearButton);
-            recv_container.Controls.Add(hexSwitch);
-            recv_container.Dock = DockStyle.Fill;
-            recv_container.Location = new Point(3, 58);
-            recv_container.Name = "recv_container";
-            recv_container.Size = new Size(794, 179);
-            recv_container.TabIndex = 1;
+            tpMain.SetColumnSpan(receivePanel, 3);
+            receivePanel.Controls.Add(receiveTextArea);
+            receivePanel.Controls.Add(copyReceiveButton);
+            receivePanel.Controls.Add(clearButton);
+            receivePanel.Controls.Add(hexSwitch);
+            receivePanel.Dock = DockStyle.Fill;
+            receivePanel.Location = new Point(3, 58);
+            receivePanel.Name = "receivePanel";
+            receivePanel.Size = new Size(794, 179);
+            receivePanel.TabIndex = 1;
             // 
             // receiveTextArea
             // 
@@ -274,14 +274,14 @@ namespace WinFormsDemo
             receiveTextArea.TabIndex = 0;
             receiveTextArea.Text = "接收的数据...";
             // 
-            // button1
+            // copyReceiveButton
             // 
-            button1.Location = new Point(513, 3);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 4;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
+            copyReceiveButton.Location = new Point(513, 3);
+            copyReceiveButton.Name = "copyReceiveButton";
+            copyReceiveButton.Size = new Size(75, 23);
+            copyReceiveButton.TabIndex = 4;
+            copyReceiveButton.Text = "button1";
+            copyReceiveButton.UseVisualStyleBackColor = true;
             // 
             // clearButton
             // 
@@ -313,39 +313,39 @@ namespace WinFormsDemo
             Load += Form1_Load;
             toolbar.ResumeLayout(false);
             tpMain.ResumeLayout(false);
-            flowLayoutPanel1.ResumeLayout(false);
-            flowLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            recv_container.ResumeLayout(false);
-            recv_container.PerformLayout();
+            sendPanel.ResumeLayout(false);
+            sendPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)previewPictureBox).EndInit();
+            receivePanel.ResumeLayout(false);
+            receivePanel.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
 
         private FlowLayoutPanel toolbar;
-        private Label port_label;
+        private Label portLabel;
         private ComboBox portDropdown;
         private Button refreshButton;
         private TableLayoutPanel tpMain;
-        private FlowLayoutPanel recv_container;
-        private Label baud_label;
+        private FlowLayoutPanel receivePanel;
+        private Label baudLabel;
         private ComboBox baudDropdown;
         private Button openButton;
         private TextBox receiveTextArea;
         private Button clearButton;
         private CheckBox hexSwitch;
-        private FlowLayoutPanel flowLayoutPanel1;
-        private TextBox textBox1;
+        private FlowLayoutPanel sendPanel;
+        private TextBox sendInputTextBox;
         private Button sendButton;
-        private Button button2;
-        private CheckBox checkBox1;
-        private PictureBox pictureBox1;
-        private RadioButton radioButton1;
-        private Button button3;
-        private Button button4;
-        private CheckBox checkBox2;
-        private Button button1;
+        private Button fillSampleButton;
+        private CheckBox appendNewLineCheckBox;
+        private PictureBox previewPictureBox;
+        private RadioButton zoomPreviewRadioButton;
+        private Button loadLogoButton;
+        private Button clearLogoButton;
+        private CheckBox stretchPreviewCheckBox;
+        private Button copyReceiveButton;
     }
 
  

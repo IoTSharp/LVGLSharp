@@ -31,7 +31,7 @@ namespace WinFormsDemo
 
         private void send_btn_Click(object sender, EventArgs e)
         {
-            string payload = textBox1.Text?.TrimEnd('\r', '\n') ?? string.Empty;
+            string payload = sendInputTextBox.Text?.TrimEnd('\r', '\n') ?? string.Empty;
             if (string.IsNullOrWhiteSpace(payload))
             {
                 AppendLog("系统: 请输入发送内容");
@@ -44,7 +44,7 @@ namespace WinFormsDemo
                 return;
             }
 
-            if (checkBox1.Checked)
+            if (appendNewLineCheckBox.Checked)
             {
                 payload += Environment.NewLine;
             }
@@ -83,31 +83,31 @@ namespace WinFormsDemo
             portDropdown.DropDownStyle = ComboBoxStyle.DropDownList;
             baudDropdown.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            button1.Text = "复制接收";
-            button2.Text = "填充示例";
-            button3.Text = "加载Logo";
-            button4.Text = "清空图片";
-            checkBox1.Text = "发送换行";
-            radioButton1.Text = "缩放预览";
-            checkBox2.Text = "拉伸预览";
+            copyReceiveButton.Text = "复制接收";
+            fillSampleButton.Text = "填充示例";
+            loadLogoButton.Text = "加载Logo";
+            clearLogoButton.Text = "清空图片";
+            appendNewLineCheckBox.Text = "发送换行";
+            zoomPreviewRadioButton.Text = "缩放预览";
+            stretchPreviewCheckBox.Text = "拉伸预览";
             hexSwitch.Text = "HEX显示";
 
-            checkBox1.Checked = true;
-            radioButton1.Checked = true;
-            checkBox2.Checked = false;
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            appendNewLineCheckBox.Checked = true;
+            zoomPreviewRadioButton.Checked = true;
+            stretchPreviewCheckBox.Checked = false;
+            previewPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
         }
 
         private void WireEvents()
         {
             refreshButton.Click += ref_btn_Click;
             openButton.Click += open_btn_Click;
-            button1.Click += copy_recv_btn_Click;
-            button2.Click += fill_sample_btn_Click;
-            button3.Click += load_logo_btn_Click;
-            button4.Click += clear_logo_btn_Click;
-            checkBox2.CheckedChanged += preview_mode_CheckedChanged;
-            radioButton1.Click += preview_zoom_Click;
+            copyReceiveButton.Click += copy_recv_btn_Click;
+            fillSampleButton.Click += fill_sample_btn_Click;
+            loadLogoButton.Click += load_logo_btn_Click;
+            clearLogoButton.Click += clear_logo_btn_Click;
+            stretchPreviewCheckBox.CheckedChanged += preview_mode_CheckedChanged;
+            zoomPreviewRadioButton.Click += preview_zoom_Click;
         }
 
         private void RefreshBaudRates()
@@ -238,7 +238,7 @@ namespace WinFormsDemo
 
         private void fill_sample_btn_Click(object? sender, EventArgs e)
         {
-            textBox1.Text = "LVGLSharp Demo";
+            sendInputTextBox.Text = "LVGLSharp Demo";
         }
 
         private void load_logo_btn_Click(object? sender, EventArgs e)
@@ -248,20 +248,20 @@ namespace WinFormsDemo
 
         private void clear_logo_btn_Click(object? sender, EventArgs e)
         {
-            pictureBox1.ImageLocation = null;
-            pictureBox1.Image = null;
+            previewPictureBox.ImageLocation = null;
+            previewPictureBox.Image = null;
             AppendLog("系统: 已清空示例图像");
         }
 
         private void preview_mode_CheckedChanged(object? sender, EventArgs e)
         {
-            if (checkBox2.Checked)
+            if (stretchPreviewCheckBox.Checked)
             {
-                radioButton1.Checked = false;
+                zoomPreviewRadioButton.Checked = false;
             }
-            else if (!radioButton1.Checked)
+            else if (!zoomPreviewRadioButton.Checked)
             {
-                radioButton1.Checked = true;
+                zoomPreviewRadioButton.Checked = true;
             }
 
             ApplyPreviewMode();
@@ -269,14 +269,14 @@ namespace WinFormsDemo
 
         private void preview_zoom_Click(object? sender, EventArgs e)
         {
-            radioButton1.Checked = true;
-            checkBox2.Checked = false;
+            zoomPreviewRadioButton.Checked = true;
+            stretchPreviewCheckBox.Checked = false;
             ApplyPreviewMode();
         }
 
         private void ApplyPreviewMode()
         {
-            pictureBox1.SizeMode = checkBox2.Checked
+            previewPictureBox.SizeMode = stretchPreviewCheckBox.Checked
                 ? PictureBoxSizeMode.StretchImage
                 : PictureBoxSizeMode.Zoom;
         }
@@ -296,7 +296,7 @@ namespace WinFormsDemo
 
             try
             {
-                pictureBox1.Load(imagePath);
+                previewPictureBox.Load(imagePath);
                 ApplyPreviewMode();
 
                 if (logResult)

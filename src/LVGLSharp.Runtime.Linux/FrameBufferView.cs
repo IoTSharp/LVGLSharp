@@ -48,7 +48,7 @@ public unsafe class FrameBufferView : IView
             _dpi = dpi;
         }
 
-        public void Init()
+        public void Open()
         {
             LvglNativeLibraryResolver.EnsureRegistered();
             startTick = Environment.TickCount;
@@ -80,7 +80,7 @@ public unsafe class FrameBufferView : IView
             }
         }
 
-        public void AttachTextInput(lv_obj_t* textArea)
+        public void RegisterTextInput(lv_obj_t* textArea)
         {
             if (textArea == null)
             {
@@ -92,24 +92,29 @@ public unsafe class FrameBufferView : IView
             lv_keyboard_set_textarea(keyboard, textArea);
         }
 
-        public void StartLoop(Action handle)
+        public void RunLoop(Action iteration)
         {
             while (g_running)
             {
-                ProcessEvents();
-                handle?.Invoke();
+                HandleEvents();
+                iteration?.Invoke();
                 Thread.Sleep(5);
             }
         }
 
-        public void ProcessEvents()
+        public void HandleEvents()
         {
             lv_timer_handler();
         }
 
-        public void Stop()
+        public void Close()
         {
             g_running = false;
+        }
+
+        public void Dispose()
+        {
+            Close();
         }
     }
 }

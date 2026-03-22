@@ -2,7 +2,7 @@ using LVGLSharp.Interop;
 
 namespace LVGLSharp
 {
-    public unsafe interface IView
+    public unsafe interface IView : IDisposable
     {
         lv_obj_t* Root { get; }
 
@@ -10,14 +10,14 @@ namespace LVGLSharp
 
         delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback { get; }
 
-        void Init();
+        void Open();
 
-        void ProcessEvents();
+        void HandleEvents();
 
-        void StartLoop(Action handle);
+        void RunLoop(Action iteration);
 
-        void Stop();
+        void Close();
 
-        void AttachTextInput(lv_obj_t* textArea);
+        void RegisterTextInput(lv_obj_t* textArea);
     }
 }

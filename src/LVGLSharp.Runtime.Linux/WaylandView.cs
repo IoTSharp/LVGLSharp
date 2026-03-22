@@ -71,7 +71,7 @@ public unsafe sealed class WaylandView : IView
 
     public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaFocusCallback => _fallbackView is not null ? _fallbackView.SendTextAreaFocusCallback : null;
 
-    public void Init()
+    public void Open()
     {
         if (_initialized)
         {
@@ -82,7 +82,7 @@ public unsafe sealed class WaylandView : IView
 
         if (_fallbackView is not null)
         {
-            _fallbackView.Init();
+            _fallbackView.Open();
             _running = true;
             _initialized = true;
             return;
@@ -98,11 +98,11 @@ public unsafe sealed class WaylandView : IView
         _initialized = true;
     }
 
-    public void ProcessEvents()
+    public void HandleEvents()
     {
         if (_fallbackView is not null)
         {
-            _fallbackView.ProcessEvents();
+            _fallbackView.HandleEvents();
             return;
         }
 
@@ -122,30 +122,30 @@ public unsafe sealed class WaylandView : IView
         lv_timer_handler();
     }
 
-    public void StartLoop(Action handle)
+    public void RunLoop(Action iteration)
     {
         if (_fallbackView is not null)
         {
-            _fallbackView.StartLoop(handle);
+            _fallbackView.RunLoop(iteration);
             return;
         }
 
         while (_running)
         {
-            ProcessEvents();
+            HandleEvents();
 
             if (_window.IsCloseRequested)
             {
-                Stop();
+                Close();
                 break;
             }
 
-            handle?.Invoke();
+            iteration?.Invoke();
             Thread.Sleep(5);
         }
     }
 
-    public void Stop()
+    public void Close()
     {
         if (s_activeView == this)
         {
@@ -156,7 +156,7 @@ public unsafe sealed class WaylandView : IView
 
         try
         {
-            _fallbackView?.Stop();
+            _fallbackView?.Close();
         }
         finally
         {
@@ -204,9 +204,14 @@ public unsafe sealed class WaylandView : IView
         }
     }
 
-    public void AttachTextInput(lv_obj_t* textArea)
+    public void RegisterTextInput(lv_obj_t* textArea)
     {
-        _fallbackView?.AttachTextInput(textArea);
+        _fallbackView?.RegisterTextInput(textArea);
+    }
+
+    public void Dispose()
+    {
+        Close();
     }
 
     public override string ToString() => _fallbackView is null

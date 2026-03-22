@@ -58,12 +58,12 @@ namespace LVGLSharp.Forms
 
             var windowOptions = new WindowCreateOptions(Text, displayWidth, displayHeight, FormBorderStyle == FormBorderStyle.None);
             _view = WindowHostFactory.Create(windowOptions);
-            _view.Init();
+            _view.Open();
 
             root = _view.Root;
             key_inputGroup = _view.KeyInputGroup;
             SendTextAreaFocusCb = _view.SendTextAreaFocusCallback;
-            SendTextAreaDefocusCb = _view is LVGLSharp.Runtime.Linux.SdlView sdlView ? sdlView.SendTextAreaDefocusCallback : null;
+            SendTextAreaDefocusCb = null;
             Application.CurrentStyleSet.Root.Apply(root);
 
             _lvglObjectHandle = (nint)root;
@@ -108,7 +108,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            _view.StartLoop(() =>
+            _view.RunLoop(() =>
             {
                 handle?.Invoke();
                 OnMessageLoopIteration();
@@ -118,7 +118,7 @@ namespace LVGLSharp.Forms
 
         internal void ProcessEventsCore()
         {
-            _view?.ProcessEvents();
+            _view?.HandleEvents();
         }
 
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -129,7 +129,7 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            _view?.Stop();
+            _view?.Dispose();
             _view = null;
             Application.UnregisterOpenForm(this);
             base.DestroyHandle();

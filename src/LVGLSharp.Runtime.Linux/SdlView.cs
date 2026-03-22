@@ -64,7 +64,7 @@ public unsafe sealed partial class SdlView : IView
 
     public delegate* unmanaged[Cdecl]<lv_event_t*, void> SendTextAreaDefocusCallback => &HandleTextAreaDefocused;
 
-    public void Init()
+    public void Open()
     {
         if (_initialized)
         {
@@ -110,12 +110,12 @@ public unsafe sealed partial class SdlView : IView
         }
         catch
         {
-            Stop();
+            Close();
             throw;
         }
     }
 
-    public void ProcessEvents()
+    public void HandleEvents()
     {
         if (!_initialized)
         {
@@ -128,23 +128,23 @@ public unsafe sealed partial class SdlView : IView
         PresentFrame();
     }
 
-    public void StartLoop(Action handle)
+    public void RunLoop(Action iteration)
     {
         try
         {
             while (_running)
             {
-                ProcessEvents();
-                handle?.Invoke();
+                HandleEvents();
+                iteration?.Invoke();
             }
         }
         finally
         {
-            Stop();
+            Close();
         }
     }
 
-    public void Stop()
+    public void Close()
     {
         if (s_activeView == this)
         {
@@ -210,9 +210,14 @@ public unsafe sealed partial class SdlView : IView
         _initialized = false;
     }
 
-    public void AttachTextInput(lv_obj_t* textArea)
+    public void RegisterTextInput(lv_obj_t* textArea)
     {
         UpdateFocusedTextArea(textArea);
+    }
+
+    public void Dispose()
+    {
+        Close();
     }
 
     public override string ToString()

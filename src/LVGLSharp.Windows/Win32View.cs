@@ -451,7 +451,7 @@ namespace LVGLSharp.Runtime.Windows
             _borderless = borderless;
         }
 
-        public void Init()
+        public void Open()
         {
             LvglNativeLibraryResolver.EnsureRegistered();
             startTick = Environment.TickCount;
@@ -553,12 +553,12 @@ namespace LVGLSharp.Runtime.Windows
 
             lv_obj_add_style(root, _defaultFontStyle, 0);
         }
-        public void StartLoop(Action handle)
+        public void RunLoop(Action iteration)
         {
             while (g_running)
             {
                 bool hadMessages = ProcessEventsCore();
-                handle?.Invoke();
+            iteration?.Invoke();
 
                 if (!hadMessages)
                 {
@@ -570,12 +570,12 @@ namespace LVGLSharp.Runtime.Windows
             Marshal.FreeHGlobal(g_lvbuf);
         }
 
-        public void ProcessEvents()
+        public void HandleEvents()
         {
             ProcessEventsCore();
         }
 
-        public void Stop()
+        public void Close()
         {
             g_running = false;
 
@@ -585,8 +585,13 @@ namespace LVGLSharp.Runtime.Windows
             }
         }
 
-        public void AttachTextInput(lv_obj_t* textArea)
+        public void RegisterTextInput(lv_obj_t* textArea)
         {
+        }
+
+        public void Dispose()
+        {
+            Close();
         }
     }
 }

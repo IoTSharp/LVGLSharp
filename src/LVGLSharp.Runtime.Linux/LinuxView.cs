@@ -49,28 +49,33 @@ public unsafe class LinuxView : IView
         _ => 0U,
     };
 
-    public void Init()
+    public void Open()
     {
-        _inner.Init();
+        _inner.Open();
     }
 
-    public void ProcessEvents()
+    public void HandleEvents()
     {
-        _inner.ProcessEvents();
+        _inner.HandleEvents();
     }
 
-    public void StartLoop(Action handle)
+    public void RunLoop(Action iteration)
     {
-        _inner.StartLoop(handle);
+        _inner.RunLoop(iteration);
     }
 
-    public void Stop()
+    public void Close()
     {
-        _inner.Stop();
+        _inner.Close();
     }
 
-    public void AttachTextInput(lv_obj_t* textArea)
+    public void RegisterTextInput(lv_obj_t* textArea)
     {
-        _inner.AttachTextInput(textArea);
+        _inner.RegisterTextInput(textArea);
+    }
+
+    public void Dispose()
+    {
+        _inner.Dispose();
     }
 }

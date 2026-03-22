@@ -32,7 +32,7 @@ unsafe class Program
     static void Main(string[] args)
     {
         view = CreateView();
-        view.Init();
+        view.Open();
 
         root = view.Root;
         key_inputGroup = view.KeyInputGroup;
@@ -40,7 +40,7 @@ unsafe class Program
 
         InitUI();
 
-        view.StartLoop(() => { });
+        view.RunLoop(() => { });
     }
 
     static IView CreateView()
@@ -276,7 +276,7 @@ unsafe class Program
             lv_group_add_obj(key_inputGroup, send_textarea);
         lv_obj_set_height(send_textarea, 50);
 
-        view?.AttachTextInput(send_textarea);
+        view?.RegisterTextInput(send_textarea);
 
         // 发送按钮
         send_btn = lv_btn_create(send_container);

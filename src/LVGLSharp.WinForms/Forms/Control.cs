@@ -1575,6 +1575,12 @@ namespace LVGLSharp.Forms
         public event KeyEventHandler? KeyDown;
         //
         // ժҪ:
+        //     Occurs before a key event when a key is pressed while the control has focus.
+        [SRCategoryAttribute("CatKey")]
+        [SRDescriptionAttribute("ControlOnPreviewKeyDownDescr")]
+        public event EventHandler<PreviewKeyDownEventArgs>? PreviewKeyDown;
+        //
+        // ժҪ:
         //     Occurs when the control receives focus.
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -3353,7 +3359,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnPreviewKeyDown(PreviewKeyDownEventArgs e)
         {
-
+            PreviewKeyDown?.Invoke(this, e);
         }
         //
         // ժҪ:
@@ -3559,12 +3565,6 @@ namespace LVGLSharp.Forms
         protected virtual bool ProcessKeyEventArgs(ref Message m)
         {
             Keys keyData = TranslateLvglKey((uint)m.wParam);
-            var previewArgs = new PreviewKeyDownEventArgs(keyData)
-            {
-                IsInputKey = IsInputKey(keyData)
-            };
-            OnPreviewKeyDown(previewArgs);
-
             var keyEventArgs = new KeyEventArgs(keyData);
             OnKeyDown(keyEventArgs);
 
@@ -3592,7 +3592,14 @@ namespace LVGLSharp.Forms
         //     true if the message was processed by the control; otherwise, false.
         protected virtual bool ProcessKeyPreview(ref Message m)
         {
-            return ProcessKeyEventArgs(ref m);
+            Keys keyData = TranslateLvglKey((uint)m.wParam);
+            var previewArgs = new PreviewKeyDownEventArgs(keyData)
+            {
+                IsInputKey = IsInputKey(keyData)
+            };
+
+            OnPreviewKeyDown(previewArgs);
+            return previewArgs.IsInputKey;
         }
 
         //

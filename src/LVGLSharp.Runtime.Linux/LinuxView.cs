@@ -21,6 +21,7 @@ public unsafe class LinuxView : IView
         {
             LinuxHostEnvironment.Wslg => new WslgView(title, width, height, dpi, detectedX11Display, borderless),
             LinuxHostEnvironment.Wayland => new WaylandView(title, width, height, dpi, detectedWaylandDisplay, detectedX11Display, borderless),
+            LinuxHostEnvironment.Sdl => new SdlView(title, width, height, dpi, borderless),
             LinuxHostEnvironment.FrameBuffer => new FrameBufferView(fbdev, indev, dpi),
             LinuxHostEnvironment.X11 => new X11View(title, width, height, dpi, detectedX11Display, borderless),
             _ => throw new InvalidOperationException($"Unsupported Linux view mode: {_environment}"),
@@ -36,6 +37,7 @@ public unsafe class LinuxView : IView
     {
         X11View => X11View.CurrentMousePosition,
         WaylandView => WaylandView.CurrentMousePosition,
+        SdlView => SdlView.CurrentMousePosition,
         _ => (0, 0),
     };
 
@@ -43,6 +45,7 @@ public unsafe class LinuxView : IView
     {
         X11View => X11View.CurrentMouseButton,
         WaylandView => WaylandView.CurrentMouseButton,
+        SdlView => SdlView.CurrentMouseButton,
         _ => 0U,
     };
 

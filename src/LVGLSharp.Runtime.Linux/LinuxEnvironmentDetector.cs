@@ -9,6 +9,7 @@ internal enum LinuxHostEnvironment
 {
     Wslg,
     Wayland,
+    Sdl,
     X11,
     FrameBuffer,
 }
@@ -76,6 +77,11 @@ internal static class LinuxEnvironmentDetector
 
     internal static LinuxHostEnvironment ResolveHostEnvironment(string? detectedWaylandDisplay, string? detectedX11Display, string fbdev)
     {
+        if (ShouldUseSdl())
+        {
+            return LinuxHostEnvironment.Sdl;
+        }
+
         if (IsWslg(detectedX11Display))
         {
             return LinuxHostEnvironment.Wslg;
@@ -97,6 +103,21 @@ internal static class LinuxEnvironmentDetector
         }
 
         return LinuxHostEnvironment.X11;
+    }
+
+    internal static bool ShouldUseSdl()
+    {
+        var explicitHost = Environment.GetEnvironmentVariable("LVGLSHARP_LINUX_HOST");
+        if (!string.IsNullOrWhiteSpace(explicitHost) &&
+            string.Equals(explicitHost, "sdl", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        var useSdl = Environment.GetEnvironmentVariable("LVGLSHARP_USE_SDL");
+        return string.Equals(useSdl, "1", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(useSdl, "true", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(useSdl, "yes", StringComparison.OrdinalIgnoreCase);
     }
 
     internal static string? DetectWaylandDisplay()

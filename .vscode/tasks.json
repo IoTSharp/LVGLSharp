@@ -1,34 +1,46 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Preview Pages HTML",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        "${workspaceFolder}/preview/preview-pages.ps1"
-      ],
-      "group": "build",
-      "isBackground": true,
-      "problemMatcher": []
-    },
-    {
-      "label": "Build Pages HTML Only",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        "${workspaceFolder}/preview/preview-pages.ps1",
-        "-NoServe"
-      ],
-      "group": "build",
-      "isBackground": false,
-      "problemMatcher": []
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Preview Pages HTML",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"${workspaceFolder}/preview/preview-pages.ps1"
+			],
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Build Pages HTML Only",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"${workspaceFolder}/preview/preview-pages.ps1",
+				"-NoServe"
+			],
+			"group": "build",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Run WinFormsVncDemo",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"run",
+				"--project",
+				"src/Demos/WinFormsVncDemo/WinFormsVncDemo.csproj"
+			],
+			"isBackground": false,
+			"group": "build"
+		}
+	]
 }

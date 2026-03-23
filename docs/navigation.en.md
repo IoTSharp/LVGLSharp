@@ -6,13 +6,14 @@ Welcome to the `LVGLSharp.Forms` documentation site.
 
 - [Chinese Home](./index.md)
 - [English Home](./index.en.md)
+- [Chinese Navigation](./navigation.md)
 
 ## Project Documentation
 
-- [CI Workflow Guide (Chinese)](./ci-workflows.md)
-- [WSL Developer Guide (Chinese)](./WSL-Developer-Guide.md)
 - [Roadmap](../ROADMAP.md)
 - [Changelog](../CHANGELOG.md)
+- [CI Workflow Guide (Chinese)](./ci-workflows.md)
+- [WSL Developer Guide (Chinese)](./WSL-Developer-Guide.md)
 
 ## Blog Articles
 

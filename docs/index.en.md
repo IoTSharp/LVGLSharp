@@ -2,7 +2,7 @@
 
 > Bringing a WinForms-style development experience to LVGL-powered cross-platform UI.
 
-English | [??](./index.md) | [Navigation](./navigation.en.md)
+English | [Chinese](./index.md) | [Navigation](./navigation.en.md)
 
 ---
 
@@ -29,7 +29,7 @@ English | [??](./index.md) | [Navigation](./navigation.en.md)
 
 ## Language Switch
 
-> Current page: **English** | Switch to: [????](./index.md) ?[????](./navigation.md) ?[????](./blog/index.md)
+> Current page: **English** | Switch to: [Chinese Home](./index.md) | [Chinese Navigation](./navigation.md) | [Chinese Blog](./blog/index.md)
 
 ---
 
@@ -39,7 +39,7 @@ English | [??](./index.md) | [Navigation](./navigation.en.md)
 
 If this is your first visit, start with this sequence:
 
-1. read this page to understand the project抯 purpose
+1. read this page to understand the project's purpose
 2. read [`ci-workflows.md`](./ci-workflows.md) to understand the engineering pipeline
 3. read [`ROADMAP.md`](../ROADMAP.md) to understand where the project is heading
 4. move into the blog section for design rationale and implementation discussions
@@ -86,7 +86,7 @@ Moves steadily toward self-contained, minimal-runtime, device-friendly deploymen
 
 ### Multi-Host Runtime Model
 
-Separates Windows and Linux runtimes while leaving room for future Wayland, SDL, DRM/KMS, and other host paths.
+Separates Windows and Linux runtimes, with `WSLg`, `X11`, and `FrameBuffer` already established, `Wayland` / `SDL` already implemented, and room left for later `DRM/KMS` and other host paths.
 
 ---
 
@@ -184,7 +184,7 @@ Start here if device deployment and runtime constraints are your main focus.
 
 ## Project Overview
 
-`LVGLSharp.Forms` is a **WinForms API compatibility layer built on top of LVGL**. Its goal is not merely to wrap LVGL with another .NET API, but to preserve as much of the familiar WinForms mental model as possible梖orms, controls, layout structure, event handling, and application lifecycle梬hile running the same UI code across Windows, Linux, and broader device-oriented environments.
+`LVGLSharp.Forms` is a **WinForms API compatibility layer built on top of LVGL**. Its goal is not merely to wrap LVGL with another .NET API, but to preserve as much of the familiar WinForms mental model as possible, including forms, controls, layout structure, event handling, and application lifecycle, while running the same UI code across Windows, Linux, and broader device-oriented environments.
 
 If summarized in one sentence, the project aims to do this:
 
@@ -216,7 +216,7 @@ However, WinForms itself is primarily designed for Windows desktop applications 
 - lightweight ARM deployments
 - aggressively trimmed NativeAOT applications
 
-LVGL, on the other hand, is excellent for embedded UI, lightweight rendering, and broad platform adaptation梑ut its native programming model is more low-level and differs significantly from the WinForms way of building applications.
+LVGL, on the other hand, is excellent for embedded UI, lightweight rendering, and broad platform adaptation, but its native programming model is more low-level and differs significantly from the WinForms way of building applications.
 
 `LVGLSharp.Forms` sits in the middle:
 
@@ -253,11 +253,19 @@ That is why the architecture emphasizes:
 |---|---|
 | WinForms-style API | Core compatibility layer established |
 | Full LVGL interop | Available |
-| Windows / Linux runtimes | Available |
+| Windows runtime | Available |
+| Unified Linux runtime entry | Available |
+| `Wayland` / `SDL` hosts | Implemented, but currently experimental |
 | NativeAOT direction | Supported and actively shaped |
 | Multi-platform native packaging | Available |
 | GitHub Actions CI/CD | Decomposed into reusable stages |
 | GitHub Pages docs site | Basic structure established |
+
+### Recently confirmed progress
+
+- [`ROADMAP.md`](../ROADMAP.md) is now the single place for completed milestones, host maturity, and the recommended next step.
+- The Linux runtime already includes `WslgView`, `X11View`, `FrameBufferView`, `WaylandView`, and `SdlView`.
+- The best next engineering step is still moving `LVGLSharp.Native` dependency ownership into the runtime packages so `Interop` remains a pure binding layer.
 
 ## What the Project Already Provides
 
@@ -423,8 +431,6 @@ The demos are not only for visual showcase. They also serve as:
 
 According to the roadmap, future work will continue toward:
 
-- `Wayland`
-- `SDL`
 - `DRM`
 - `KMS`
 - `Offscreen`
@@ -452,7 +458,7 @@ That is currently one of the most practical usage patterns for the project.
 
 ---
 
-## The 揕VGLSharp Layout?Pattern
+## The LVGLSharp Layout Pattern
 
 The repository uses a specific term for its recommended layout model:
 
@@ -495,18 +501,20 @@ On Linux, `LinuxView` currently serves as the unified entry point and routes int
 - `WslgView`
 - `X11View`
 - `FrameBufferView`
+- `WaylandView`
+- `SdlView`
 
 This allows the project to:
 
 - reuse the same upper-layer API across multiple Linux environments
 - keep host-specific logic inside runtime packages
-- prepare for future expansion toward `Wayland`, `SDL`, and other hosts
+- keep `Wayland` and `SDL` on the same runtime path while they continue to mature as experimental hosts
 
 ---
 
 ## AOT and Trimming Philosophy
 
-This is one of the project抯 most technically important aspects.
+This is one of the project's most technically important aspects.
 
 Many UI frameworks struggle when moving toward NativeAOT or aggressive trimming because they depend on:
 
@@ -516,7 +524,7 @@ Many UI frameworks struggle when moving toward NativeAOT or aggressive trimming 
 
 This project explicitly tries to avoid that. It emphasizes:
 
-- no 揷omment-based?suppression of AOT or trimming warnings as a design strategy
+- no comment-based suppression of AOT or trimming warnings as a design strategy
 - replacing risky activation paths with explicit, analyzable implementations
 - favoring static-friendly registration and startup patterns
 
@@ -592,7 +600,7 @@ Key characteristics of the current CI design:
 - demo and NuGet packaging are decoupled
 - prepare / pack / publish stages are reusable
 
-This means the repository is not just 揵uildable敆it is moving toward a sustainable release engineering structure.
+This means the repository is not just buildable; it is moving toward a sustainable release engineering structure.
 
 ---
 
@@ -610,11 +618,21 @@ Recommended Pages content includes:
 
 A practical Pages structure can include:
 
-- `docs/index.md` ?Chinese homepage
-- `docs/index.en.md` ?English homepage
-- `docs/ci-workflows.md` ?CI explanation
-- `docs/WSL-Developer-Guide.md` ?WSL guide
+- `docs/index.md` - Chinese homepage
+- `docs/index.en.md` - English homepage
+- `docs/ci-workflows.md` - CI explanation
+- `docs/WSL-Developer-Guide.md` - WSL guide
 - later additions for host-specific and topic-specific documentation
+
+---
+
+## Current priority
+
+If we continue from the current repository state, the next three things to prioritize are:
+
+1. move `LVGLSharp.Native` dependency ownership into `LVGLSharp.Runtime.Windows` / `LVGLSharp.Runtime.Linux`
+2. add smoke tests and regression validation for `Wayland` / `SDL`
+3. keep `README`, `ROADMAP`, `CHANGELOG`, and the docs home pages aligned on the same project state
 
 ---
 
@@ -663,10 +681,10 @@ Topics:
 Topics:
 
 - X11 / WSLg / framebuffer today
-- why `Wayland`, `SDL`, `DRM`, and `KMS` matter next
+- why `Wayland` / `SDL` still need validation, and why `DRM` / `KMS` matter next
 - differences between desktop environments and device-side hosts
 
-### 5. From 搃t runs?to 搃t ships?
+### 5. From "it runs" to "it ships"
 
 Topics:
 
@@ -692,11 +710,11 @@ At this point, the repository already shows strong signs of an emerging framewor
 
 In other words, it is moving from:
 
-- 揳n interesting prototype?
+- "an interesting prototype"
 
 into:
 
-- 揳 real engineering direction for cross-platform .NET UI over LVGL?
+- "a real engineering direction for cross-platform .NET UI over LVGL"
 
 ---
 
@@ -741,7 +759,7 @@ You can continue with:
 
 ## Closing Thoughts
 
-The meaning of `LVGLSharp.Forms` is bigger than 搑unning WinForms on LVGL?
+The meaning of `LVGLSharp.Forms` is bigger than simply "running WinForms on LVGL".
 
 It is really an attempt to answer a deeper question:
 

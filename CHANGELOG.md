@@ -11,15 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [未发布 / Unreleased]
 
 ### 新增 / Added
-- 无。
+- 新增 `ROADMAP.md`，用于统一记录当前已完成的里程碑、宿主成熟度与下一阶段建议优先项。
 
 ### 变更 / Changed
+- `LVGLSharp.Interop` 与部分 demo 工程对 `LVGLSharp.Native` 改为按构建配置拆分依赖：非 `Release` 默认引用已发布包，`Release` 引用本地项目，并统一引入 `LVGLSharpNativePackageVersion` 属性。
 - `LVGLSharp.Forms` 改为通过 `buildTransitive` 自动生成平台运行时注册代码，在 `ApplicationConfiguration.Initialize()` 中按当前平台完成初始化，不再依赖 demo 侧显式调用运行时配置辅助类。
-- 新增 Linux `IView` 路线图与 `WSL2/WSLg` 开发者手册，统一记录 Linux 图形宿主扩展方向与 demo 开发调试流程。
-- 新增 `Visual Studio 2026` + `WSL` 调试手册，补充说明通用 `WSL` 程序与本仓库 demo 的推荐调试方式。
+- 文档首页、导航页与 README 的入口统一对齐到真实存在的 `ROADMAP.md`、`docs/WSL-Developer-Guide*.md` 与 `docs/navigation*.md`。
+- 文档对 Linux 宿主状态的描述已更新：`Wayland` 与 `SDL` 不再只作为未来规划，而是标记为“已实现、当前偏实验性”的路径。
 
 ### 修复 / Fixed
-- 无。
+- 修复了多处指向不存在路线图或调试手册文件的文档链接。
 
 ---
 

@@ -9,12 +9,13 @@
 
 ## 项目文档
 
+- [路线图](../ROADMAP.md)
+- [更新记录](../CHANGELOG.md)
 - [CI 工作流说明](./ci-workflows.md)
 - [WSL 开发指南](./WSL-Developer-Guide.md)
 - [CI Workflow Guide](./ci-workflows.en.md)
 - [WSL Developer Guide](./WSL-Developer-Guide.en.md)
-- [路线图](../ROADMAP.md)
-- [更新记录](../CHANGELOG.md)
+- [英文文档导航](./navigation.en.md)
 
 ## 专题博客
 

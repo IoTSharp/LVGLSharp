@@ -2,14 +2,14 @@
 
 This document explains how developers in this repository can run and debug Linux-path demos inside `WSL2/WSLg`.
 
-If you specifically want to understand how `Visual Studio 2026` participates in `WSL` debugging and demo debugging for this repository, also see: [`docs/VS2026-WSL-Debug-Guide.md`](./VS2026-WSL-Debug-Guide.md).
+If you also want the current completion status and the recommended next engineering step, see [`ROADMAP.md`](../ROADMAP.md) and [`navigation.en.md`](./navigation.en.md).
 
 ## Short Conclusion First
 
 The most practical workflow for this repository today is:
 
 1. keep editing code on Windows using `Visual Studio`
-2. use the repository¡¯s Linux publish script or `dotnet publish` to generate Linux executables
+2. use the repository's Linux publish script or `dotnet publish` to generate Linux executables
 3. run the published outputs inside `WSL2`
 4. if Linux-side breakpoint debugging is required, prefer `VS Code + Remote WSL`
 
@@ -25,7 +25,7 @@ According to the current Microsoft documentation:
   - run in WSL
   - switch to `VS Code Remote WSL` when Linux-side breakpoints are needed
 
-That is why this guide does not treat ¡°Visual Studio directly F5-debugging a WSL .NET demo¡± as the primary path. Instead, it documents the more reliable workflow.
+That is why this guide does not treat "Visual Studio directly F5-debugging a WSL .NET demo" as the primary path. Instead, it documents the more reliable workflow.
 
 ## Environment Preparation
 
@@ -254,7 +254,7 @@ Based on current validation, the following can already be concluded:
 - button refresh stability: after foreground/background switches, further button interactions still changed the screenshot result, so there is currently no evidence that focus return breaks repainting
 - `root invalidate`: based on first frame, resize, and interaction visibility, there is currently no evidence that `PictureBoxDemo` still needs another dedicated `root invalidate` fix
 
-In other words, `PictureBoxDemo` has already moved beyond ¡°can the path start at all?¡± and into real rendering validation.
+In other words, `PictureBoxDemo` has already moved beyond "can the path start at all?" and into real rendering validation.
 
 ### `SmartWatchDemo`
 

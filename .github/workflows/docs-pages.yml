@@ -67,6 +67,7 @@ jobs:
           cp docs/blog/why-winforms-over-lvgl.en.md _site/blog/why-winforms-over-lvgl.en.md
           cp ROADMAP.md _site/ROADMAP.md
           cp CHANGELOG.md _site/CHANGELOG.md
+          cp docs/CNAME _site/CNAME
 
           if [ -d docs/images ]; then
             mkdir -p _site/images

@@ -7,6 +7,7 @@
 📘 Documentation site (GitHub Pages):
 
 - GitHub repository: `https://github.com/IoTSharp/LVGLSharp`
+- Primary site: `https://lvglsharp.net/`
 - Mirror site: `https://gtiee.com/IoTSharp/LVGLSharp`
 
 - Chinese home: `docs/index.md`
@@ -17,6 +18,11 @@
 - English navigation: `docs/navigation.en.md`
 - Chinese blog index: `docs/blog/index.md`
 - English blog index: `docs/blog/index.en.md`
+
+Suggested public entry points:
+
+- Chinese home: <https://lvglsharp.net/>
+- English home: <https://lvglsharp.net/index.en.html>
 
 > ⚠️ This project is currently in the experimental phase and is not yet suitable for production use.
 

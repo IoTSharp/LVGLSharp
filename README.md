@@ -7,7 +7,8 @@
 📘 文档站点（GitHub Pages）：
 
 - GitHub 仓库：`https://github.com/IoTSharp/LVGLSharp`
-- 镜像站点：`https://gtiee.com/IoTSharp/LVGLSharp`
+- 正式站点：`https://lvglsharp.net/`
+- 备用镜像：`https://gtiee.com/IoTSharp/LVGLSharp`
 
 - 中文首页：`docs/index.md`
 - 英文首页：`docs/index.en.md`
@@ -17,6 +18,11 @@
 - 英文导航：`docs/navigation.en.md`
 - 中文博客索引：`docs/blog/index.md`
 - 英文博客索引：`docs/blog/index.en.md`
+
+站点访问建议：
+
+- 中文首页：<https://lvglsharp.net/>
+- 英文首页：<https://lvglsharp.net/index.en.html>
 
 > ⚠️ 项目目前处于试验阶段，尚不可用于生产环境。
 

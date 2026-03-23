@@ -6,8 +6,8 @@ show_excerpts: false
 lang: zh-CN
 timezone: Asia/Shanghai
 author: IoTSharp
-url: https://gtiee.com
-baseurl: /IoTSharp/LVGLSharp
+url: https://lvglsharp.net
+baseurl: ""
 minima:
   skin: auto
   social_links:

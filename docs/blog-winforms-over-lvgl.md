@@ -1,4 +1,12 @@
-﻿# 为什么要做 WinForms over LVGL
+﻿---
+title: 为什么要做 WinForms over LVGL
+description: 说明 LVGLSharp 试图保留 WinForms 开发体验，同时把渲染能力迁移到 LVGL 的核心动机。
+lang: zh-CN
+---
+
+# 为什么要做 WinForms over LVGL
+
+> 这篇文章最适合作为项目第一篇阅读材料，用来理解项目存在的原因与路线价值。
 
 ## 一个长期存在的问题
 

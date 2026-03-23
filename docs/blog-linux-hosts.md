@@ -1,4 +1,12 @@
-﻿# Linux 图形宿主路线：从 X11 到 Wayland，再到设备侧
+﻿---
+title: Linux 图形宿主路线：从 X11 到 Wayland，再到设备侧
+description: 说明 LVGLSharp 在 Linux 上为何必须面向多宿主环境演进，而不是把 Linux 视为单一图形平台。
+lang: zh-CN
+---
+
+# Linux 图形宿主路线：从 X11 到 Wayland，再到设备侧
+
+> 这篇文章适合关注 Linux 图形栈、显示宿主差异和后续设备侧运行路线的读者。
 
 ## 问题不是“Linux 支持不支持 GUI”
 

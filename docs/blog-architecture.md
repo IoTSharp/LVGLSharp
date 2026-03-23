@@ -1,4 +1,12 @@
-﻿# LVGLSharp.Forms 架构拆解：从 Forms 到 Runtime，再到底层 LVGL
+﻿---
+title: 架构拆解：从 Forms 到 Runtime，再到底层 LVGL
+description: 理解 LVGLSharp 如何通过 Forms、Core、Interop、Native 与 Runtime 分层组织跨平台 GUI 能力。
+lang: zh-CN
+---
+
+# LVGLSharp.Forms 架构拆解：从 Forms 到 Runtime，再到底层 LVGL
+
+> 这篇文章适合想快速建立整体工程认知的读者，重点关注分层边界、职责拆分与长期可维护性。
 
 ## 为什么这个项目需要分层
 
@@ -78,6 +86,9 @@
 - 抽象层
 - 绑定层
 - 原生分发层
+
+- 平台运行时层
+- 文档与发布工程层
 - 平台运行时层
 - 发布与文档层
 

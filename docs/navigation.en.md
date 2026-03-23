@@ -27,6 +27,7 @@ lang: en
 				<li><a href="../CHANGELOG.md">Changelog</a></li>
 				<li><a href="./ci-workflows.en.md">CI Workflow Guide</a></li>
 				<li><a href="./WSL-Developer-Guide.en.md">WSL Developer Guide</a></li>
+				<li><a href="./preview-local.md">Local preview guide</a></li>
 			</ul>
 		</div>
 	</div>

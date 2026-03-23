@@ -27,6 +27,7 @@ lang: zh-CN
 				<li><a href="../CHANGELOG.md">更新记录</a></li>
 				<li><a href="./ci-workflows.md">CI 工作流说明</a></li>
 				<li><a href="./WSL-Developer-Guide.md">WSL 开发指南</a></li>
+				<li><a href="./preview-local.md">本地预览说明</a></li>
 			</ul>
 		</div>
 	</div>

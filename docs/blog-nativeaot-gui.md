@@ -1,4 +1,12 @@
-﻿# NativeAOT 与 GUI：为什么这个方向值得认真做
+﻿---
+title: NativeAOT 与 GUI：为什么这个方向值得认真做
+description: 理解为什么 GUI 框架也必须认真对待 AOT，以及这如何影响 LVGLSharp 的整体架构。
+lang: zh-CN
+---
+
+# NativeAOT 与 GUI：为什么这个方向值得认真做
+
+> 这篇文章适合关注部署体积、启动速度、设备端运行和 AOT 架构约束的读者。
 
 ## GUI 为什么也要关心 AOT
 

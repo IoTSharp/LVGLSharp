@@ -114,10 +114,15 @@ body.site-shell a:hover {
 .top-nav a {
   color: var(--muted) !important;
   font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 10px;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .top-nav a:hover {
   color: var(--text) !important;
+  background: rgba(255,255,255,0.05);
+  transform: translateY(-1px);
 }
 
 .site-main {

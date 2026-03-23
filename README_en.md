@@ -1,10 +1,13 @@
-# LVGLSharp.Forms
+# LVGLSharp
 
 [中文](./README.md) | English
 
-**LVGLSharp.Forms** is a cross-platform WinForms API compatibility layer that uses [LVGL](https://github.com/lvgl/lvgl) as the underlying rendering engine. The goal is to achieve **WYSIWYG (What You See Is What You Get)** — UI designed with the Visual Studio Windows Forms Designer on Windows will render with high fidelity on Linux (arm / arm64 / x64) and other embedded platforms.
+**LVGLSharp** is a cross-platform WinForms API compatibility project that uses [LVGL](https://github.com/lvgl/lvgl) as the underlying rendering engine. Its current core UI compatibility layer is still `LVGLSharp.Forms`. The goal is to achieve **WYSIWYG (What You See Is What You Get)** — UI designed with the Visual Studio Windows Forms Designer on Windows will render with high fidelity on Linux (arm / arm64 / x64) and other embedded platforms.
 
 📘 Documentation site (GitHub Pages):
+
+- GitHub repository: `https://github.com/IoTSharp/LVGLSharp`
+- Mirror site: `https://gtiee.com/IoTSharp/LVGLSharp`
 
 - Chinese home: `docs/index.md`
 - English home: `docs/index.en.md`
@@ -27,7 +30,7 @@
 
 ### 9.5.0.5 Highlights
 
-- Continues the initial LVGL-backed WinForms compatibility direction and documents the now-available controls, runtime hosts, and packaging layout.
+- Continues the initial LVGL-backed WinForms compatibility direction, documents the now-available controls, runtime hosts, and packaging layout, and aligns public links with the renamed `LVGLSharp` repository.
 - Clarifies the responsibilities of `LVGLSharp.Forms`, `LVGLSharp.Core`, the platform runtime packages, and `LVGLSharp.Native`.
 - Documents `Application.Run(Form)` lifecycle support, the LVGL event bridge, and NativeAOT publishing readiness.
 - Synchronizes the release summary with [`CHANGELOG.md`](./CHANGELOG.md) so future releases can build on top of tag-based release records.

@@ -4,8 +4,8 @@
     <Authors>IoTSharp</Authors>
     <Company>IoTSharp</Company>
     <Copyright>Copyright © IoTSharp contributors</Copyright>
-    <PackageProjectUrl>https://github.com/IoTSharp/LVGLSharp.Forms</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/IoTSharp/LVGLSharp.Forms</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/IoTSharp/LVGLSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/IoTSharp/LVGLSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>lvgl128x128.png</PackageIcon>

@@ -1,4 +1,4 @@
-title: LVGLSharp.Forms
+title: LVGLSharp
 description: WinForms API compatibility layer powered by LVGL
 theme: minima
 markdown: kramdown
@@ -6,14 +6,14 @@ show_excerpts: false
 lang: zh-CN
 timezone: Asia/Shanghai
 author: IoTSharp
-url: https://iotsharp.github.io
-baseurl: /LVGLSharp.Forms
+url: https://gtiee.com
+baseurl: /IoTSharp/LVGLSharp
 minima:
   skin: auto
   social_links:
     - title: GitHub
       icon: github
-      url: https://github.com/IoTSharp/LVGLSharp.Forms
+      url: https://github.com/IoTSharp/LVGLSharp
 header_pages:
   - index.md
   - index.en.md

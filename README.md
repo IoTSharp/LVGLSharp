@@ -1,10 +1,13 @@
-# LVGLSharp.Forms
+# LVGLSharp
 
 中文 | [English](./README_en.md)
 
-**LVGLSharp.Forms** 是一个跨平台的 WinForms API 兼容层，以 [LVGL](https://github.com/lvgl/lvgl) 作为底层渲染引擎。目标是实现**所见即所得**——在 Visual Studio Windows Forms 设计器中设计的界面，可以在 Linux（arm / arm64 / x64）等嵌入式平台上以高度一致的效果运行。
+**LVGLSharp** 是一个跨平台的 WinForms API 兼容层项目，以 [LVGL](https://github.com/lvgl/lvgl) 作为底层渲染引擎。当前核心 UI 兼容层仍然是 `LVGLSharp.Forms`，目标是实现**所见即所得**——在 Visual Studio Windows Forms 设计器中设计的界面，可以在 Linux（arm / arm64 / x64）等嵌入式平台上以高度一致的效果运行。
 
 📘 文档站点（GitHub Pages）：
+
+- GitHub 仓库：`https://github.com/IoTSharp/LVGLSharp`
+- 镜像站点：`https://gtiee.com/IoTSharp/LVGLSharp`
 
 - 中文首页：`docs/index.md`
 - 英文首页：`docs/index.en.md`
@@ -27,7 +30,7 @@
 
 ### 9.5.0.5 发布摘要
 
-- 延续初始版本中基于 LVGL 的 WinForms API 兼容层方向，补齐核心控件、运行时宿主与打包说明。
+- 延续初始版本中基于 LVGL 的 WinForms API 兼容层方向，补齐核心控件、运行时宿主与打包说明，并统一切换到 `LVGLSharp` 仓库名。
 - 明确 `LVGLSharp.Forms`、`LVGLSharp.Core`、平台运行时包与 `LVGLSharp.Native` 的职责划分。
 - 补充 `Application.Run(Form)` 生命周期支持、LVGL 事件桥接与 NativeAOT 发布能力说明。
 - 将当前稳定可对外说明的能力同步到 [`CHANGELOG.md`](./CHANGELOG.md)，便于后续基于 tag 自动生成发布记录。

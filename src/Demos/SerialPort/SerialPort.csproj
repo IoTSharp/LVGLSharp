@@ -14,7 +14,12 @@
 		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
 	</PropertyGroup>
 
-	<ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' != 'Release'">
+		<PackageReference Include="LVGLSharp.Native" Version="$(LVGLSharpNativePackageVersion)" />
+		<PackageReference Include="System.IO.Ports" Version="10.0.5" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)' == 'Release'">
 		<ProjectReference Include="..\..\LVGLSharp.Native\LVGLSharp.Native.csproj" />
 		<PackageReference Include="System.IO.Ports" Version="10.0.5" />
 	</ItemGroup>

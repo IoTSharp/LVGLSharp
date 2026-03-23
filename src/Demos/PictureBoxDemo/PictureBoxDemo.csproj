@@ -39,7 +39,10 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
-	<ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' != 'Release'">
+		<PackageReference Include="LVGLSharp.Native" Version="$(LVGLSharpNativePackageVersion)" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' == 'Release'">
 		<ProjectReference Include="..\..\LVGLSharp.Native\LVGLSharp.Native.csproj" />
 	</ItemGroup>
 

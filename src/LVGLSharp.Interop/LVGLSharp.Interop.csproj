@@ -13,13 +13,16 @@
 		<Description>Auto-generated P/Invoke bindings for LVGL (via ClangSharpPInvokeGenerator). Provides low-level access to the full LVGL C API from .NET.</Description>
 	</PropertyGroup>
 
-	<!-- Depend on the native library package so the correct shared lib is
-	     restored alongside the managed bindings automatically.
-	     The condition limits this to CI environments (where the package
-	     already exists in a feed) so that local development builds are
-	     not affected before the native package is first published. -->
-	<ItemGroup Condition="'$(CI)' == 'true'">
-		<PackageReference Include="LVGLSharp.Native" Version="$(Version)" />
+	<!-- Non-Release builds consume the published native package. Pack keeps
+	     the package dependency metadata for downstream NuGet consumers. -->
+	<ItemGroup Condition="'$(Configuration)' != 'Release' Or '$(_IsPacking)' == 'true'">
+		<PackageReference Include="LVGLSharp.Native" Version="$(LVGLSharpNativePackageVersion)" />
+	</ItemGroup>
+
+	<!-- Release and publish-oriented repo builds stay project-based so they
+	     can use the native binaries generated from the current source tree. -->
+	<ItemGroup Condition="'$(Configuration)' == 'Release' And '$(_IsPacking)' != 'true'">
+		<ProjectReference Include="..\LVGLSharp.Native\LVGLSharp.Native.csproj" />
 	</ItemGroup>
 
 </Project>

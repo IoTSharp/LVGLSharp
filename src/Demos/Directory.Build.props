@@ -1,4 +1,11 @@
 <Project>
+  <PropertyGroup>
+    <!-- Demo projects have their own Directory.Build.props, so mirror the
+         native package version properties here for Debug package references. -->
+    <LVGLSharpVersion Condition="'$(LVGLSharpVersion)' == ''">9.5.0</LVGLSharpVersion>
+    <LVGLSharpNativePackageVersion Condition="'$(LVGLSharpNativePackageVersion)' == ''">$(LVGLSharpVersion)</LVGLSharpNativePackageVersion>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <PublishAot>true</PublishAot>
     <PublishSingleFile>true</PublishSingleFile>

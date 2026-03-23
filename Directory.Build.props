@@ -11,8 +11,13 @@
     <PackageIcon>lvgl128x128.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>lvgl;embedded;ui;winforms;cross-platform</PackageTags>
+    <!-- Canonical repository version used by project/package switching logic. -->
+    <LVGLSharpVersion>9.5.0</LVGLSharpVersion>
     <!-- Default version; overridden by CI via -p:Version=... -->
-    <Version>9.5.0</Version>
+    <Version>$(LVGLSharpVersion)</Version>
+    <!-- Allows Debug builds to consume a published native package version
+         without forcing the whole repo version to match that feed entry. -->
+    <LVGLSharpNativePackageVersion Condition="'$(LVGLSharpNativePackageVersion)' == ''">$(LVGLSharpVersion)</LVGLSharpNativePackageVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">

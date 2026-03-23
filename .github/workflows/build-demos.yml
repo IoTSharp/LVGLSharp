@@ -1,4 +1,4 @@
-name: 构建 Demo 资产
+name: Build Demo Assets
 
 'on':
   push:
@@ -24,55 +24,53 @@ name: 构建 Demo 资产
   workflow_dispatch:
     inputs:
       package_version:
-        description: "可选版本号：用于生成 demo 资产文件名"
+        description: Optional package version used in demo asset filenames
         required: false
         default: ""
   workflow_call:
-    # inputs: 供上层协调工作流传入 demo 资产版本号，用于统一产物命名。
     inputs:
       package_version:
-        description: "可选版本号：用于生成 demo 资产文件名"
+        description: Optional package version used in demo asset filenames
         required: false
         type: string
-    # outputs: 当前工作流仅产出 artifact，不向调用方返回结构化 outputs。
 
 env:
   DEMO_PACKAGE_VERSION: ${{ inputs.package_version || github.ref_name || 'dev' }}
 
 jobs:
   build-linux-demos:
-    name: 生成 Demo 资产（linux-x64）
+    name: Build demo asset (linux-x64)
     runs-on: ubuntu-24.04
     permissions:
       contents: read
 
     steps:
-      - name: 检出代码
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: 安装 .NET SDK
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: 安装 Linux 构建依赖
+      - name: Install Linux build dependencies
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y cmake ninja-build
 
-      - name: 构建并发布 Linux demos
+      - name: Build and publish Linux demos
         run: bash ./build-linux-demos.sh --clean --rid linux-x64
 
-      - name: 归档 Linux demos
+      - name: Archive Linux demos
         shell: bash
         run: |
           mkdir -p release_assets
           tar -C dist -czf "release_assets/LVGLSharp-demos-linux-x64-${{ env.DEMO_PACKAGE_VERSION }}.tar.gz" linux-x64
           ls -lh release_assets
 
-      - name: 上传 Linux demo 制品
+      - name: Upload Linux demo artifact
         uses: actions/upload-artifact@v4
         with:
           name: demo-release-linux-x64
@@ -80,27 +78,27 @@ jobs:
           if-no-files-found: error
 
   build-windows-demos:
-    name: 生成 Demo 资产（win-x64）
+    name: Build demo asset (win-x64)
     runs-on: windows-latest
     permissions:
       contents: read
 
     steps:
-      - name: 检出代码
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: 安装 .NET SDK
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: 构建并发布 Windows demos
+      - name: Build and publish Windows demos
         shell: pwsh
         run: ./build-windows-demos.ps1 -Clean -Rid win-x64
 
-      - name: 归档 Windows demos
+      - name: Archive Windows demos
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path release_assets -Force | Out-Null
@@ -112,7 +110,7 @@ jobs:
           Compress-Archive -Path "dist/win-x64" -DestinationPath $archivePath -CompressionLevel Optimal
           Get-ChildItem release_assets | Format-Table Name, Length -AutoSize
 
-      - name: 上传 Windows demo 制品
+      - name: Upload Windows demo artifact
         uses: actions/upload-artifact@v4
         with:
           name: demo-release-win-x64

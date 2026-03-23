@@ -1,4 +1,4 @@
-name: 协调打包与发布
+name: Coordinate Packaging And Release
 
 'on':
   push:
@@ -24,43 +24,36 @@ name: 协调打包与发布
   workflow_dispatch:
     inputs:
       version:
-        description: "版本号：支持 9.5.0.5 或 v9.5.0.5 格式"
+        description: Package version, for example 9.5.0.5 or v9.5.0.5
         required: true
         default: "9.5.0.5"
       publish_nuget:
-        description: "是否发布到 NuGet.org"
+        description: Whether to publish to NuGet.org
         type: boolean
         default: true
       publish_github:
-        description: "是否发布到 GitHub Packages"
+        description: Whether to publish to GitHub Packages
         type: boolean
         default: true
 
-env:
-  # 版本来源：优先使用 workflow_dispatch 输入，其次使用 tag 名称。
-  # 注意：tag/输入值可能含有 'v' 前缀（如 v9.5.0.5），会在 prepare 步骤中去除。
-  PACKAGE_VERSION: ${{ github.event.inputs.version || github.ref_name }}
-
 jobs:
   prepare:
-    name: 调用准备阶段
+    name: Prepare release metadata
     uses: ./.github/workflows/prepare-release.yml
     with:
       package_version: ${{ github.event.inputs.version || github.ref_name }}
     permissions:
       contents: read
 
-  # 1. 准备版本元数据与原生库制品
   build-native:
-    name: 调用原生库构建阶段
+    name: Build native assets
     needs: prepare
     uses: ./.github/workflows/build-native.yml
     permissions:
       contents: read
 
-  # 2. 生成 NuGet 包制品
   pack:
-    name: 调用 NuGet 打包阶段
+    name: Pack NuGet packages
     needs: [prepare, build-native]
     uses: ./.github/workflows/pack-nuget.yml
     with:
@@ -68,9 +61,8 @@ jobs:
     permissions:
       contents: read
 
-  # 3. 仅在 tag 或手动发布时生成 demo 资产
   build-demos:
-    name: 调用 Demo 构建阶段
+    name: Build demo assets
     if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
     needs: prepare
     uses: ./.github/workflows/build-demos.yml
@@ -80,7 +72,7 @@ jobs:
       contents: read
 
   publish:
-    name: 调用发布阶段
+    name: Publish artifacts
     if: |
       startsWith(github.ref, 'refs/tags/') ||
       (
@@ -90,12 +82,13 @@ jobs:
           github.event.inputs.publish_github == 'true'
         )
       )
-    needs: [prepare, pack]
+    needs: [prepare, pack, build-demos]
     uses: ./.github/workflows/publish-release.yml
     with:
       release_tag: ${{ needs.prepare.outputs.release_tag }}
       publish_nuget: ${{ startsWith(github.ref, 'refs/tags/') || github.event.inputs.publish_nuget == 'true' }}
       publish_github: ${{ startsWith(github.ref, 'refs/tags/') || github.event.inputs.publish_github == 'true' }}
+    secrets: inherit
     permissions:
       contents: write
       packages: write

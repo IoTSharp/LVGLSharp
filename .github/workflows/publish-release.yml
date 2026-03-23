@@ -1,57 +1,59 @@
-name: 发布 NuGet 与 Release 资产
+name: Publish NuGet Packages And Release Assets
 
 'on':
   workflow_call:
     inputs:
       release_tag:
-        description: "发布标签：通常为 v9.5.0.5 形式"
+        description: Release tag, usually in the form v9.5.0.5
         required: true
         type: string
       publish_nuget:
-        description: "是否发布到 NuGet.org"
+        description: Whether to publish to NuGet.org
         required: true
         type: boolean
       publish_github:
-        description: "是否发布到 GitHub Packages"
+        description: Whether to publish to GitHub Packages
         required: true
         type: boolean
 
 jobs:
   publish:
-    name: 发布 Release 资产
+    name: Publish release assets
     runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
 
     steps:
-      - name: 安装 .NET SDK
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: 下载 NuGet 包制品
+      - name: Download NuGet packages
         uses: actions/download-artifact@v4
         with:
           name: nuget-packages
           path: nupkgs
 
-      - name: 下载 demo 发布包制品
+      - name: Download demo assets
         uses: actions/download-artifact@v4
         with:
           pattern: demo-release-*
           path: demo_assets
           merge-multiple: true
 
-      - name: 汇总 Release 资产
+      - name: Gather release assets
         shell: bash
         run: |
           mkdir -p release_assets
           cp nupkgs/*.nupkg release_assets/
-          find demo_assets -maxdepth 1 -type f -exec cp {} release_assets/ \;
+          if [ -d demo_assets ]; then
+            find demo_assets -maxdepth 1 -type f -exec cp {} release_assets/ \;
+          fi
           ls -lh release_assets
 
-      - name: 发布到 GitHub Release
+      - name: Publish GitHub release
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -73,12 +75,12 @@ jobs:
               --title "$RELEASE_TAG" \
               --generate-notes
           else
-            echo "查询 GitHub Release 失败，HTTP 状态码：$http_status（请检查令牌权限、API 限流或网络连接）。"
+            echo "Error: failed to query GitHub release. HTTP status: $http_status"
             cat /tmp/release_lookup.json
             exit 1
           fi
 
-      - name: 发布到 NuGet.org
+      - name: Publish to NuGet.org
         if: ${{ inputs.publish_nuget }}
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
@@ -89,7 +91,7 @@ jobs:
             --skip-duplicate \
             --timeout 600
 
-      - name: 发布到 GitHub Packages
+      - name: Publish to GitHub Packages
         if: ${{ inputs.publish_github }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -100,6 +102,7 @@ jobs:
             --username "${{ github.actor }}" \
             --password "$GITHUB_TOKEN" \
             --store-password-in-clear-text
+
           dotnet nuget push nupkgs/*.nupkg \
             --source github \
             --api-key "$GITHUB_TOKEN" \

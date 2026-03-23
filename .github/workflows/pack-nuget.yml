@@ -1,46 +1,44 @@
-name: 打包 NuGet 资产
+name: Pack NuGet Packages
 
 'on':
   workflow_call:
-    # inputs: 由上层协调工作流传入规范化版本号，用于生成所有 NuGet 包。
     inputs:
       package_version:
-        description: "版本号：用于生成 NuGet 包文件"
+        description: Package version used when creating NuGet packages
         required: true
         type: string
-    # outputs: 当前工作流仅产出 nuget-packages artifact，不向调用方返回结构化 outputs。
 
 jobs:
   pack:
-    name: 生成 NuGet 资产
+    name: Create NuGet packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
 
     steps:
-      - name: 检出代码
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: false
 
-      - name: 安装 .NET SDK
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: 下载所有原生库制品
+      - name: Download native artifacts
         uses: actions/download-artifact@v4
         with:
           pattern: native-*
           path: native_artifacts
 
-      - name: 清理占位 runtimes 目录
+      - name: Reset runtime layout
         shell: bash
         run: |
           rm -rf src/LVGLSharp.Native/runtimes
           mkdir -p src/LVGLSharp.Native/runtimes
 
-      - name: 整理原生库到 runtimes 目录结构
+      - name: Arrange native assets under runtimes
         shell: bash
         run: |
           declare -A LIB_NAME=(
@@ -51,6 +49,7 @@ jobs:
             [linux-arm]="liblvgl.so"
             [linux-arm64]="liblvgl.so"
           )
+
           missing=()
           for rid in "${!LIB_NAME[@]}"; do
             src_dir="native_artifacts/native-${rid}"
@@ -58,76 +57,80 @@ jobs:
             mkdir -p "$dst_dir"
             lib="${LIB_NAME[$rid]}"
             placed=false
+
             if [ -f "${src_dir}/${lib}" ]; then
               cp "${src_dir}/${lib}" "${dst_dir}/"
-              echo "已放置 ${lib} -> ${dst_dir}/"
+              echo "Placed ${lib} -> ${dst_dir}/"
               placed=true
             else
               first=$(find "$src_dir" \( -name "*.dll" -o -name "*.so" \) | head -1)
               if [ -n "$first" ]; then
                 cp "$first" "${dst_dir}/${lib}"
-                echo "已放置（回退）$(basename "$first") -> ${dst_dir}/${lib}"
+                echo "Placed fallback $(basename "$first") -> ${dst_dir}/${lib}"
                 placed=true
               fi
             fi
+
             if [ "$placed" = "false" ]; then
-              echo "错误：在 ${src_dir} 中找不到 ${rid} 的原生库"
+              echo "Error: no native library found for ${rid} in ${src_dir}"
               missing+=("$rid")
             fi
           done
+
           if [ ${#missing[@]} -ne 0 ]; then
-            echo "以下 RID 缺少原生库：${missing[*]}"
+            echo "Missing native outputs for: ${missing[*]}"
             exit 1
           fi
-          echo "当前将用于打包的原生库："
+
+          echo "Native assets prepared for packing:"
           find src/LVGLSharp.Native/runtimes -type f | sort
 
-      - name: 打包 LVGLSharp.Native
+      - name: Pack LVGLSharp.Native
         run: |
           dotnet pack src/LVGLSharp.Native/LVGLSharp.Native.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             --output nupkgs
 
-      - name: 注册本地 NuGet 源
+      - name: Register local NuGet feed
         run: dotnet nuget add source "$(pwd)/nupkgs" --name local-packages
 
-      - name: 打包 LVGLSharp.Interop
+      - name: Pack LVGLSharp.Interop
         run: |
           dotnet pack src/LVGLSharp.Interop/LVGLSharp.Interop.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             --output nupkgs
 
-      - name: 打包 LVGLSharp.Core
+      - name: Pack LVGLSharp.Core
         run: |
           dotnet pack src/LVGLSharp.Core/LVGLSharp.Core.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             --output nupkgs
 
-      - name: 打包 LVGLSharp.Runtime.Windows
+      - name: Pack LVGLSharp.Runtime.Windows
         run: |
           dotnet pack src/LVGLSharp.Runtime.Windows/LVGLSharp.Runtime.Windows.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             --output nupkgs
 
-      - name: 打包 LVGLSharp.Runtime.Linux
+      - name: Pack LVGLSharp.Runtime.Linux
         run: |
           dotnet pack src/LVGLSharp.Runtime.Linux/LVGLSharp.Runtime.Linux.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             --output nupkgs
 
-      - name: 打包 LVGLSharp.Forms
+      - name: Pack LVGLSharp.Forms
         run: |
           dotnet pack src/LVGLSharp.WinForms/LVGLSharp.Forms.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             --output nupkgs
 
-      - name: 上传 NuGet 包制品
+      - name: Upload NuGet packages
         uses: actions/upload-artifact@v4
         with:
           name: nuget-packages

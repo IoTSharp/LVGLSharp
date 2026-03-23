@@ -1,4 +1,5 @@
-name: 鏋勫缓鍘熺敓搴撹祫浜?
+name: Build Native Assets
+
 'on':
   push:
     branches: [main, develop, master]
@@ -21,21 +22,21 @@ name: 鏋勫缓鍘熺敓搴撹祫浜?
   workflow_dispatch:
     inputs:
       note:
-        description: "鍙€夊娉細鐢ㄤ簬璇存槑鏈鎵嬪姩瑙﹀彂鐨勭洰鐨?
+        description: Optional note for this manual run
         required: false
         default: ""
   workflow_call:
-    # inputs: 褰撳墠宸ヤ綔娴佹棤闇€璋冪敤鏂归澶栦紶鍙傦紝鎸夌煩闃电洿鎺ユ瀯寤哄骞冲彴鍘熺敓搴撱€?    # outputs: 褰撳墠宸ヤ綔娴佷粎浜у嚭 artifact锛屼笉鍚戣皟鐢ㄦ柟杩斿洖缁撴瀯鍖?outputs銆?
+
 jobs:
   build:
-    name: 鏋勫缓鍘熺敓搴擄紙${{ matrix.rid }}锛?    runs-on: ${{ matrix.os }}
+    name: Build native (${{ matrix.rid }})
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: read
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Windows 鐩爣锛氶€氳繃 MSVC -A 鍙傛暟鏋勫缓澶氭灦鏋勫師鐢熷簱
           - rid: win-x64
             os: windows-latest
             cmake_generator: "Visual Studio 17 2022"
@@ -48,18 +49,15 @@ jobs:
             os: windows-latest
             cmake_generator: "Visual Studio 17 2022"
             cmake_arch: ARM64
-
-          # Linux 鐩爣锛氬師鐢?x64锛堜笌 LVGL 瀹樻柟 CI 涓€鑷达紝浣跨敤 ubuntu-24.04锛?          - rid: linux-x64
+          - rid: linux-x64
             os: ubuntu-24.04
+            apt_packages: ""
             cmake_extra: ""
-
-          # Linux 鐩爣锛欰RM 浜ゅ弶缂栬瘧锛堢‖娴偣锛?          - rid: linux-arm
+          - rid: linux-arm
             os: ubuntu-24.04
             apt_packages: gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
             cmake_extra: >-
               -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/libs/cmake/toolchains/arm-linux-gnueabihf.cmake
-
-          # Linux 鐩爣锛欰RM64 浜ゅ弶缂栬瘧
           - rid: linux-arm64
             os: ubuntu-24.04
             apt_packages: gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
@@ -67,23 +65,23 @@ jobs:
               -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/libs/cmake/toolchains/aarch64-linux-gnu.cmake
 
     steps:
-      - name: 妫€鍑轰唬鐮?        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      # 1. 鍑嗗 LVGL 鏋勫缓杈撳叆
-      - name: 澶嶅埗 lv_conf.h 鍒?lvgl 婧愮爜鐩綍
+      - name: Copy lv_conf.h into the LVGL tree
         shell: bash
         run: cp libs/lv_conf.h libs/lvgl/lv_conf.h
 
-      # 2. 瀹夎 Linux 鏋勫缓渚濊禆
-      - name: 瀹夎 Linux 鏋勫缓渚濊禆
+      - name: Install Linux build dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y cmake ninja-build ${{ matrix.apt_packages }}
 
-      # 3. 閰嶇疆骞剁紪璇?Windows 鍘熺敓搴?      - name: CMake 閰嶇疆锛圵indows锛?        if: runner.os == 'Windows'
+      - name: Configure with CMake on Windows
+        if: runner.os == 'Windows'
         shell: bash
         run: |
           cmake -S libs/lvgl -B libs/lvgl/build_shared \
@@ -95,11 +93,14 @@ jobs:
             -DBUILD_SHARED_LIBS=ON \
             -DCONFIG_LV_USE_PRIVATE_API=ON
 
-      - name: 缂栬瘧锛圵indows锛?        if: runner.os == 'Windows'
+      - name: Build on Windows
+        if: runner.os == 'Windows'
         shell: bash
         run: cmake --build libs/lvgl/build_shared --config Release
 
-      # 4. 閰嶇疆骞剁紪璇?Linux 鍘熺敓搴?      - name: CMake 閰嶇疆锛圠inux锛?        if: runner.os == 'Linux'
+      - name: Configure with CMake on Linux
+        if: runner.os == 'Linux'
+        shell: bash
         run: |
           cmake -S libs/lvgl -B libs/lvgl/build_shared \
             -G Ninja \
@@ -111,11 +112,13 @@ jobs:
             -DBUILD_SHARED_LIBS=ON \
             -DCONFIG_LV_USE_PRIVATE_API=ON
 
-      - name: 缂栬瘧锛圠inux锛?        if: runner.os == 'Linux'
+      - name: Build on Linux
+        if: runner.os == 'Linux'
+        shell: bash
         run: cmake --build libs/lvgl/build_shared
 
-      # 5. 鏀堕泦骞舵牎楠屽師鐢熷簱浜х墿
-      - name: 鏀堕泦鍘熺敓搴撴枃浠?        shell: bash
+      - name: Collect native binaries
+        shell: bash
         run: |
           mkdir -p native_output
           find libs/lvgl/build_shared -name "lvgl.dll" | head -1 | xargs -I{} cp {} native_output/ 2>/dev/null || true
@@ -125,12 +128,13 @@ jobs:
           fi
           ls -la native_output/
 
-      - name: 鏍￠獙瀵煎嚭绗﹀彿锛圠inux锛?        if: runner.os == 'Linux'
+      - name: Validate exported symbols on Linux
+        if: runner.os == 'Linux'
         shell: bash
         run: |
           lib="native_output/liblvgl.so"
           if [ ! -f "$lib" ]; then
-            echo "閿欒锛氭湭鎵惧埌 $lib"
+            echo "Error: missing $lib"
             exit 1
           fi
 
@@ -150,20 +154,21 @@ jobs:
           done
 
           if [ ${#missing[@]} -ne 0 ]; then
-            echo "閿欒锛?lib 缂哄皯浠ヤ笅瀵煎嚭绗﹀彿锛?{missing[*]}"
+            echo "Error: missing exports: ${missing[*]}"
             echo "===== nm -D $lib ====="
             nm -D "$lib" || true
             exit 1
           fi
 
-          echo "瀵煎嚭绗﹀彿鏍￠獙閫氳繃锛?{expected_symbols[*]}"
+          echo "Validated exports: ${expected_symbols[*]}"
 
-      - name: 鏍￠獙瀵煎嚭绗﹀彿锛圵indows锛?        if: runner.os == 'Windows'
+      - name: Validate exported symbols on Windows
+        if: runner.os == 'Windows'
         shell: pwsh
         run: |
           $lib = Join-Path $PWD 'native_output\lvgl.dll'
           if (-not (Test-Path $lib)) {
-            throw "鏈壘鍒?$lib"
+            throw "Missing $lib"
           }
 
           $dumpbin = (Get-Command dumpbin.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1)
@@ -181,7 +186,7 @@ jobs:
           }
 
           if (-not $dumpbin) {
-            throw '鏈壘鍒?dumpbin.exe锛屾棤娉曟牎楠?Windows 瀵煎嚭绗﹀彿銆?
+            throw 'Missing dumpbin.exe; cannot validate Windows exports.'
           }
 
           $exports = & $dumpbin /exports $lib 2>&1
@@ -200,27 +205,27 @@ jobs:
           }
 
           if ($missing.Count -gt 0) {
-            Write-Host "閿欒锛?lib 缂哄皯浠ヤ笅瀵煎嚭绗﹀彿锛?($missing -join ', ')"
+            Write-Host "Error: missing exports: $($missing -join ', ')"
             Write-Host "===== dumpbin /exports $lib ====="
             $exports | ForEach-Object { Write-Host $_ }
-            throw 'Windows 瀵煎嚭绗﹀彿鏍￠獙澶辫触銆?
+            throw 'Windows export validation failed.'
           }
 
-          Write-Host "瀵煎嚭绗﹀彿鏍￠獙閫氳繃锛?($expectedSymbols -join ', ')"
+          Write-Host "Validated exports: $($expectedSymbols -join ', ')"
 
-      - name: 鐢熸垚 sha256
+      - name: Generate sha256 files
         shell: pwsh
         run: |
           $files = Get-ChildItem -Path native_output -File | Where-Object { $_.Extension -in '.dll', '.so' }
           if (-not $files) {
-            throw 'native_output 涓病鏈夊彲鐢熸垚鏍￠獙鍊肩殑鍘熺敓搴撴枃浠躲€?
+            throw 'No native binaries were found in native_output.'
           }
 
           foreach ($file in $files) {
             $hash = (Get-FileHash -Path $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             $shaFile = "$($file.FullName).sha256"
             Set-Content -Path $shaFile -Value "$hash  $($file.Name)" -NoNewline
-            Write-Host "宸茬敓鎴?$shaFile"
+            Write-Host "Generated $shaFile"
           }
 
           Get-ChildItem -Path native_output -Filter '*.sha256' | ForEach-Object {
@@ -228,7 +233,8 @@ jobs:
             Get-Content $_.FullName | ForEach-Object { Write-Host $_ }
           }
 
-      - name: 涓婁紶鍘熺敓搴撳埗鍝?        uses: actions/upload-artifact@v4
+      - name: Upload native artifact
+        uses: actions/upload-artifact@v4
         with:
           name: native-${{ matrix.rid }}
           path: native_output/

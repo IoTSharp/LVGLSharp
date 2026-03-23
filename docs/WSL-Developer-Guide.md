@@ -2,7 +2,7 @@
 
 本文面向本仓库开发者，说明如何在 `WSL2/WSLg` 中运行和调试 Linux 路径下的 demo。
 
-如果你希望专门看 `Visual Studio 2026` 如何参与 `WSL` 调试和本仓库 demo 调试，请同时参考：[`docs/VS2026-WSL-Debug-Guide.md`](./VS2026-WSL-Debug-Guide.md)。
+如果你想同时了解当前已完成的工程范围和下一阶段优先事项，可以同时参考：[`ROADMAP.md`](../ROADMAP.md) 和 [`navigation.md`](./navigation.md)。
 
 ## 先说结论
 

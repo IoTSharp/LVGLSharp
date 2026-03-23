@@ -4,6 +4,12 @@
 
 **LVGLSharp.Forms** 是一个跨平台的 WinForms API 兼容层，以 [LVGL](https://github.com/lvgl/lvgl) 作为底层渲染引擎。目标是实现**所见即所得**——在 Visual Studio Windows Forms 设计器中设计的界面，可以在 Linux（arm / arm64 / x64）等嵌入式平台上以高度一致的效果运行。
 
+📘 文档站点（GitHub Pages）：
+
+- 中文首页：`docs/index.md`
+- 英文首页：`docs/index.en.md`
+- CI 文档：`docs/ci-workflows.md`
+
 > ⚠️ 项目目前处于试验阶段，尚不可用于生产环境。
 
 ---
@@ -176,9 +182,9 @@ libs/
 
 ## 📚 开发文档
 
-- [`docs/Roadmap.md`](./docs/Roadmap.md)：统一运行时路线图，包含 Linux 宿主扩展顺序、`LVGLSharp.Runtime.MacOs` 规划与远程运行时规划。
+- [`ROADMAP.md`](./ROADMAP.md)：汇总当前已完成的里程碑、各运行时路径状态与下一阶段建议优先项。
 - [`docs/WSL-Developer-Guide.md`](./docs/WSL-Developer-Guide.md)：`WSL2/WSLg` 下运行、验证与调试 demo 的开发者手册。
-- [`docs/VS2026-WSL-Debug-Guide.md`](./docs/VS2026-WSL-Debug-Guide.md)：使用 `Visual Studio 2026` 调试 `WSL` 程序与本仓库 demo 的建议流程。
+- [`docs/navigation.md`](./docs/navigation.md)：文档站点导航页，可快速跳转到首页、专题文档、博客和更新记录。
 
 ---
 

@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /libs/build
 dist/
+/.dotnet_cli

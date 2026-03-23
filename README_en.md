@@ -4,6 +4,12 @@
 
 **LVGLSharp.Forms** is a cross-platform WinForms API compatibility layer that uses [LVGL](https://github.com/lvgl/lvgl) as the underlying rendering engine. The goal is to achieve **WYSIWYG (What You See Is What You Get)** — UI designed with the Visual Studio Windows Forms Designer on Windows will render with high fidelity on Linux (arm / arm64 / x64) and other embedded platforms.
 
+📘 Documentation site (GitHub Pages):
+
+- Chinese home: `docs/index.md`
+- English home: `docs/index.en.md`
+- CI documentation: `docs/ci-workflows.md`
+
 > ⚠️ This project is currently in the experimental phase and is not yet suitable for production use.
 
 ---
@@ -156,9 +162,9 @@ libs/
 
 ## 📚 Developer Docs
 
-- [`docs/Roadmap.md`](./docs/Roadmap.md): the unified runtime roadmap covering the Linux host rollout order, the planned `LVGLSharp.Runtime.MacOs`, and the future remote runtime plan.
+- [`ROADMAP.md`](./ROADMAP.md): completed milestones, current host/runtime status, and the recommended next engineering step.
 - [`docs/WSL-Developer-Guide.md`](./docs/WSL-Developer-Guide.md): a developer guide for running, validating, and debugging demos on `WSL2/WSLg`.
-- [`docs/VS2026-WSL-Debug-Guide.md`](./docs/VS2026-WSL-Debug-Guide.md): the recommended workflow for using `Visual Studio 2026` with `WSL` and debugging this repo's demos.
+- [`docs/navigation.en.md`](./docs/navigation.en.md): the docs-site navigation page for home pages, blog entries, roadmap, and reference docs.
 
 ---
 

@@ -1,0 +1,94 @@
+name: 发布 GitHub Pages 文档站点
+
+on:
+  push:
+    branches: [main, develop, master]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs-pages.yml'
+      - 'README.md'
+      - 'README_en.md'
+      - 'ROADMAP.md'
+      - 'CHANGELOG.md'
+  workflow_dispatch:
+    inputs:
+      note:
+        description: "可选备注：用于说明本次手动发布 Pages 的目的"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build-pages-site:
+    name: 生成 Pages 文档站点
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 准备 Pages 站点目录
+        shell: bash
+        run: |
+          rm -rf _site
+          mkdir -p _site/blog
+          cp docs/_config.yml _site/_config.yml
+          cp docs/index.md _site/index.md
+          cp docs/index.en.md _site/index.en.md
+          cp docs/navigation.md _site/navigation.md
+          cp docs/navigation.en.md _site/navigation.en.md
+          cp docs/ci-workflows.md _site/ci-workflows.md
+          cp docs/ci-workflows.en.md _site/ci-workflows.en.md
+          cp docs/WSL-Developer-Guide.md _site/WSL-Developer-Guide.md
+          cp docs/WSL-Developer-Guide.en.md _site/WSL-Developer-Guide.en.md
+          cp docs/blog-winforms-over-lvgl.md _site/blog-winforms-over-lvgl.md
+          cp docs/blog-nativeaot-gui.md _site/blog-nativeaot-gui.md
+          cp docs/blog-linux-hosts.md _site/blog-linux-hosts.md
+          cp docs/blog-architecture.md _site/blog-architecture.md
+          cp docs/blog/index.md _site/blog/index.md
+          cp docs/blog/index.en.md _site/blog/index.en.md
+          cp docs/blog-architecture.md _site/blog/architecture.md
+          cp docs/blog-nativeaot-gui.md _site/blog/nativeaot-gui.md
+          cp docs/blog-linux-hosts.md _site/blog/linux-hosts.md
+          cp docs/blog-winforms-over-lvgl.md _site/blog/winforms-over-lvgl.md
+          cp docs/blog/architecture.en.md _site/blog/architecture.en.md
+          cp docs/blog/nativeaot-gui.en.md _site/blog/nativeaot-gui.en.md
+          cp docs/blog/linux-hosts.en.md _site/blog/linux-hosts.en.md
+          cp docs/blog/why-winforms-over-lvgl.en.md _site/blog/why-winforms-over-lvgl.en.md
+          cp ROADMAP.md _site/ROADMAP.md
+          cp CHANGELOG.md _site/CHANGELOG.md
+
+          if [ -d docs/images ]; then
+            mkdir -p _site/images
+            cp -R docs/images/. _site/images/
+          fi
+
+          cat > _site/.nojekyll <<'EOF'
+          
+          EOF
+
+      - name: 上传 Pages 产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy-pages-site:
+    name: 发布 Pages 文档站点
+    environment: github-pages
+    runs-on: ubuntu-latest
+    needs: build-pages-site
+
+    steps:
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

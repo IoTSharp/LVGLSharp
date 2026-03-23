@@ -18,11 +18,116 @@ function Fail {
     throw $Message
 }
 
-function Require-Command {
+function Get-CommandPathOrNull {
     param([string]$Name)
-    if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
-        Fail "missing required command: $Name"
+
+    $command = Get-Command $Name -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($command) {
+        return $command.Source
     }
+
+    return $null
+}
+
+function Require-Command {
+    param(
+        [string]$Name,
+        [string]$InstallHint = ""
+    )
+
+    $commandPath = Get-CommandPathOrNull $Name
+    if (-not $commandPath) {
+        $message = "缺少必需命令: $Name"
+        if ($InstallHint) {
+            $message += "`n安装建议: $InstallHint"
+        }
+
+        $message += "`n最小依赖: .NET SDK 10、CMake、Visual Studio 2022 C++ 生成工具(Desktop development with C++)。"
+        Fail $message
+    }
+
+    return $commandPath
+}
+
+function Test-VsGeneratorAvailable {
+    param([string]$Generator)
+
+    $cmakePath = Get-CommandPathOrNull "cmake"
+    if (-not $cmakePath) {
+        return $false
+    }
+
+    $help = & $cmakePath --help 2>&1
+    return [bool]($help | Select-String -SimpleMatch $Generator)
+}
+
+function Get-VswherePath {
+    if (-not ${env:ProgramFiles(x86)}) {
+        return $null
+    }
+
+    $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
+    if (Test-Path $vswhere) {
+        return $vswhere
+    }
+
+    return $null
+}
+
+function Get-VisualStudioCppInstallationPath {
+    $vswhere = Get-VswherePath
+    if (-not $vswhere) {
+        return $null
+    }
+
+    $installationPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2>$null | Select-Object -First 1
+    if ([string]::IsNullOrWhiteSpace($installationPath)) {
+        return $null
+    }
+
+    return $installationPath.Trim()
+}
+
+function Assert-BuildPrerequisites {
+    $cmakePath = Require-Command "cmake" "安装 CMake 并确保 cmake.exe 在 PATH 中。"
+    $dotnetPath = Require-Command "dotnet" "安装 .NET SDK 10，并确保 dotnet.exe 在 PATH 中。"
+
+    Write-Host "==> 检查构建依赖"
+    Write-Host "    dotnet: $dotnetPath"
+    Write-Host "    cmake : $cmakePath"
+
+    if (-not (Test-VsGeneratorAvailable "Visual Studio 17 2022")) {
+        $vsInstallation = Get-VisualStudioCppInstallationPath
+        $message = "CMake 未检测到生成器 'Visual Studio 17 2022'。"
+
+        if ($vsInstallation) {
+            $message += "`n已找到 Visual Studio 安装: $vsInstallation"
+            $message += "`n请确认已安装 'Desktop development with C++' 工作负载，且从新的终端重新运行脚本。"
+        }
+        else {
+            $message += "`n未找到带 C++ 工具链的 Visual Studio 2022 安装。"
+            $message += "`n请安装 Visual Studio 2022 Build Tools 或 Visual Studio 2022，并勾选 'Desktop development with C++'。"
+        }
+
+        $message += "`nCI 最小依赖: windows-latest + .NET SDK 10；GitHub Hosted Runner 通常已自带 VS 2022 C++ 工具链。"
+        Fail $message
+    }
+
+    $vsInstallation = Get-VisualStudioCppInstallationPath
+    if ($vsInstallation) {
+        Write-Host "    VS C++: $vsInstallation"
+    }
+    else {
+        Write-Host "    VS C++: 未通过 vswhere 定位，将依赖 CMake 直接解析已安装生成器"
+    }
+}
+
+function Show-MinimalRequirements {
+    Write-Host "==> 最小安装清单"
+    Write-Host "    1. .NET SDK 10.x"
+    Write-Host "    2. CMake"
+    Write-Host "    3. Visual Studio 2022 或 Build Tools 2022 + Desktop development with C++"
+    Write-Host "    4. 建议使用 Developer PowerShell / 普通 PowerShell 均可，但安装完成后需重新打开终端"
 }
 
 function Get-DemoTargetFramework {
@@ -91,8 +196,8 @@ switch ($Rid) {
     default { Fail "unsupported RID: $Rid" }
 }
 
-Require-Command "cmake"
-Require-Command "dotnet"
+Show-MinimalRequirements
+Assert-BuildPrerequisites
 
 $rootDir = $PSScriptRoot
 $lvglSourceDir = Join-Path $rootDir "libs/lvgl"

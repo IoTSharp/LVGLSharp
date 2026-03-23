@@ -55,13 +55,59 @@ get_demo_project_path() {
 }
 
 fail() {
-    printf 'error: %s
-' "$*" >&2
+    printf 'error: %s\n' "$*" >&2
     exit 1
 }
 
+get_cmd_path_or_null() {
+    command -v "$1" 2>/dev/null || true
+}
+
 require_cmd() {
-    command -v "$1" >/dev/null 2>&1 || fail "missing required command: $1"
+    local name="$1"
+    local install_hint="${2:-}"
+    local command_path
+
+    command_path="$(get_cmd_path_or_null "$name")"
+    if [[ -z "$command_path" ]]; then
+        local message="缺少必需命令: $name"
+        if [[ -n "$install_hint" ]]; then
+            message+=$'\n安装建议: '
+            message+="$install_hint"
+        fi
+
+        message+=$'\n最小依赖: .NET SDK 10、CMake、Ninja、基础 GNU 文件工具(cp/find/ln/rm/chmod)。'
+        fail "$message"
+    fi
+
+    printf '%s' "$command_path"
+}
+
+show_minimal_requirements() {
+    printf '==> 最小安装清单\n'
+    printf '    1. .NET SDK 10.x\n'
+    printf '    2. CMake\n'
+    printf '    3. Ninja\n'
+    printf '    4. 基础 GNU 文件工具: cp / find / ln / rm / chmod\n'
+    printf '    5. Linux 构建环境（Ubuntu/Debian 可直接 apt 安装上述依赖）\n'
+}
+
+assert_build_prerequisites() {
+    local cmake_path dotnet_path ninja_path
+
+    cmake_path="$(require_cmd cmake '安装 CMake，并确保 cmake 在 PATH 中。')"
+    dotnet_path="$(require_cmd dotnet '安装 .NET SDK 10，并确保 dotnet 在 PATH 中。')"
+    ninja_path="$(require_cmd ninja '安装 ninja-build，并确保 ninja 在 PATH 中。')"
+    require_cmd cp '安装 coreutils。' >/dev/null
+    require_cmd find '安装 findutils。' >/dev/null
+    require_cmd ln '安装 coreutils。' >/dev/null
+    require_cmd rm '安装 coreutils。' >/dev/null
+    require_cmd chmod '安装 coreutils。' >/dev/null
+
+    printf '==> 检查构建依赖\n'
+    printf '    dotnet: %s\n' "$dotnet_path"
+    printf '    cmake : %s\n' "$cmake_path"
+    printf '    ninja : %s\n' "$ninja_path"
 }
 
 normalize_demo() {
@@ -124,13 +170,8 @@ if ((${#DEMO_NAMES[@]} == 0)); then
     DEMO_NAMES=(SerialPort WinFormsDemo PictureBoxDemo MusicDemo SmartWatchDemo)
 fi
 
-require_cmd cmake
-require_cmd dotnet
-require_cmd cp
-require_cmd find
-require_cmd ln
-require_cmd rm
-require_cmd chmod
+show_minimal_requirements
+assert_build_prerequisites
 
 LVGL_SOURCE_DIR="$ROOT_DIR/libs/lvgl"
 LVGL_BUILD_DIR="$ROOT_DIR/libs/build/lvgl-x11"
@@ -160,6 +201,7 @@ fi
 
 printf '==> Building LVGL shared library (%s)\n' "$RID"
 cmake -S "$LVGL_SOURCE_DIR" -B "$LVGL_BUILD_DIR" \
+    -G Ninja \
     -DCMAKE_BUILD_TYPE="$CONFIGURATION" \
     -DBUILD_SHARED_LIBS=ON \
     -DCONFIG_LV_BUILD_EXAMPLES=OFF \
@@ -217,15 +259,12 @@ publish_demo() {
     rm -f "$publish_dir"/*.pdb "$publish_dir"/*.dbg
     chmod +x "$executable_path"
 
-    printf '    output: %s
-' "$publish_dir"
+    printf '    output: %s\n' "$publish_dir"
 }
 
 for demo_name in "${DEMO_NAMES[@]}"; do
     publish_demo "$demo_name"
 done
 
-printf '==> Done
-'
-printf 'Published demos under %s
-' "$DIST_DIR"
+printf '==> Done\n'
+printf 'Published demos under %s\n' "$DIST_DIR"

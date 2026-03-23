@@ -1,0 +1,97 @@
+name: 构建 Demo 发布包
+
+on:
+  push:
+    branches: [main, develop, master]
+    tags:
+      - "v*"
+  pull_request:
+    branches: [main, develop, master]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      package_version:
+        description: "用于产物命名的版本号"
+        required: false
+        type: string
+
+env:
+  DEMO_PACKAGE_VERSION: ${{ inputs.package_version || github.ref_name || 'dev' }}
+
+jobs:
+  build-linux-demos:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: 安装 .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: 安装 Linux 构建依赖
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y cmake ninja-build
+
+      - name: 构建并发布 Linux demos
+        run: bash ./build-linux-demos.sh --clean --rid linux-x64
+
+      - name: 归档 Linux demos
+        shell: bash
+        run: |
+          mkdir -p release_assets
+          tar -C dist -czf "release_assets/LVGLSharp-demos-linux-x64-${{ env.DEMO_PACKAGE_VERSION }}.tar.gz" linux-x64
+          ls -lh release_assets
+
+      - name: 上传 Linux demo 制品
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-release-linux-x64
+          path: release_assets/LVGLSharp-demos-linux-x64-${{ env.DEMO_PACKAGE_VERSION }}.tar.gz
+          if-no-files-found: error
+
+  build-windows-demos:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: 安装 .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: 构建并发布 Windows demos
+        shell: pwsh
+        run: ./build-windows-demos.ps1 -Clean -Rid win-x64
+
+      - name: 归档 Windows demos
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path release_assets -Force | Out-Null
+          $archivePath = Join-Path $PWD "release_assets/LVGLSharp-demos-win-x64-${{ env.DEMO_PACKAGE_VERSION }}.zip"
+          if (Test-Path $archivePath) {
+            Remove-Item -Force $archivePath
+          }
+
+          Compress-Archive -Path "dist/win-x64" -DestinationPath $archivePath -CompressionLevel Optimal
+          Get-ChildItem release_assets | Format-Table Name, Length -AutoSize
+
+      - name: 上传 Windows demo 制品
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-release-win-x64
+          path: release_assets/LVGLSharp-demos-win-x64-${{ env.DEMO_PACKAGE_VERSION }}.zip
+          if-no-files-found: error

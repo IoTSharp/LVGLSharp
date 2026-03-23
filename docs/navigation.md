@@ -1,76 +1,86 @@
-# 文档导航
-
-欢迎来到 `LVGLSharp.Forms` 文档站点。
-
-## 双语入口
-
-**当前语言：中文**
-
-- 首页：[`index.md`](./index.md) · [`index.en.md`](./index.en.md)
-- 导航：[`navigation.md`](./navigation.md) · [`navigation.en.md`](./navigation.en.md)
-- 博客：[`blog/index.md`](./blog/index.md) · [`blog/index.en.md`](./blog/index.en.md)
-
-> 建议：分享给中文读者可直接发送 `navigation.md`，需要双语对照时优先从导航页进入。
-
+---
+title: 文档导航
+description: 按主题、角色和语言快速浏览 LVGLSharp 文档与博客内容。
+lang: zh-CN
 ---
 
-## 首页
+<section class="section">
+	<div class="section-header">
+		<h1>文档导航</h1>
+		<p>把首页、博客、工程说明和运行时路线整理成可快速跳转的阅读地图。</p>
+	</div>
 
-- [项目首页](./index.md)
-- [English Home](./index.en.md)
-- [English Navigation](./navigation.en.md)
+	<div class="nav-grid">
+		<div class="nav-card">
+			<h3>站点入口</h3>
+			<ul>
+				<li><a href="./index.md">中文首页</a></li>
+				<li><a href="./index.en.md">English Home</a></li>
+				<li><a href="./navigation.en.md">English Navigation</a></li>
+				<li><a href="./blog/index.md">博客索引</a></li>
+			</ul>
+		</div>
+		<div class="nav-card">
+			<h3>项目文档</h3>
+			<ul>
+				<li><a href="../ROADMAP.md">路线图</a></li>
+				<li><a href="../CHANGELOG.md">更新记录</a></li>
+				<li><a href="./ci-workflows.md">CI 工作流说明</a></li>
+				<li><a href="./WSL-Developer-Guide.md">WSL 开发指南</a></li>
+			</ul>
+		</div>
+	</div>
+</section>
 
-## 项目文档
+<section class="section">
+	<div class="section-header">
+		<h2>按读者类型进入</h2>
+		<p>从你的关注点出发，而不是从文件名猜内容。</p>
+	</div>
+	<div class="article-grid">
+		<div class="article-card">
+			<h3>第一次了解项目</h3>
+			<ul>
+				<li><a href="./index.md">项目首页</a></li>
+				<li><a href="./blog-winforms-over-lvgl.md">为什么要做 WinForms over LVGL</a></li>
+				<li><a href="./index.en.md">英文首页</a></li>
+			</ul>
+		</div>
+		<div class="article-card">
+			<h3>架构与工程化</h3>
+			<ul>
+				<li><a href="./blog-architecture.md">项目架构拆解</a></li>
+				<li><a href="./ci-workflows.md">CI 工作流说明</a></li>
+				<li><a href="./ci-workflows.en.md">CI Workflow Guide</a></li>
+			</ul>
+		</div>
+		<div class="article-card">
+			<h3>Linux / 运行时宿主</h3>
+			<ul>
+				<li><a href="./blog-linux-hosts.md">Linux 图形宿主路线</a></li>
+				<li><a href="./WSL-Developer-Guide.md">WSL 开发指南</a></li>
+				<li><a href="./WSL-Developer-Guide.en.md">WSL Developer Guide</a></li>
+			</ul>
+		</div>
+		<div class="article-card">
+			<h3>AOT / 发布</h3>
+			<ul>
+				<li><a href="./blog-nativeaot-gui.md">NativeAOT 与 GUI</a></li>
+				<li><a href="../CHANGELOG.md">更新记录</a></li>
+				<li><a href="../ROADMAP.md">路线图</a></li>
+			</ul>
+		</div>
+	</div>
+</section>
 
-- [路线图](../ROADMAP.md)
-- [更新记录](../CHANGELOG.md)
-- [CI 工作流说明](./ci-workflows.md)
-- [WSL 开发指南](./WSL-Developer-Guide.md)
-- [CI Workflow Guide](./ci-workflows.en.md)
-- [WSL Developer Guide](./WSL-Developer-Guide.en.md)
-
-## 按读者类型导航
-
-### 第一次了解项目
-
-- [项目首页](./index.md)
-- [为什么要做 WinForms over LVGL](./blog-winforms-over-lvgl.md)
-- [English Home](./index.en.md)
-
-### 关注架构与工程化
-
-- [项目架构拆解](./blog-architecture.md)
-- [CI 工作流说明](./ci-workflows.md)
-- [CI Workflow Guide](./ci-workflows.en.md)
-
-### 关注 Linux / 运行时宿主
-
-- [Linux 图形宿主路线](./blog-linux-hosts.md)
-- [WSL 开发指南](./WSL-Developer-Guide.md)
-- [WSL Developer Guide](./WSL-Developer-Guide.en.md)
-
-### 关注 AOT / 发布
-
-- [NativeAOT 与 GUI](./blog-nativeaot-gui.md)
-- [更新记录](../CHANGELOG.md)
-- [路线图](../ROADMAP.md)
-
-## 专题博客
-
-- [为什么要做 WinForms over LVGL](./blog-winforms-over-lvgl.md)
-- [NativeAOT 与 GUI](./blog-nativeaot-gui.md)
-- [Linux 图形宿主路线](./blog-linux-hosts.md)
-- [项目架构拆解](./blog-architecture.md)
-- [英文博客索引](./blog/index.en.md)
-
-## 英文专题博客
-
-- [Why WinForms over LVGL](./blog/why-winforms-over-lvgl.en.md)
-- [NativeAOT and GUI](./blog/nativeaot-gui.en.md)
-- [Linux Host Strategy](./blog/linux-hosts.en.md)
-- [Architecture Breakdown](./blog/architecture.en.md)
-
-## 仓库入口
-
-- [README](../README.md)
-- [README English](../README_en.md)
+<section class="section surface">
+	<div class="section-header">
+		<h2>双语对照入口</h2>
+		<p>如果你要发给不同语言读者，可以从这里直接切换。</p>
+	</div>
+	<ul>
+		<li><a href="./navigation.en.md">English Navigation</a></li>
+		<li><a href="./blog/index.en.md">English Blog Index</a></li>
+		<li><a href="../README_en.md">README English</a></li>
+	</ul>
+</section>

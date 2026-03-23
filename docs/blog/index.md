@@ -1,82 +1,65 @@
-﻿# 博客索引
-
-这里汇总 `LVGLSharp.Forms` 当前已经整理好的专题文章，适合作为 GitHub Pages 博客入口页。
-
-## 双语入口
-
-**当前语言：中文**
-
-- 首页：[`../index.md`](../index.md) · [`../index.en.md`](../index.en.md)
-- 导航：[`../navigation.md`](../navigation.md) · [`../navigation.en.md`](../navigation.en.md)
-- 博客：[`index.md`](./index.md) · [`index.en.md`](./index.en.md)
-
-> 建议：分享给中文读者可直接发送 `blog/index.md`，需要双语对照时优先从导航页进入。
-
+﻿---
+title: 博客索引
+description: 汇总 LVGLSharp 当前的设计、架构、运行时与 NativeAOT 相关文章。
+lang: zh-CN
 ---
 
-## 文章卡片
+<section class="section">
+	<div class="section-header">
+		<h1>博客索引</h1>
+		<p>集中查看项目的设计背景、架构拆解、Linux 宿主路线和 NativeAOT 方向。</p>
+	</div>
 
-### 中文 / English article cards
+	<div class="article-grid">
+		<div class="article-card">
+			<h3><a href="../blog-winforms-over-lvgl.md">为什么要做 WinForms over LVGL</a></h3>
+			<p>适合第一次理解项目定位与价值，回答“为什么这个项目值得做”。</p>
+		</div>
+		<div class="article-card">
+			<h3><a href="../blog-architecture.md">项目架构拆解</a></h3>
+			<p>适合快速理解模块职责、工程边界和运行时分层思路。</p>
+		</div>
+		<div class="article-card">
+			<h3><a href="../blog-nativeaot-gui.md">NativeAOT 与 GUI</a></h3>
+			<p>适合关注设备部署、运行时体积、裁剪与 AOT 约束的读者。</p>
+		</div>
+		<div class="article-card">
+			<h3><a href="../blog-linux-hosts.md">Linux 图形宿主路线</a></h3>
+			<p>适合关注 Linux 桌面、设备侧图形宿主与未来演进方向的读者。</p>
+		</div>
+	</div>
+</section>
 
-| 中文文章 | English article |
-|---|---|
-| [为什么要做 WinForms over LVGL](../blog-winforms-over-lvgl.md) | [Why WinForms over LVGL](./why-winforms-over-lvgl.en.md) |
-| [项目架构拆解](../blog-architecture.md) | [Architecture Breakdown](./architecture.en.md) |
-| [NativeAOT 与 GUI](../blog-nativeaot-gui.md) | [NativeAOT and GUI](./nativeaot-gui.en.md) |
-| [Linux 图形宿主路线](../blog-linux-hosts.md) | [Linux Host Strategy](./linux-hosts.en.md) |
+<section class="section surface">
+	<div class="section-header">
+		<h2>推荐阅读顺序</h2>
+		<p>如果你第一次来到项目博客，按这个顺序最容易建立整体认知。</p>
+	</div>
+	<ul>
+		<li><a href="../blog-winforms-over-lvgl.md">为什么要做 WinForms over LVGL</a></li>
+		<li><a href="../blog-architecture.md">项目架构拆解</a></li>
+		<li><a href="../blog-nativeaot-gui.md">NativeAOT 与 GUI</a></li>
+		<li><a href="../blog-linux-hosts.md">Linux 图形宿主路线</a></li>
+	</ul>
+</section>
 
----
-
-### [为什么要做 WinForms over LVGL](../blog-winforms-over-lvgl.md)
-
-适合第一次了解项目定位的读者，重点回答“为什么这个项目值得做”。
-
-### [项目架构拆解](../blog-architecture.md)
-
-适合想快速理解项目分层、模块职责与工程结构的读者。
-
-### [NativeAOT 与 GUI](../blog-nativeaot-gui.md)
-
-适合关注设备部署、运行时体积、AOT 约束与 GUI 架构取舍的读者。
-
-### [Linux 图形宿主路线](../blog-linux-hosts.md)
-
-适合关注 Linux 桌面、设备侧宿主与未来运行时路线的读者。
-
-## 当前文章
-
-### 架构与方向
-
-- [为什么要做 WinForms over LVGL](../blog-winforms-over-lvgl.md)
-- [项目架构拆解](../blog-architecture.md)
-
-### 工程与运行时
-
-- [NativeAOT 与 GUI](../blog-nativeaot-gui.md)
-- [Linux 图形宿主路线](../blog-linux-hosts.md)
-
-## 推荐阅读顺序
-
-如果你是第一次了解这个项目，建议按下面顺序阅读：
-
-1. [为什么要做 WinForms over LVGL](../blog-winforms-over-lvgl.md)
-2. [项目架构拆解](../blog-architecture.md)
-3. [NativeAOT 与 GUI](../blog-nativeaot-gui.md)
-4. [Linux 图形宿主路线](../blog-linux-hosts.md)
-
-## 相关入口
-
-- [站点首页](../index.md)
-- [英文首页](../index.en.md)
-- [文档导航](../navigation.md)
-- [英文导航](../navigation.en.md)
-- [CI 工作流说明](../ci-workflows.md)
-- [CI Workflow Guide](../ci-workflows.en.md)
-
-## 对照阅读入口
-
-- [英文博客索引](./index.en.md)
-- [Why WinForms over LVGL](./why-winforms-over-lvgl.en.md)
-- [Architecture Breakdown](./architecture.en.md)
-- [NativeAOT and GUI](./nativeaot-gui.en.md)
-- [Linux Host Strategy](./linux-hosts.en.md)
+<section class="section">
+	<div class="section-header">
+		<h2>对照阅读</h2>
+		<p>需要英文版本时，可以直接从这里切换。</p>
+	</div>
+	<div class="quick-links">
+		<a href="./index.en.md">
+			<strong>English Blog Index</strong>
+			<span>浏览全部英文文章入口。</span>
+		</a>
+		<a href="./why-winforms-over-lvgl.en.md">
+			<strong>Why WinForms over LVGL</strong>
+			<span>阅读项目定位的英文版说明。</span>
+		</a>
+		<a href="./architecture.en.md">
+			<strong>Architecture Breakdown</strong>
+			<span>查看工程结构与模块职责的英文版说明。</span>
+		</a>
+	</div>
+</section>

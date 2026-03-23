@@ -1,263 +1,215 @@
-# LVGLSharp.Forms
-
-> 用 WinForms 的开发体验，连接 LVGL 的跨平台渲染能力。
-
-[中文首页](./index.md) · [English Home](./index.en.md) · [中文导航](./navigation.md) · [English Navigation](./navigation.en.md)
-
+---
+title: LVGLSharp 首页
+description: 用 WinForms 的开发体验，连接 LVGL 的跨平台渲染能力。
+lang: zh-CN
 ---
 
-## 双语入口
-
-**当前语言：中文**
-
-- 首页：[`index.md`](./index.md) · [`index.en.md`](./index.en.md)
-- 导航：[`navigation.md`](./navigation.md) · [`navigation.en.md`](./navigation.en.md)
-- 博客：[`blog/index.md`](./blog/index.md) · [`blog/index.en.md`](./blog/index.en.md)
-
-> 建议：分享给中文读者可直接发送 `index.md`，需要双语对照时优先从导航页进入。
-
----
-
-## 徽章区
-
-![Status](https://img.shields.io/badge/status-experimental-orange)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-blue)
-![AOT](https://img.shields.io/badge/NativeAOT-supported-success)
-![Rendering](https://img.shields.io/badge/rendering-LVGL-5c3ee8)
-![License](https://img.shields.io/badge/license-MIT-green)
-
-## 首页摘要
-
-`LVGLSharp.Forms` 是一个面向跨平台、设备端与 NativeAOT 场景的 **WinForms API 兼容层**。它以 **LVGL** 为底层渲染引擎，试图在保留 WinForms 开发体验的同时，把 UI 运行能力扩展到 Linux、嵌入式和更轻量的运行环境中。
-
-### 你可以在这里快速看到
-
-- 项目做什么
-- 为什么值得关注
-- 当前支持了什么
-- 架构如何组织
-- 应该从哪篇文档开始读
-
----
-
-## 语言切换
-
-> 当前页面：**中文** ｜ 切换到：[English Home](./index.en.md) · [English Navigation](./navigation.en.md) · [English Blog](./blog/index.en.md)
-
----
-
-## 按角色开始阅读
-
-### 第一次了解项目
-
-- [项目首页](./index.md)
-- [为什么要做 WinForms over LVGL](./blog-winforms-over-lvgl.md)
-- [英文首页](./index.en.md)
-
-### 架构与工程读者
-
-- [项目架构拆解](./blog-architecture.md)
-- [CI 工作流说明](./ci-workflows.md)
-- [CI Workflow Guide](./ci-workflows.en.md)
-
-### Linux / 运行时宿主读者
-
-- [Linux 图形宿主路线](./blog-linux-hosts.md)
-- [WSL 开发指南](./WSL-Developer-Guide.md)
-- [WSL Developer Guide](./WSL-Developer-Guide.en.md)
-
-### AOT / 发布读者
-
-- [NativeAOT 与 GUI](./blog-nativeaot-gui.md)
-- [更新记录](../CHANGELOG.md)
-- [路线图](../ROADMAP.md)
-
----
-
-## 快速入口
-
-## Start Here
-
-如果你第一次来到这个项目，建议直接从这里开始：
-
-1. 阅读本页，了解项目想解决什么问题
-2. 阅读 [`ci-workflows.md`](./ci-workflows.md)，理解工程化结构
-3. 阅读 [`ROADMAP.md`](../ROADMAP.md)，理解未来方向
-4. 进入博客区，阅读设计与实现思路
-
----
-
-## 功能卡片区
-
-## 三列入口区
-
-### 文档
-
-- [文档导航](./navigation.md)
-- [CI 工作流说明](./ci-workflows.md)
-- [WSL 开发指南](./WSL-Developer-Guide.md)
-
-### 博客
-
-- [博客索引](./blog/index.md)
-- [为什么要做 WinForms over LVGL](./blog-winforms-over-lvgl.md)
-- [项目架构拆解](./blog-architecture.md)
-
-### 仓库
-
-- [README](../README.md)
-- [路线图](../ROADMAP.md)
-- [更新记录](../CHANGELOG.md)
-
----
-
-## 项目亮点卡片
-
-### WinForms 风格开发
-
-保留熟悉的窗体、控件、事件和布局思维，降低迁移成本。
-
-### LVGL 渲染内核
-
-以下层 LVGL 驱动跨平台 UI，兼顾轻量、性能与设备适应性。
-
-### NativeAOT 方向
-
-面向设备端、自包含发布和最小运行时部署持续优化。
-
-### 多运行时宿主
-
-通过 Windows / Linux 运行时分层，当前已经落地 `WSLg`、`X11`、`FrameBuffer` 等主路径，`Wayland` / `SDL` 也已有实现，并继续为 `DRM/KMS` 等路线预留空间。
-
----
-
-## 版本 / 平台 / 包结构摘要区
-
-### 当前版本
-
-- 当前文档化版本：`9.5.0.5`
-- 发布标签：`v9.5.0.5`
-
-### 当前平台
-
-- Windows：`win-x86` / `win-x64` / `win-arm64`
-- Linux：`linux-x64` / `linux-arm` / `linux-arm64`
-
-### 当前包结构
-
-- `LVGLSharp.Forms`
-- `LVGLSharp.Core`
-- `LVGLSharp.Interop`
-- `LVGLSharp.Native`
-- `LVGLSharp.Runtime.Windows`
-- `LVGLSharp.Runtime.Linux`
-
-### 入门阅读
-
-- [CI 工作流说明](./ci-workflows.md)
-- [WSL 开发指南](./WSL-Developer-Guide.md)
-- [路线图](../ROADMAP.md)
-- [更新记录](../CHANGELOG.md)
-
-### 博客专题
-
-- [为什么要做 WinForms over LVGL](./blog-winforms-over-lvgl.md)
-- [NativeAOT 与 GUI](./blog-nativeaot-gui.md)
-- [Linux 图形宿主路线](./blog-linux-hosts.md)
-- [项目架构拆解](./blog-architecture.md)
-
----
-
-## 最新文章
-
-- [为什么要做 WinForms over LVGL](./blog-winforms-over-lvgl.md)
-- [项目架构拆解](./blog-architecture.md)
-- [NativeAOT 与 GUI](./blog-nativeaot-gui.md)
-- [Linux 图形宿主路线](./blog-linux-hosts.md)
-
----
-
-## 文章推荐卡片
-
-### 新读者首选
-
-从“项目为什么存在”切入，建议先读：
-
-- [为什么要做 WinForms over LVGL](./blog-winforms-over-lvgl.md)
-
-### 架构与工程读者
-
-如果你更关心模块边界、包拆分与运行时分层，建议先读：
-
-- [项目架构拆解](./blog-architecture.md)
-- [CI 工作流说明](./ci-workflows.md)
-
-### Linux / 设备方向读者
-
-如果你关注 WSL、Linux 图形宿主与设备部署，建议先读：
-
-- [Linux 图形宿主路线](./blog-linux-hosts.md)
-- [WSL 开发指南](./WSL-Developer-Guide.md)
-
-### AOT / 发布方向读者
-
-如果你关注裁剪、自包含发布与 NativeAOT，建议先读：
-
-- [NativeAOT 与 GUI](./blog-nativeaot-gui.md)
-
----
-
-## 博客推荐区
-
-### 推荐一：为什么要做 WinForms over LVGL
-
-如果你最关心“这个项目为什么存在”，从这篇开始最合适。
-
-### 推荐二：项目架构拆解
-
-如果你更关心工程结构和模块边界，这篇最值得先读。
-
-### 推荐三：NativeAOT 与 GUI
-
-如果你更关心设备端部署和运行时约束，这篇会更有帮助。
-
----
-
-## 项目简介
-
-`LVGLSharp.Forms` 是一个基于 **LVGL** 的 **WinForms API 兼容层**。它的目标不是简单地“把 LVGL 包一层 .NET API”，而是希望在尽可能保留 WinForms 开发方式、窗体结构、控件模型和事件习惯的前提下，把同一套 UI 代码运行到 Windows、Linux 以及更广泛的嵌入式与设备侧环境中。
-
-如果用一句话概括这个项目，它想做的是：
-
-> **让开发者继续用熟悉的 WinForms 思维编写界面，同时把最终渲染能力交给 LVGL，从而获得跨平台、轻量、可 AOT、适合设备端部署的 UI 运行时。**
-
-这个项目尤其适合以下场景：
-
-- 已有 WinForms 经验，希望迁移到嵌入式或 Linux 设备端
-- 希望在 .NET 生态下使用 LVGL，而不是回到纯 C/C++ 工程
-- 希望获得 NativeAOT 发布能力，减少运行时依赖
-- 希望在桌面端快速开发 UI，再把它部署到 ARM / ARM64 / x64 设备
-
----
-
-## 为什么值得关注
-
-在传统桌面开发中，WinForms 提供了极高的开发效率：
-
-- 控件模型直接
-- 事件模型成熟
-- 设计器体验友好
-- 业务代码结构稳定
-
-但 WinForms 本身主要服务于 Windows 桌面场景，并不天然适合：
-
-- Linux 图形环境
-- 无桌面设备
-- Framebuffer / DRM / KMS 等底层显示宿主
-- ARM 设备上的轻量部署
-- NativeAOT 的极致裁剪发布
-
-另一方面，LVGL 在嵌入式、轻量设备 UI 和跨平台渲染方面非常强，但它的原生开发方式更偏底层，和 .NET / WinForms 的心智模型存在差异。
+<section class="hero">
+  <div class="hero-panel">
+    <span class="kicker">跨平台 GUI · WinForms over LVGL · NativeAOT Ready</span>
+    <h1>让熟悉的 WinForms 思维，跑在更广阔的运行时上。</h1>
+    <p class="lead">
+      <strong>LVGLSharp</strong> 以 <strong>LVGL</strong> 为渲染内核，提供面向 .NET 的 WinForms 风格开发体验，目标覆盖 Windows、Linux 与设备侧场景，同时持续强化 <strong>NativeAOT</strong>、轻量部署与跨平台宿主能力。
+    </p>
+    <div class="button-row">
+      <a class="button primary" href="./navigation.md">开始阅读文档</a>
+      <a class="button secondary" href="./blog/index.md">查看设计博客</a>
+      <a class="button secondary" href="https://github.com/IoTSharp/LVGLSharp">GitHub 仓库</a>
+    </div>
+    <div class="pill-row">
+      <span class="pill">Windows / Linux</span>
+      <span class="pill">LVGL Rendering</span>
+      <span class="pill">WinForms-style API</span>
+      <span class="pill">NativeAOT Friendly</span>
+    </div>
+  </div>
+  <div class="hero-panel hero-side">
+    <div>
+      <div class="kicker">Project Snapshot</div>
+      <div class="code-window">dotnet add package LVGLSharp.Forms
+
+Application.Run(new MainForm());
+
+// Familiar form model
+// LVGL-backed rendering
+// Cross-platform runtime layering
+// Device-oriented deployment path</div>
+    </div>
+    <div class="surface">
+      <h3>一句话理解</h3>
+      <p>不是把 LVGL 简单包一层 .NET API，而是尽量保留 WinForms 的开发心智，同时把渲染与宿主能力迁移到跨平台、轻量、可裁剪的运行时体系上。</p>
+    </div>
+  </div>
+</section>
+
+<section class="stats-row">
+  <div class="stat-card">
+    <div class="stat-label">核心定位</div>
+    <div class="stat-value">WinForms over LVGL</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">主要平台</div>
+    <div class="stat-value">Windows + Linux</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">发布方向</div>
+    <div class="stat-value">NativeAOT</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">工程目标</div>
+    <div class="stat-value">跨平台 UI Runtime</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>为什么值得关注</h2>
+    <p>它连接了传统桌面开发效率与设备侧图形运行时能力，让熟悉的控件、事件、窗体模型延伸到更轻量的宿主与部署场景。</p>
+  </div>
+  <div class="card-grid">
+    <div>
+      <h3>熟悉的开发体验</h3>
+      <p>延续窗体、控件、事件和布局思维，降低从 WinForms 迁移到跨平台图形栈的认知门槛。</p>
+    </div>
+    <div>
+      <h3>LVGL 渲染底座</h3>
+      <p>利用 LVGL 的轻量、高性能与设备适配能力，支撑更广泛的图形宿主与显示环境。</p>
+    </div>
+    <div>
+      <h3>AOT 与轻量部署</h3>
+      <p>围绕 NativeAOT、自包含发布和设备端部署持续优化，减少运行时依赖和部署复杂度。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>快速入口</h2>
+    <p>如果你想快速判断这个项目是否适合自己，可以直接从下面几个入口开始。</p>
+  </div>
+  <div class="quick-links">
+    <a href="./navigation.md">
+      <strong>文档导航</strong>
+      <span>快速按主题、角色和语言找到合适的阅读顺序。</span>
+    </a>
+    <a href="./ci-workflows.md">
+      <strong>工程与 CI</strong>
+      <span>了解当前仓库的构建、打包、发布与自动化流程。</span>
+    </a>
+    <a href="./WSL-Developer-Guide.md">
+      <strong>WSL / Linux 开发</strong>
+      <span>如果你关注 Linux 图形宿主和开发体验，从这里进入最合适。</span>
+    </a>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>推荐阅读路径</h2>
+    <p>按你的关注点进入，而不是从所有文档里盲目翻找。</p>
+  </div>
+  <div class="article-grid">
+    <div class="article-card">
+      <h3>第一次了解项目</h3>
+      <p>适合先理解“为什么存在”和“整体目标是什么”。</p>
+      <ul>
+        <li><a href="./blog-winforms-over-lvgl.md">为什么要做 WinForms over LVGL</a></li>
+        <li><a href="./index.en.md">English Home</a></li>
+      </ul>
+    </div>
+    <div class="article-card">
+      <h3>关注架构与工程化</h3>
+      <p>适合想快速理解模块边界、运行时分层与工程结构的读者。</p>
+      <ul>
+        <li><a href="./blog-architecture.md">项目架构拆解</a></li>
+        <li><a href="./ci-workflows.md">CI 工作流说明</a></li>
+      </ul>
+    </div>
+    <div class="article-card">
+      <h3>关注 Linux / 宿主路线</h3>
+      <p>适合关心 X11、WSLg、FrameBuffer、Wayland 和后续显示宿主方向的读者。</p>
+      <ul>
+        <li><a href="./blog-linux-hosts.md">Linux 图形宿主路线</a></li>
+        <li><a href="./WSL-Developer-Guide.md">WSL 开发指南</a></li>
+      </ul>
+    </div>
+    <div class="article-card">
+      <h3>关注 AOT / 发布</h3>
+      <p>适合关注裁剪、自包含发布、运行时体积和部署方式的读者。</p>
+      <ul>
+        <li><a href="./blog-nativeaot-gui.md">NativeAOT 与 GUI</a></li>
+        <li><a href="../CHANGELOG.md">更新记录</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>项目能力地图</h2>
+    <p>这个项目的价值，不只在于“能画界面”，更在于一整套可扩展的运行时与工程组织方式。</p>
+  </div>
+  <div class="card-grid">
+    <div>
+      <h3>窗体与控件模型</h3>
+      <p>保持传统 WinForms 的编程习惯，包括生命周期、控件树、事件和布局组织方式。</p>
+    </div>
+    <div>
+      <h3>运行时分层</h3>
+      <p>通过 `Core`、`Interop`、`Runtime.Windows`、`Runtime.Linux` 等层次组织平台能力，避免把渲染与宿主耦死在一起。</p>
+    </div>
+    <div>
+      <h3>设备化部署路径</h3>
+      <p>为 x64、ARM、ARM64 等平台提供更现实的设备端与边缘端 UI 运行可能性。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>Demo 与使用场景</h2>
+    <p>这个项目不是抽象概念验证，而是面向真实界面、真实运行时和真实发布链路持续推进。</p>
+  </div>
+  <div class="card-grid">
+    <div>
+      <h3>桌面验证</h3>
+      <p>通过 Windows 与 Linux 宿主持续验证 UI 生命周期、控件模型和跨平台运行一致性。</p>
+    </div>
+    <div>
+      <h3>设备方向探索</h3>
+      <p>围绕 FrameBuffer、Wayland、SDL、DRM/KMS 等路线逐步扩展适合设备端的运行方式。</p>
+    </div>
+    <div>
+      <h3>示例驱动演进</h3>
+      <p>通过 `MusicDemo`、`SmartWatchDemo`、`PictureBoxDemo`、`WinFormsDemo` 等示例沉淀真实能力。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section surface">
+  <div class="section-header">
+    <h2>快速开始</h2>
+    <p>如果你想先感受整体开发方式，可以从下面的最小路径开始。</p>
+  </div>
+  <ul>
+    <li>查看 <a href="https://github.com/IoTSharp/LVGLSharp">GitHub 仓库</a> 了解项目结构</li>
+    <li>阅读 <a href="./navigation.md">文档导航</a> 选择你的阅读路线</li>
+    <li>进入 <a href="./blog/index.md">博客索引</a> 理解设计背景与架构取舍</li>
+    <li>结合 `src/Demos` 下的示例项目理解实际使用场景</li>
+  </ul>
+</section>
+
+<section class="section surface">
+  <div class="section-header">
+    <h2>当前重点阅读</h2>
+    <p>如果只看三篇，建议从下面开始。</p>
+  </div>
+  <ul>
+    <li><a href="./blog-winforms-over-lvgl.md">为什么要做 WinForms over LVGL</a></li>
+    <li><a href="./blog-architecture.md">项目架构拆解</a></li>
+    <li><a href="./blog-nativeaot-gui.md">NativeAOT 与 GUI</a></li>
+  </ul>
+</section>
 
 `LVGLSharp.Forms` 的价值就在于把两者连接起来：
 

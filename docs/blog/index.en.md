@@ -1,82 +1,65 @@
-﻿# Blog Index
-
-This page collects the currently available `LVGLSharp.Forms` articles and serves as the blog entry page for GitHub Pages.
-
-## Bilingual Entry Points
-
-**Current language: English**
-
-- Home: [`../index.md`](../index.md) · [`../index.en.md`](../index.en.md)
-- Navigation: [`../navigation.md`](../navigation.md) · [`../navigation.en.md`](../navigation.en.md)
-- Blog: [`index.md`](./index.md) · [`index.en.md`](./index.en.md)
-
-> Tip: share `blog/index.en.md` with English readers, and start from the navigation pages when you want a bilingual comparison path.
-
+﻿---
+title: Blog Index
+description: A curated entry page for LVGLSharp articles about architecture, runtime hosts, and NativeAOT.
+lang: en
 ---
 
-## Article Cards
+<section class="section">
+	<div class="section-header">
+		<h1>Blog Index</h1>
+		<p>Explore the project rationale, architecture, Linux host strategy, and NativeAOT direction from one place.</p>
+	</div>
 
-### Chinese / English article cards
+	<div class="article-grid">
+		<div class="article-card">
+			<h3><a href="./why-winforms-over-lvgl.en.md">Why WinForms over LVGL</a></h3>
+			<p>Best if you want to understand why the project should exist at all and what gap it is trying to close.</p>
+		</div>
+		<div class="article-card">
+			<h3><a href="./architecture.en.md">Architecture Breakdown</a></h3>
+			<p>Best if you want a quick mental model of the repository structure, runtime layers, and module boundaries.</p>
+		</div>
+		<div class="article-card">
+			<h3><a href="./nativeaot-gui.en.md">NativeAOT and GUI</a></h3>
+			<p>Best if you care about deployment size, runtime trimming, AOT constraints, and GUI tradeoffs.</p>
+		</div>
+		<div class="article-card">
+			<h3><a href="./linux-hosts.en.md">Linux Host Strategy</a></h3>
+			<p>Best if you are following Linux desktop, device-side hosts, and the longer runtime roadmap.</p>
+		</div>
+	</div>
+</section>
 
-| English article | 中文文章 |
-|---|---|
-| [Why WinForms over LVGL](./why-winforms-over-lvgl.en.md) | [为什么要做 WinForms over LVGL](../blog-winforms-over-lvgl.md) |
-| [Architecture Breakdown](./architecture.en.md) | [项目架构拆解](../blog-architecture.md) |
-| [NativeAOT and GUI](./nativeaot-gui.en.md) | [NativeAOT 与 GUI](../blog-nativeaot-gui.md) |
-| [Linux Host Strategy](./linux-hosts.en.md) | [Linux 图形宿主路线](../blog-linux-hosts.md) |
+<section class="section surface">
+	<div class="section-header">
+		<h2>Suggested reading order</h2>
+		<p>If this is your first pass through the blog, this order builds context most effectively.</p>
+	</div>
+	<ul>
+		<li><a href="./why-winforms-over-lvgl.en.md">Why WinForms over LVGL</a></li>
+		<li><a href="./architecture.en.md">Architecture Breakdown</a></li>
+		<li><a href="./nativeaot-gui.en.md">NativeAOT and GUI</a></li>
+		<li><a href="./linux-hosts.en.md">Linux Host Strategy</a></li>
+	</ul>
+</section>
 
----
-
-### [Why WinForms over LVGL](./why-winforms-over-lvgl.en.md)
-
-Best for readers who want to understand why this project exists in the first place.
-
-### [Architecture Breakdown](./architecture.en.md)
-
-Best for readers who want a quick understanding of project layering, module boundaries, and engineering structure.
-
-### [NativeAOT and GUI](./nativeaot-gui.en.md)
-
-Best for readers interested in device deployment, runtime size, AOT constraints, and GUI architecture tradeoffs.
-
-### [Linux Host Strategy](./linux-hosts.en.md)
-
-Best for readers following the Linux desktop/device host roadmap and runtime evolution.
-
-## Current Articles
-
-### Architecture and Direction
-
-- [Why WinForms over LVGL](./why-winforms-over-lvgl.en.md)
-- [Architecture Breakdown](./architecture.en.md)
-
-### Engineering and Runtime
-
-- [NativeAOT and GUI](./nativeaot-gui.en.md)
-- [Linux Host Strategy](./linux-hosts.en.md)
-
-## Suggested Reading Order
-
-If this is your first time exploring the project, a good order is:
-
-1. [Why WinForms over LVGL](./why-winforms-over-lvgl.en.md)
-2. [Architecture Breakdown](./architecture.en.md)
-3. [NativeAOT and GUI](./nativeaot-gui.en.md)
-4. [Linux Host Strategy](./linux-hosts.en.md)
-
-## Related Entry Points
-
-- [Home](../index.en.md)
-- [Chinese Home](../index.md)
-- [Navigation](../navigation.en.md)
-- [Chinese Navigation](../navigation.md)
-- [CI Workflow Guide](../ci-workflows.en.md)
-- [CI 工作流说明](../ci-workflows.md)
-
-## Bilingual Reading Entry Points
-
-- [Chinese Blog Index](./index.md)
-- [为什么要做 WinForms over LVGL](../blog-winforms-over-lvgl.md)
-- [项目架构拆解](../blog-architecture.md)
-- [NativeAOT 与 GUI](../blog-nativeaot-gui.md)
-- [Linux 图形宿主路线](../blog-linux-hosts.md)
+<section class="section">
+	<div class="section-header">
+		<h2>Bilingual reading</h2>
+		<p>Switch to the Chinese entry points here when you need bilingual comparison or local sharing.</p>
+	</div>
+	<div class="quick-links">
+		<a href="./index.md">
+			<strong>中文博客索引</strong>
+			<span>浏览全部中文文章入口。</span>
+		</a>
+		<a href="../blog-winforms-over-lvgl.md">
+			<strong>为什么要做 WinForms over LVGL</strong>
+			<span>查看项目定位与动机的中文版本。</span>
+		</a>
+		<a href="../blog-architecture.md">
+			<strong>项目架构拆解</strong>
+			<span>查看工程结构与模块职责的中文版本。</span>
+		</a>
+	</div>
+</section>

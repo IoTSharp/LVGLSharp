@@ -1,262 +1,215 @@
-﻿# LVGLSharp.Forms
-
-> Bringing a WinForms-style development experience to LVGL-powered cross-platform UI.
-
-[Chinese Home](./index.md) · [English Home](./index.en.md) · [Chinese Navigation](./navigation.md) · [English Navigation](./navigation.en.md)
-
+﻿---
+title: LVGLSharp Home
+description: Bring a WinForms-style development experience to LVGL-powered cross-platform UI.
+lang: en
 ---
 
-## Bilingual Entry Points
-
-**Current language: English**
-
-- Home: [`index.md`](./index.md) · [`index.en.md`](./index.en.md)
-- Navigation: [`navigation.md`](./navigation.md) · [`navigation.en.md`](./navigation.en.md)
-- Blog: [`blog/index.md`](./blog/index.md) · [`blog/index.en.md`](./blog/index.en.md)
-
-> Tip: share `index.en.md` with English readers, and start from the navigation pages when you want a bilingual comparison path.
-
----
-
-## Badge Area
-![Status](https://img.shields.io/badge/status-experimental-orange)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-blue)
-![AOT](https://img.shields.io/badge/NativeAOT-supported-success)
-![Rendering](https://img.shields.io/badge/rendering-LVGL-5c3ee8)
-![License](https://img.shields.io/badge/license-MIT-green)
-
-## Homepage Summary
-
-`LVGLSharp.Forms` is a **WinForms API compatibility layer** designed for cross-platform UI, device-oriented environments, and NativeAOT-friendly deployment. It uses **LVGL** as its rendering engine while trying to preserve the productivity and mental model of WinForms development.
-
-### What you can quickly learn here
-
-- what the project does
-- why it matters
-- what it already supports
-- how the architecture is organized
-- where to go next in the documentation
-
----
-
-## Language Switch
-
-> Current page: **English** | Switch to: [Chinese Home](./index.md) | [Chinese Navigation](./navigation.md) | [Chinese Blog](./blog/index.md)
-
----
-
-## Start Reading by Role
-
-### First-Time Readers
-
-- [English Home](./index.en.md)
-- [Why WinForms over LVGL](./blog/why-winforms-over-lvgl.en.md)
-- [Chinese Home](./index.md)
-
-### Architecture and Engineering Readers
-
-- [Architecture Breakdown](./blog/architecture.en.md)
-- [CI Workflow Guide](./ci-workflows.en.md)
-- [CI Workflow Guide (Chinese)](./ci-workflows.md)
-
-### Linux and Runtime-Host Readers
-
-- [Linux Host Strategy](./blog/linux-hosts.en.md)
-- [WSL Developer Guide](./WSL-Developer-Guide.en.md)
-- [WSL Developer Guide (Chinese)](./WSL-Developer-Guide.md)
-
-### AOT and Release Readers
-
-- [NativeAOT and GUI](./blog/nativeaot-gui.en.md)
-- [Changelog](../CHANGELOG.md)
-- [Roadmap](../ROADMAP.md)
-
----
-
-## Quick Entry Points
-
-## Start Here
-
-If this is your first visit, start with this sequence:
-
-1. read this page to understand the project's purpose
-2. read [`ci-workflows.md`](./ci-workflows.md) to understand the engineering pipeline
-3. read [`ROADMAP.md`](../ROADMAP.md) to understand where the project is heading
-4. move into the blog section for design rationale and implementation discussions
-
----
-
-## Feature Cards
-
-## Three-Column Entry Area
-
-### Documentation
-
-- [Navigation](./navigation.en.md)
-- [CI Workflow Guide](./ci-workflows.en.md)
-- [WSL Developer Guide](./WSL-Developer-Guide.en.md)
-
-### Blog
-
-- [Blog Index](./blog/index.en.md)
-- [Why WinForms over LVGL](./blog/why-winforms-over-lvgl.en.md)
-- [Architecture Breakdown](./blog/architecture.en.md)
-
-### Repository
-
-- [README](../README_en.md)
-- [Roadmap](../ROADMAP.md)
-- [Changelog](../CHANGELOG.md)
-
----
-
-## Project Highlights
-
-### WinForms-style Development
-
-Keeps the familiar forms, controls, events, and layout mental model.
-
-### LVGL Rendering Core
-
-Uses LVGL as the rendering backend to support portability, lightweight deployment, and device adaptation.
-
-### NativeAOT Direction
-
-Moves steadily toward self-contained, minimal-runtime, device-friendly deployment.
-
-### Multi-Host Runtime Model
-
-Separates Windows and Linux runtimes, with `WSLg`, `X11`, and `FrameBuffer` already established, `Wayland` / `SDL` already implemented, and room left for later `DRM/KMS` and other host paths.
-
----
-
-## Version / Platform / Package Summary
-
-### Current Version
-
-- Current documented version: `9.5.0.5`
-- Release tag: `v9.5.0.5`
-
-### Current Platform Coverage
-
-- Windows: `win-x86` / `win-x64` / `win-arm64`
-- Linux: `linux-x64` / `linux-arm` / `linux-arm64`
-
-### Current Package Layout
-
-- `LVGLSharp.Forms`
-- `LVGLSharp.Core`
-- `LVGLSharp.Interop`
-- `LVGLSharp.Native`
-- `LVGLSharp.Runtime.Windows`
-- `LVGLSharp.Runtime.Linux`
-
-### Getting Started Reading
-
-- [CI Workflow Guide](./ci-workflows.en.md)
-- [WSL Developer Guide](./WSL-Developer-Guide.en.md)
-- [Roadmap](../ROADMAP.md)
-- [Changelog](../CHANGELOG.md)
-
-### Blog Articles
-
-- [Why WinForms over LVGL](./blog/why-winforms-over-lvgl.en.md)
-- [NativeAOT and GUI](./blog/nativeaot-gui.en.md)
-- [Linux Host Strategy](./blog/linux-hosts.en.md)
-- [Architecture Breakdown](./blog/architecture.en.md)
-
----
-
-## Latest Articles
-
-- [Why WinForms over LVGL](./blog/why-winforms-over-lvgl.en.md)
-- [Architecture Breakdown](./blog/architecture.en.md)
-- [NativeAOT and GUI](./blog/nativeaot-gui.en.md)
-- [Linux Host Strategy](./blog/linux-hosts.en.md)
-
----
-
-## Recommended Reading Cards
-
-### Best for New Readers
-
-If you want to understand why this project exists, start with:
-
-- [Why WinForms over LVGL](./blog/why-winforms-over-lvgl.en.md)
-
-### Best for Architecture and Engineering
-
-If you care about module boundaries, package layout, and runtime layering, start with:
-
-- [Architecture Breakdown](./blog/architecture.en.md)
-- [CI Workflow Guide](./ci-workflows.en.md)
-
-### Best for Linux and Device Work
-
-If your main interest is WSL, Linux graphics hosts, or device-side deployment, start with:
-
-- [Linux Host Strategy](./blog/linux-hosts.en.md)
-- [WSL Developer Guide](./WSL-Developer-Guide.en.md)
-
-### Best for AOT and Publishing
-
-If you care most about trimming, self-contained deployment, and NativeAOT, start with:
-
-- [NativeAOT and GUI](./blog/nativeaot-gui.en.md)
-
----
-
-## Blog Highlights
-
-### Highlight 1: Why WinForms over LVGL
-
-Start here if your main question is why this project should exist at all.
-
-### Highlight 2: Architecture Breakdown
-
-Start here if you care most about module boundaries and engineering structure.
-
-### Highlight 3: NativeAOT and GUI
-
-Start here if device deployment and runtime constraints are your main focus.
-
----
-
-## Project Overview
-
-`LVGLSharp.Forms` is a **WinForms API compatibility layer built on top of LVGL**. Its goal is not merely to wrap LVGL with another .NET API, but to preserve as much of the familiar WinForms mental model as possible, including forms, controls, layout structure, event handling, and application lifecycle, while running the same UI code across Windows, Linux, and broader device-oriented environments.
-
-If summarized in one sentence, the project aims to do this:
-
-> **Let developers keep writing UI with a WinForms-like programming model while delegating rendering to LVGL, gaining cross-platform reach, lightweight deployment, and NativeAOT-friendly runtime behavior.**
-
-This project is especially interesting for developers who:
-
-- already know WinForms and want to move toward Linux or embedded devices
-- want to use LVGL from the .NET ecosystem instead of working only in C/C++
-- want NativeAOT publishing with reduced runtime footprint
-- want to prototype UI on desktop systems and deploy it later to ARM / ARM64 / x64 targets
-
----
-
-## Why It Matters
-
-WinForms is still one of the most productive UI models in the .NET world:
-
-- straightforward control model
-- mature event model
-- designer-friendly workflow
-- stable application structure for business software
-
-However, WinForms itself is primarily designed for Windows desktop applications and does not naturally target:
-
-- Linux graphical environments
-- device-side UI scenarios
-- framebuffer / DRM / KMS display stacks
-- lightweight ARM deployments
-- aggressively trimmed NativeAOT applications
-
-LVGL, on the other hand, is excellent for embedded UI, lightweight rendering, and broad platform adaptation, but its native programming model is more low-level and differs significantly from the WinForms way of building applications.
+<section class="hero">
+  <div class="hero-panel">
+    <span class="kicker">Cross-platform GUI · WinForms over LVGL · NativeAOT Ready</span>
+    <h1>Keep the familiar WinForms mindset, target much broader runtimes.</h1>
+    <p class="lead">
+      <strong>LVGLSharp</strong> uses <strong>LVGL</strong> as the rendering core while exposing a .NET-friendly, WinForms-style development model. The goal is to bridge desktop productivity with Windows, Linux, and device-oriented runtime environments, while continuing to improve <strong>NativeAOT</strong>, lightweight deployment, and host portability.
+    </p>
+    <div class="button-row">
+      <a class="button primary" href="./navigation.en.md">Start with docs</a>
+      <a class="button secondary" href="./blog/index.en.md">Read the blog</a>
+      <a class="button secondary" href="https://github.com/IoTSharp/LVGLSharp">GitHub repository</a>
+    </div>
+    <div class="pill-row">
+      <span class="pill">Windows / Linux</span>
+      <span class="pill">LVGL Rendering</span>
+      <span class="pill">WinForms-style API</span>
+      <span class="pill">NativeAOT Friendly</span>
+    </div>
+  </div>
+  <div class="hero-panel hero-side">
+    <div>
+      <div class="kicker">Project Snapshot</div>
+      <div class="code-window">dotnet add package LVGLSharp.Forms
+
+Application.Run(new MainForm());
+
+// Familiar form model
+// LVGL-backed rendering
+// Cross-platform runtime layering
+// Device-oriented deployment path</div>
+    </div>
+    <div class="surface">
+      <h3>In one sentence</h3>
+      <p>This is not just a thin .NET wrapper over LVGL. It is an attempt to preserve the WinForms development model while moving rendering and runtime hosting toward a lighter, more portable, and AOT-friendly architecture.</p>
+    </div>
+  </div>
+</section>
+
+<section class="stats-row">
+  <div class="stat-card">
+    <div class="stat-label">Core identity</div>
+    <div class="stat-value">WinForms over LVGL</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Main platforms</div>
+    <div class="stat-value">Windows + Linux</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Publishing direction</div>
+    <div class="stat-value">NativeAOT</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Engineering target</div>
+    <div class="stat-value">Cross-platform UI Runtime</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>Why it matters</h2>
+    <p>It connects familiar desktop development productivity with lightweight runtime capabilities for broader display hosts and deployment models.</p>
+  </div>
+  <div class="card-grid">
+    <div>
+      <h3>Familiar development flow</h3>
+      <p>Preserves forms, controls, events, and layout thinking so developers can reuse the WinForms mental model instead of starting from a lower-level graphics stack.</p>
+    </div>
+    <div>
+      <h3>LVGL rendering foundation</h3>
+      <p>Builds on LVGL for lightweight, high-performance, and device-adaptive rendering across broader platform and host combinations.</p>
+    </div>
+    <div>
+      <h3>AOT and lightweight deployment</h3>
+      <p>Moves toward NativeAOT, self-contained publishing, and device-friendly packaging with lower runtime overhead.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>Quick entry points</h2>
+    <p>If you want to evaluate the project quickly, these are the best places to start.</p>
+  </div>
+  <div class="quick-links">
+    <a href="./navigation.en.md">
+      <strong>Documentation map</strong>
+      <span>Jump into the right reading path by topic, audience, and language.</span>
+    </a>
+    <a href="./ci-workflows.en.md">
+      <strong>Engineering and CI</strong>
+      <span>Understand the build, packaging, publishing, and automation structure.</span>
+    </a>
+    <a href="./WSL-Developer-Guide.en.md">
+      <strong>WSL / Linux development</strong>
+      <span>Start here if your main interest is Linux graphics hosts and development workflow.</span>
+    </a>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>Recommended reading paths</h2>
+    <p>Choose a path based on your interest instead of browsing everything manually.</p>
+  </div>
+  <div class="article-grid">
+    <div class="article-card">
+      <h3>First-time readers</h3>
+      <p>Best if you want to understand why the project exists and what it is trying to achieve.</p>
+      <ul>
+        <li><a href="./blog/why-winforms-over-lvgl.en.md">Why WinForms over LVGL</a></li>
+        <li><a href="./index.md">中文首页</a></li>
+      </ul>
+    </div>
+    <div class="article-card">
+      <h3>Architecture and engineering</h3>
+      <p>Best if you care about module boundaries, runtime layering, and repository organization.</p>
+      <ul>
+        <li><a href="./blog/architecture.en.md">Architecture Breakdown</a></li>
+        <li><a href="./ci-workflows.en.md">CI Workflow Guide</a></li>
+      </ul>
+    </div>
+    <div class="article-card">
+      <h3>Linux and host strategy</h3>
+      <p>Best if you care about X11, WSLg, FrameBuffer, Wayland, and future display-host paths.</p>
+      <ul>
+        <li><a href="./blog/linux-hosts.en.md">Linux Host Strategy</a></li>
+        <li><a href="./WSL-Developer-Guide.en.md">WSL Developer Guide</a></li>
+      </ul>
+    </div>
+    <div class="article-card">
+      <h3>AOT and publishing</h3>
+      <p>Best if you care about trimming, self-contained deployments, runtime size, and publishing shape.</p>
+      <ul>
+        <li><a href="./blog/nativeaot-gui.en.md">NativeAOT and GUI</a></li>
+        <li><a href="../CHANGELOG.md">Changelog</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>Capability map</h2>
+    <p>The project value is not only about drawing UI, but about the runtime structure and engineering model behind it.</p>
+  </div>
+  <div class="card-grid">
+    <div>
+      <h3>Forms and controls model</h3>
+      <p>Keeps the traditional WinForms programming style, including lifecycle, control tree, events, and layout organization.</p>
+    </div>
+    <div>
+      <h3>Layered runtime structure</h3>
+      <p>Organizes capabilities across `Core`, `Interop`, `Runtime.Windows`, and `Runtime.Linux` so rendering and hosting stay decoupled.</p>
+    </div>
+    <div>
+      <h3>Device deployment path</h3>
+      <p>Opens a realistic path for x64, ARM, and ARM64 device-side UI scenarios in the .NET ecosystem.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>Demos and usage scenarios</h2>
+    <p>This project is not only a concept exploration. It is being shaped against real UI scenarios, real runtime hosts, and real publishing paths.</p>
+  </div>
+  <div class="card-grid">
+    <div>
+      <h3>Desktop validation</h3>
+      <p>Windows and Linux hosts are used to continuously validate lifecycle behavior, control models, and cross-platform runtime consistency.</p>
+    </div>
+    <div>
+      <h3>Device-oriented exploration</h3>
+      <p>The runtime roadmap keeps expanding around FrameBuffer, Wayland, SDL, DRM/KMS, and other device-side host strategies.</p>
+    </div>
+    <div>
+      <h3>Demo-driven evolution</h3>
+      <p>Examples such as `MusicDemo`, `SmartWatchDemo`, `PictureBoxDemo`, and `WinFormsDemo` help anchor the project in practical usage.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section surface">
+  <div class="section-header">
+    <h2>Quick start path</h2>
+    <p>If you want to get a fast feel for the project, this is the shortest useful path.</p>
+  </div>
+  <ul>
+    <li>Inspect the <a href="https://github.com/IoTSharp/LVGLSharp">GitHub repository</a> for project structure</li>
+    <li>Use the <a href="./navigation.en.md">documentation map</a> to choose a reading path</li>
+    <li>Read the <a href="./blog/index.en.md">blog index</a> for rationale and architecture tradeoffs</li>
+    <li>Study the demo projects under `src/Demos` for practical usage patterns</li>
+  </ul>
+</section>
+
+<section class="section surface">
+  <div class="section-header">
+    <h2>Start with these</h2>
+    <p>If you only read three pieces first, use this shortlist.</p>
+  </div>
+  <ul>
+    <li><a href="./blog/why-winforms-over-lvgl.en.md">Why WinForms over LVGL</a></li>
+    <li><a href="./blog/architecture.en.md">Architecture Breakdown</a></li>
+    <li><a href="./blog/nativeaot-gui.en.md">NativeAOT and GUI</a></li>
+  </ul>
+</section>
 
 `LVGLSharp.Forms` sits in the middle:
 

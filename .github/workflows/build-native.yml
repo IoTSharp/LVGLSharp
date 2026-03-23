@@ -1,5 +1,4 @@
-name: 构建原生库资产
-
+name: 鏋勫缓鍘熺敓搴撹祫浜?
 'on':
   push:
     branches: [main, develop, master]
@@ -22,24 +21,21 @@ name: 构建原生库资产
   workflow_dispatch:
     inputs:
       note:
-        description: "可选备注：用于说明本次手动触发的目的"
+        description: "鍙€夊娉細鐢ㄤ簬璇存槑鏈鎵嬪姩瑙﹀彂鐨勭洰鐨?
         required: false
         default: ""
   workflow_call:
-    # inputs: 当前工作流无需调用方额外传参，按矩阵直接构建多平台原生库。
-    # outputs: 当前工作流仅产出 artifact，不向调用方返回结构化 outputs。
-
+    # inputs: 褰撳墠宸ヤ綔娴佹棤闇€璋冪敤鏂归澶栦紶鍙傦紝鎸夌煩闃电洿鎺ユ瀯寤哄骞冲彴鍘熺敓搴撱€?    # outputs: 褰撳墠宸ヤ綔娴佷粎浜у嚭 artifact锛屼笉鍚戣皟鐢ㄦ柟杩斿洖缁撴瀯鍖?outputs銆?
 jobs:
   build:
-    name: 构建原生库（${{ matrix.rid }}）
-    runs-on: ${{ matrix.os }}
+    name: 鏋勫缓鍘熺敓搴擄紙${{ matrix.rid }}锛?    runs-on: ${{ matrix.os }}
     permissions:
       contents: read
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Windows 目标：通过 MSVC -A 参数构建多架构原生库
+          # Windows 鐩爣锛氶€氳繃 MSVC -A 鍙傛暟鏋勫缓澶氭灦鏋勫師鐢熷簱
           - rid: win-x64
             os: windows-latest
             cmake_generator: "Visual Studio 17 2022"
@@ -53,19 +49,17 @@ jobs:
             cmake_generator: "Visual Studio 17 2022"
             cmake_arch: ARM64
 
-          # Linux 目标：原生 x64（与 LVGL 官方 CI 一致，使用 ubuntu-24.04）
-          - rid: linux-x64
+          # Linux 鐩爣锛氬師鐢?x64锛堜笌 LVGL 瀹樻柟 CI 涓€鑷达紝浣跨敤 ubuntu-24.04锛?          - rid: linux-x64
             os: ubuntu-24.04
             cmake_extra: ""
 
-          # Linux 目标：ARM 交叉编译（硬浮点）
-          - rid: linux-arm
+          # Linux 鐩爣锛欰RM 浜ゅ弶缂栬瘧锛堢‖娴偣锛?          - rid: linux-arm
             os: ubuntu-24.04
             apt_packages: gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
             cmake_extra: >-
               -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/libs/cmake/toolchains/arm-linux-gnueabihf.cmake
 
-          # Linux 目标：ARM64 交叉编译
+          # Linux 鐩爣锛欰RM64 浜ゅ弶缂栬瘧
           - rid: linux-arm64
             os: ubuntu-24.04
             apt_packages: gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
@@ -73,26 +67,23 @@ jobs:
               -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/libs/cmake/toolchains/aarch64-linux-gnu.cmake
 
     steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
+      - name: 妫€鍑轰唬鐮?        uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      # 1. 准备 LVGL 构建输入
-      - name: 复制 lv_conf.h 到 lvgl 源码目录
+      # 1. 鍑嗗 LVGL 鏋勫缓杈撳叆
+      - name: 澶嶅埗 lv_conf.h 鍒?lvgl 婧愮爜鐩綍
         shell: bash
         run: cp libs/lv_conf.h libs/lvgl/lv_conf.h
 
-      # 2. 安装 Linux 构建依赖
-      - name: 安装 Linux 构建依赖
+      # 2. 瀹夎 Linux 鏋勫缓渚濊禆
+      - name: 瀹夎 Linux 鏋勫缓渚濊禆
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y cmake ninja-build ${{ matrix.apt_packages }}
 
-      # 3. 配置并编译 Windows 原生库
-      - name: CMake 配置（Windows）
-        if: runner.os == 'Windows'
+      # 3. 閰嶇疆骞剁紪璇?Windows 鍘熺敓搴?      - name: CMake 閰嶇疆锛圵indows锛?        if: runner.os == 'Windows'
         shell: bash
         run: |
           cmake -S libs/lvgl -B libs/lvgl/build_shared \
@@ -104,14 +95,11 @@ jobs:
             -DBUILD_SHARED_LIBS=ON \
             -DCONFIG_LV_USE_PRIVATE_API=ON
 
-      - name: 编译（Windows）
-        if: runner.os == 'Windows'
+      - name: 缂栬瘧锛圵indows锛?        if: runner.os == 'Windows'
         shell: bash
         run: cmake --build libs/lvgl/build_shared --config Release
 
-      # 4. 配置并编译 Linux 原生库
-      - name: CMake 配置（Linux）
-        if: runner.os == 'Linux'
+      # 4. 閰嶇疆骞剁紪璇?Linux 鍘熺敓搴?      - name: CMake 閰嶇疆锛圠inux锛?        if: runner.os == 'Linux'
         run: |
           cmake -S libs/lvgl -B libs/lvgl/build_shared \
             -G Ninja \
@@ -123,13 +111,11 @@ jobs:
             -DBUILD_SHARED_LIBS=ON \
             -DCONFIG_LV_USE_PRIVATE_API=ON
 
-      - name: 编译（Linux）
-        if: runner.os == 'Linux'
+      - name: 缂栬瘧锛圠inux锛?        if: runner.os == 'Linux'
         run: cmake --build libs/lvgl/build_shared
 
-      # 5. 收集并校验原生库产物
-      - name: 收集原生库文件
-        shell: bash
+      # 5. 鏀堕泦骞舵牎楠屽師鐢熷簱浜х墿
+      - name: 鏀堕泦鍘熺敓搴撴枃浠?        shell: bash
         run: |
           mkdir -p native_output
           find libs/lvgl/build_shared -name "lvgl.dll" | head -1 | xargs -I{} cp {} native_output/ 2>/dev/null || true
@@ -139,13 +125,12 @@ jobs:
           fi
           ls -la native_output/
 
-      - name: 校验导出符号（Linux）
-        if: runner.os == 'Linux'
+      - name: 鏍￠獙瀵煎嚭绗﹀彿锛圠inux锛?        if: runner.os == 'Linux'
         shell: bash
         run: |
           lib="native_output/liblvgl.so"
           if [ ! -f "$lib" ]; then
-            echo "错误：未找到 $lib"
+            echo "閿欒锛氭湭鎵惧埌 $lib"
             exit 1
           fi
 
@@ -165,21 +150,20 @@ jobs:
           done
 
           if [ ${#missing[@]} -ne 0 ]; then
-            echo "错误：$lib 缺少以下导出符号：${missing[*]}"
+            echo "閿欒锛?lib 缂哄皯浠ヤ笅瀵煎嚭绗﹀彿锛?{missing[*]}"
             echo "===== nm -D $lib ====="
             nm -D "$lib" || true
             exit 1
           fi
 
-          echo "导出符号校验通过：${expected_symbols[*]}"
+          echo "瀵煎嚭绗﹀彿鏍￠獙閫氳繃锛?{expected_symbols[*]}"
 
-      - name: 校验导出符号（Windows）
-        if: runner.os == 'Windows'
+      - name: 鏍￠獙瀵煎嚭绗﹀彿锛圵indows锛?        if: runner.os == 'Windows'
         shell: pwsh
         run: |
           $lib = Join-Path $PWD 'native_output\lvgl.dll'
           if (-not (Test-Path $lib)) {
-            throw "未找到 $lib"
+            throw "鏈壘鍒?$lib"
           }
 
           $dumpbin = (Get-Command dumpbin.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1)
@@ -197,7 +181,7 @@ jobs:
           }
 
           if (-not $dumpbin) {
-            throw '未找到 dumpbin.exe，无法校验 Windows 导出符号。'
+            throw '鏈壘鍒?dumpbin.exe锛屾棤娉曟牎楠?Windows 瀵煎嚭绗﹀彿銆?
           }
 
           $exports = & $dumpbin /exports $lib 2>&1
@@ -216,27 +200,27 @@ jobs:
           }
 
           if ($missing.Count -gt 0) {
-            Write-Host "错误：$lib 缺少以下导出符号：$($missing -join ', ')"
+            Write-Host "閿欒锛?lib 缂哄皯浠ヤ笅瀵煎嚭绗﹀彿锛?($missing -join ', ')"
             Write-Host "===== dumpbin /exports $lib ====="
             $exports | ForEach-Object { Write-Host $_ }
-            throw 'Windows 导出符号校验失败。'
+            throw 'Windows 瀵煎嚭绗﹀彿鏍￠獙澶辫触銆?
           }
 
-          Write-Host "导出符号校验通过：$($expectedSymbols -join ', ')"
+          Write-Host "瀵煎嚭绗﹀彿鏍￠獙閫氳繃锛?($expectedSymbols -join ', ')"
 
-      - name: 生成 sha256
+      - name: 鐢熸垚 sha256
         shell: pwsh
         run: |
           $files = Get-ChildItem -Path native_output -File | Where-Object { $_.Extension -in '.dll', '.so' }
           if (-not $files) {
-            throw 'native_output 中没有可生成校验值的原生库文件。'
+            throw 'native_output 涓病鏈夊彲鐢熸垚鏍￠獙鍊肩殑鍘熺敓搴撴枃浠躲€?
           }
 
           foreach ($file in $files) {
             $hash = (Get-FileHash -Path $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             $shaFile = "$($file.FullName).sha256"
             Set-Content -Path $shaFile -Value "$hash  $($file.Name)" -NoNewline
-            Write-Host "已生成 $shaFile"
+            Write-Host "宸茬敓鎴?$shaFile"
           }
 
           Get-ChildItem -Path native_output -Filter '*.sha256' | ForEach-Object {
@@ -244,8 +228,7 @@ jobs:
             Get-Content $_.FullName | ForEach-Object { Write-Host $_ }
           }
 
-      - name: 上传原生库制品
-        uses: actions/upload-artifact@v4
+      - name: 涓婁紶鍘熺敓搴撳埗鍝?        uses: actions/upload-artifact@v4
         with:
           name: native-${{ matrix.rid }}
           path: native_output/

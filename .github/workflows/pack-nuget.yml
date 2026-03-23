@@ -1,46 +1,46 @@
-name: ´ò°ü NuGet ×Ê²ú
+name: æ‰“åŒ… NuGet èµ„äº§
 
 'on':
   workflow_call:
-    # inputs: ÓÉÉÏ²ãĞ­µ÷¹¤×÷Á÷´«Èë¹æ·¶»¯°æ±¾ºÅ£¬ÓÃÓÚÉú³ÉËùÓĞ NuGet °ü¡£
+    # inputs: ç”±ä¸Šå±‚åè°ƒå·¥ä½œæµä¼ å…¥è§„èŒƒåŒ–ç‰ˆæœ¬å·ï¼Œç”¨äºç”Ÿæˆæ‰€æœ‰ NuGet åŒ…ã€‚
     inputs:
       package_version:
-        description: "°æ±¾ºÅ£ºÓÃÓÚÉú³É NuGet °üÎÄ¼ş"
+        description: "ç‰ˆæœ¬å·ï¼šç”¨äºç”Ÿæˆ NuGet åŒ…æ–‡ä»¶"
         required: true
         type: string
-    # outputs: µ±Ç°¹¤×÷Á÷½ö²ú³ö nuget-packages artifact£¬²»Ïòµ÷ÓÃ·½·µ»Ø½á¹¹»¯ outputs¡£
+    # outputs: å½“å‰å·¥ä½œæµä»…äº§å‡º nuget-packages artifactï¼Œä¸å‘è°ƒç”¨æ–¹è¿”å›ç»“æ„åŒ– outputsã€‚
 
 jobs:
   pack:
-    name: Éú³É NuGet ×Ê²ú
+    name: ç”Ÿæˆ NuGet èµ„äº§
     runs-on: ubuntu-latest
     permissions:
       contents: read
 
     steps:
-      - name: ¼ì³ö´úÂë
+      - name: æ£€å‡ºä»£ç 
         uses: actions/checkout@v4
         with:
           submodules: false
 
-      - name: °²×° .NET SDK
+      - name: å®‰è£… .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: ÏÂÔØËùÓĞÔ­Éú¿âÖÆÆ·
+      - name: ä¸‹è½½æ‰€æœ‰åŸç”Ÿåº“åˆ¶å“
         uses: actions/download-artifact@v4
         with:
           pattern: native-*
           path: native_artifacts
 
-      - name: ÇåÀíÕ¼Î» runtimes Ä¿Â¼
+      - name: æ¸…ç†å ä½ runtimes ç›®å½•
         shell: bash
         run: |
           rm -rf src/LVGLSharp.Native/runtimes
           mkdir -p src/LVGLSharp.Native/runtimes
 
-      - name: ÕûÀíÔ­Éú¿âµ½ runtimes Ä¿Â¼½á¹¹
+      - name: æ•´ç†åŸç”Ÿåº“åˆ° runtimes ç›®å½•ç»“æ„
         shell: bash
         run: |
           declare -A LIB_NAME=(
@@ -60,74 +60,74 @@ jobs:
             placed=false
             if [ -f "${src_dir}/${lib}" ]; then
               cp "${src_dir}/${lib}" "${dst_dir}/"
-              echo "ÒÑ·ÅÖÃ ${lib} -> ${dst_dir}/"
+              echo "å·²æ”¾ç½® ${lib} -> ${dst_dir}/"
               placed=true
             else
               first=$(find "$src_dir" \( -name "*.dll" -o -name "*.so" \) | head -1)
               if [ -n "$first" ]; then
                 cp "$first" "${dst_dir}/${lib}"
-                echo "ÒÑ·ÅÖÃ£¨»ØÍË£©$(basename "$first") -> ${dst_dir}/${lib}"
+                echo "å·²æ”¾ç½®ï¼ˆå›é€€ï¼‰$(basename "$first") -> ${dst_dir}/${lib}"
                 placed=true
               fi
             fi
             if [ "$placed" = "false" ]; then
-              echo "´íÎó£ºÔÚ ${src_dir} ÖĞÕÒ²»µ½ ${rid} µÄÔ­Éú¿â"
+              echo "é”™è¯¯ï¼šåœ¨ ${src_dir} ä¸­æ‰¾ä¸åˆ° ${rid} çš„åŸç”Ÿåº“"
               missing+=("$rid")
             fi
           done
           if [ ${#missing[@]} -ne 0 ]; then
-            echo "ÒÔÏÂ RID È±ÉÙÔ­Éú¿â£º${missing[*]}"
+            echo "ä»¥ä¸‹ RID ç¼ºå°‘åŸç”Ÿåº“ï¼š${missing[*]}"
             exit 1
           fi
-          echo "µ±Ç°½«ÓÃÓÚ´ò°üµÄÔ­Éú¿â£º"
+          echo "å½“å‰å°†ç”¨äºæ‰“åŒ…çš„åŸç”Ÿåº“ï¼š"
           find src/LVGLSharp.Native/runtimes -type f | sort
 
-      - name: ´ò°ü LVGLSharp.Native
+      - name: æ‰“åŒ… LVGLSharp.Native
         run: |
           dotnet pack src/LVGLSharp.Native/LVGLSharp.Native.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             --output nupkgs
 
-      - name: ×¢²á±¾µØ NuGet Ô´
+      - name: æ³¨å†Œæœ¬åœ° NuGet æº
         run: dotnet nuget add source "$(pwd)/nupkgs" --name local-packages
 
-      - name: ´ò°ü LVGLSharp.Interop
+      - name: æ‰“åŒ… LVGLSharp.Interop
         run: |
           dotnet pack src/LVGLSharp.Interop/LVGLSharp.Interop.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             --output nupkgs
 
-      - name: ´ò°ü LVGLSharp.Core
+      - name: æ‰“åŒ… LVGLSharp.Core
         run: |
           dotnet pack src/LVGLSharp.Core/LVGLSharp.Core.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             --output nupkgs
 
-      - name: ´ò°ü LVGLSharp.Runtime.Windows
+      - name: æ‰“åŒ… LVGLSharp.Runtime.Windows
         run: |
           dotnet pack src/LVGLSharp.Runtime.Windows/LVGLSharp.Runtime.Windows.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             --output nupkgs
 
-      - name: ´ò°ü LVGLSharp.Runtime.Linux
+      - name: æ‰“åŒ… LVGLSharp.Runtime.Linux
         run: |
           dotnet pack src/LVGLSharp.Runtime.Linux/LVGLSharp.Runtime.Linux.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             --output nupkgs
 
-      - name: ´ò°ü LVGLSharp.Forms
+      - name: æ‰“åŒ… LVGLSharp.Forms
         run: |
           dotnet pack src/LVGLSharp.WinForms/LVGLSharp.Forms.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             --output nupkgs
 
-      - name: ÉÏ´« NuGet °üÖÆÆ·
+      - name: ä¸Šä¼  NuGet åŒ…åˆ¶å“
         uses: actions/upload-artifact@v4
         with:
           name: nuget-packages

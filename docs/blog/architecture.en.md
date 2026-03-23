@@ -1,4 +1,4 @@
-# LVGLSharp.Forms Architecture Breakdown
+ï»¿# LVGLSharp.Forms Architecture Breakdown
 
 ## Why the project needs layering
 
@@ -69,7 +69,7 @@ A project becomes real not only when it runs, but when it can:
 - publish reliably
 - explain itself clearly
 
-The repository¡¯s CI decomposition and docs structure are already becoming part of that sixth layer.
+The repositoryâ€™s CI decomposition and docs structure are already becoming part of that sixth layer.
 
 ## Closing thought
 

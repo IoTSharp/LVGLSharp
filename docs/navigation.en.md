@@ -1,4 +1,4 @@
-# Documentation Navigation
+ï»¿# Documentation Navigation
 
 Welcome to the `LVGLSharp.Forms` documentation site.
 
@@ -6,9 +6,9 @@ Welcome to the `LVGLSharp.Forms` documentation site.
 
 **Current language: English**
 
-- Home: [`index.md`](./index.md) ¡¤ [`index.en.md`](./index.en.md)
-- Navigation: [`navigation.md`](./navigation.md) ¡¤ [`navigation.en.md`](./navigation.en.md)
-- Blog: [`blog/index.md`](./blog/index.md) ¡¤ [`blog/index.en.md`](./blog/index.en.md)
+- Home: [`index.md`](./index.md) Â· [`index.en.md`](./index.en.md)
+- Navigation: [`navigation.md`](./navigation.md) Â· [`navigation.en.md`](./navigation.en.md)
+- Blog: [`blog/index.md`](./blog/index.md) Â· [`blog/index.en.md`](./blog/index.en.md)
 
 > Tip: share `navigation.en.md` with English readers, and start from the navigation pages when you want a bilingual comparison path.
 
@@ -66,12 +66,13 @@ Welcome to the `LVGLSharp.Forms` documentation site.
 
 ## Chinese Blog Articles
 
-- [ÎªÊ²Ã´Òª×ö WinForms over LVGL](./blog-winforms-over-lvgl.md)
-- [NativeAOT Óë GUI](./blog-nativeaot-gui.md)
-- [Linux Í¼ĞÎËŞÖ÷Â·Ïß](./blog-linux-hosts.md)
-- [ÏîÄ¿¼Ü¹¹²ğ½â](./blog-architecture.md)
+- [ä¸ºä»€ä¹ˆè¦åš WinForms over LVGL](./blog-winforms-over-lvgl.md)
+- [NativeAOT ä¸ GUI](./blog-nativeaot-gui.md)
+- [Linux å›¾å½¢å®¿ä¸»è·¯çº¿](./blog-linux-hosts.md)
+- [é¡¹ç›®æ¶æ„æ‹†è§£](./blog-architecture.md)
 
 ## Repository Entry Points
 
 - [README](../README.md)
 - [README English](../README_en.md)
+

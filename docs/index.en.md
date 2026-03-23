@@ -1,8 +1,8 @@
-# LVGLSharp.Forms
+ï»¿# LVGLSharp.Forms
 
 > Bringing a WinForms-style development experience to LVGL-powered cross-platform UI.
 
-[Chinese Home](./index.md) ¡¤ [English Home](./index.en.md) ¡¤ [Chinese Navigation](./navigation.md) ¡¤ [English Navigation](./navigation.en.md)
+[Chinese Home](./index.md) Â· [English Home](./index.en.md) Â· [Chinese Navigation](./navigation.md) Â· [English Navigation](./navigation.en.md)
 
 ---
 
@@ -10,9 +10,9 @@
 
 **Current language: English**
 
-- Home: [`index.md`](./index.md) ¡¤ [`index.en.md`](./index.en.md)
-- Navigation: [`navigation.md`](./navigation.md) ¡¤ [`navigation.en.md`](./navigation.en.md)
-- Blog: [`blog/index.md`](./blog/index.md) ¡¤ [`blog/index.en.md`](./blog/index.en.md)
+- Home: [`index.md`](./index.md) Â· [`index.en.md`](./index.en.md)
+- Navigation: [`navigation.md`](./navigation.md) Â· [`navigation.en.md`](./navigation.en.md)
+- Blog: [`blog/index.md`](./blog/index.md) Â· [`blog/index.en.md`](./blog/index.en.md)
 
 > Tip: share `index.en.md` with English readers, and start from the navigation pages when you want a bilingual comparison path.
 
@@ -814,3 +814,4 @@ If you are looking for:
 - a promising direction for device-deployable .NET GUI applications
 
 then this project is worth following.
+

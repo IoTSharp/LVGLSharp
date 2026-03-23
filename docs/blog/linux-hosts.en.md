@@ -1,10 +1,10 @@
-# Linux Host Strategy: From X11 to Wayland and Beyond
+Ôªø# Linux Host Strategy: From X11 to Wayland and Beyond
 
 ## The real question is not whether Linux supports GUI
 
 The real question is how many different GUI host environments Linux actually contains.
 
-For a cross-platform UI framework, Linux is not a single platform°™it is a collection of host models:
+For a cross-platform UI framework, Linux is not a single platform‚Äîit is a collection of host models:
 
 - WSLg
 - X11
@@ -15,7 +15,7 @@ For a cross-platform UI framework, Linux is not a single platform°™it is a colle
 - SDL
 - Offscreen
 
-One of the most meaningful things about `LVGLSharp.Forms` is that it does not collapse all of these into one vague °∞Linux mode°±. Instead, it is shaping a runtime entry model that can route between different hosts.
+One of the most meaningful things about `LVGLSharp.Forms` is that it does not collapse all of these into one vague ‚ÄúLinux mode‚Äù. Instead, it is shaping a runtime entry model that can route between different hosts.
 
 ## What already exists
 
@@ -36,7 +36,7 @@ Because the future desktop path and the future device path are not the same:
 - real device-side display pipelines often need `DRM` / `KMS`
 - automation and rendering validation benefit from `Offscreen`
 
-So the roadmap is not °∞add Linux support once°±. It is about progressively covering Linux as a family of runtime hosts.
+So the roadmap is not ‚Äúadd Linux support once‚Äù. It is about progressively covering Linux as a family of runtime hosts.
 
 ## Why runtime separation matters
 

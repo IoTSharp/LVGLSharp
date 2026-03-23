@@ -1,4 +1,4 @@
-# LVGLSharp CI Workflow Guide
+ï»¿# LVGLSharp CI Workflow Guide
 
 This document explains how the current GitHub Actions CI/CD pipeline in the `LVGLSharp` repository is split, how the workflows depend on each other, what triggers them, and what each workflow is responsible for.
 
@@ -6,7 +6,7 @@ This document explains how the current GitHub Actions CI/CD pipeline in the `LVG
 
 The current CI structure follows these goals:
 
-- split ¡°prepare version¡±, ¡°build native libraries¡±, ¡°build demos¡±, ¡°pack NuGet¡±, and ¡°publish assets¡± into independent stages
+- split â€œprepare versionâ€, â€œbuild native librariesâ€, â€œbuild demosâ€, â€œpack NuGetâ€, and â€œpublish assetsâ€ into independent stages
 - make workflows reusable and easier to maintain
 - ensure branch and PR runs validate the pipeline without accidentally publishing
 - allow tag and manual release scenarios to reuse the same build outputs
@@ -136,25 +136,25 @@ The overall dependency structure is:
 
 ```text
 nuget-publish.yml
-©À©¤ prepare-release.yml
-©À©¤ build-native.yml
-©À©¤ pack-nuget.yml
-©À©¤ build-demos.yml         (tag / manual release only)
-©¸©¤ publish-release.yml     (tag / manual release only)
+â”œâ”€ prepare-release.yml
+â”œâ”€ build-native.yml
+â”œâ”€ pack-nuget.yml
+â”œâ”€ build-demos.yml         (tag / manual release only)
+â””â”€ publish-release.yml     (tag / manual release only)
 ```
 
 Execution order:
 
 ```text
 prepare
-  ©¸©¤ build-native
-       ©¸©¤ pack
+  â””â”€ build-native
+       â””â”€ pack
 
 prepare
-  ©¸©¤ build-demos          (tag / workflow_dispatch only)
+  â””â”€ build-demos          (tag / workflow_dispatch only)
 
 prepare + pack + build-demos
-  ©¸©¤ publish              (tag / manual release only)
+  â””â”€ publish              (tag / manual release only)
 ```
 
 ## 4. Behavior by Trigger Type

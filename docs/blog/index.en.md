@@ -1,4 +1,4 @@
-# Blog Index
+ï»¿# Blog Index
 
 This page collects the currently available `LVGLSharp.Forms` articles and serves as the blog entry page for GitHub Pages.
 
@@ -6,9 +6,9 @@ This page collects the currently available `LVGLSharp.Forms` articles and serves
 
 **Current language: English**
 
-- Home: [`../index.md`](../index.md) ¡¤ [`../index.en.md`](../index.en.md)
-- Navigation: [`../navigation.md`](../navigation.md) ¡¤ [`../navigation.en.md`](../navigation.en.md)
-- Blog: [`index.md`](./index.md) ¡¤ [`index.en.md`](./index.en.md)
+- Home: [`../index.md`](../index.md) Â· [`../index.en.md`](../index.en.md)
+- Navigation: [`../navigation.md`](../navigation.md) Â· [`../navigation.en.md`](../navigation.en.md)
+- Blog: [`index.md`](./index.md) Â· [`index.en.md`](./index.en.md)
 
 > Tip: share `blog/index.en.md` with English readers, and start from the navigation pages when you want a bilingual comparison path.
 
@@ -18,12 +18,12 @@ This page collects the currently available `LVGLSharp.Forms` articles and serves
 
 ### Chinese / English article cards
 
-| English article | ÖĞÎÄÎÄÕÂ |
+| English article | ä¸­æ–‡æ–‡ç«  |
 |---|---|
-| [Why WinForms over LVGL](./why-winforms-over-lvgl.en.md) | [ÎªÊ²Ã´Òª×ö WinForms over LVGL](../blog-winforms-over-lvgl.md) |
-| [Architecture Breakdown](./architecture.en.md) | [ÏîÄ¿¼Ü¹¹²ğ½â](../blog-architecture.md) |
-| [NativeAOT and GUI](./nativeaot-gui.en.md) | [NativeAOT Óë GUI](../blog-nativeaot-gui.md) |
-| [Linux Host Strategy](./linux-hosts.en.md) | [Linux Í¼ĞÎËŞÖ÷Â·Ïß](../blog-linux-hosts.md) |
+| [Why WinForms over LVGL](./why-winforms-over-lvgl.en.md) | [ä¸ºä»€ä¹ˆè¦åš WinForms over LVGL](../blog-winforms-over-lvgl.md) |
+| [Architecture Breakdown](./architecture.en.md) | [é¡¹ç›®æ¶æ„æ‹†è§£](../blog-architecture.md) |
+| [NativeAOT and GUI](./nativeaot-gui.en.md) | [NativeAOT ä¸ GUI](../blog-nativeaot-gui.md) |
+| [Linux Host Strategy](./linux-hosts.en.md) | [Linux å›¾å½¢å®¿ä¸»è·¯çº¿](../blog-linux-hosts.md) |
 
 ---
 
@@ -71,12 +71,12 @@ If this is your first time exploring the project, a good order is:
 - [Navigation](../navigation.en.md)
 - [Chinese Navigation](../navigation.md)
 - [CI Workflow Guide](../ci-workflows.en.md)
-- [CI ¹¤×÷Á÷ËµÃ÷](../ci-workflows.md)
+- [CI å·¥ä½œæµè¯´æ˜](../ci-workflows.md)
 
 ## Bilingual Reading Entry Points
 
 - [Chinese Blog Index](./index.md)
-- [ÎªÊ²Ã´Òª×ö WinForms over LVGL](../blog-winforms-over-lvgl.md)
-- [ÏîÄ¿¼Ü¹¹²ğ½â](../blog-architecture.md)
-- [NativeAOT Óë GUI](../blog-nativeaot-gui.md)
-- [Linux Í¼ĞÎËŞÖ÷Â·Ïß](../blog-linux-hosts.md)
+- [ä¸ºä»€ä¹ˆè¦åš WinForms over LVGL](../blog-winforms-over-lvgl.md)
+- [é¡¹ç›®æ¶æ„æ‹†è§£](../blog-architecture.md)
+- [NativeAOT ä¸ GUI](../blog-nativeaot-gui.md)
+- [Linux å›¾å½¢å®¿ä¸»è·¯çº¿](../blog-linux-hosts.md)

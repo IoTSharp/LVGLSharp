@@ -1,8 +1,8 @@
-# NativeAOT and GUI: Why This Direction Matters
+ï»¿# NativeAOT and GUI: Why This Direction Matters
 
 ## Why GUI should care about AOT
 
-When people think of NativeAOT, they often think of command-line tools, microservices, or tiny runtime deployments¡ªnot GUI systems.
+When people think of NativeAOT, they often think of command-line tools, microservices, or tiny runtime deploymentsâ€”not GUI systems.
 
 But for device-side applications, embedded systems, and constrained environments, GUI frameworks may benefit from AOT even more:
 
@@ -44,7 +44,7 @@ AOT changes more than publishing. It directly influences:
 - platform runtime composition
 - packaging and release structure
 
-In other words, AOT is not just a compiler flag¡ªit is an architectural condition.
+In other words, AOT is not just a compiler flagâ€”it is an architectural condition.
 
 ## Why this matters for device-side GUI
 
@@ -60,6 +60,6 @@ NativeAOT aligns naturally with all of those goals.
 
 ## Closing thought
 
-For a project like `LVGLSharp.Forms`, NativeAOT is not a bonus feature. It is part of the project¡¯s long-term engineering value.
+For a project like `LVGLSharp.Forms`, NativeAOT is not a bonus feature. It is part of the projectâ€™s long-term engineering value.
 
 If a cross-platform GUI compatibility layer cannot move toward AOT safely, its future on device targets will always be limited. If it can, it becomes much more than a UI demo project.

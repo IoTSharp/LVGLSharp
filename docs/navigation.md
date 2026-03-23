@@ -2,86 +2,85 @@
 title: 文档导航
 description: 按主题、角色和语言快速浏览 LVGLSharp 文档与博客内容。
 lang: zh-CN
+template: structured
+intro:
+  eyebrow: "Documentation Map"
+  title: "文档导航"
+  description: "把首页、博客、工程说明和运行时路线整理成可快速跳转的阅读地图。"
+sections:
+  - title: "站点入口"
+    description: "适合第一次进入站点时快速建立路径感。"
+    variant: link-lists
+    columns: 2
+    items:
+      - title: "首页与语言切换"
+        links:
+          - label: "中文首页"
+            url: "/"
+          - label: "English Home"
+            url: "/index.en.html"
+          - label: "English Navigation"
+            url: "/navigation.en.html"
+          - label: "博客索引"
+            url: "/blog/index.html"
+      - title: "项目文档"
+        links:
+          - label: "路线图"
+            url: "https://github.com/IoTSharp/LVGLSharp/blob/main/ROADMAP.md"
+          - label: "更新记录"
+            url: "https://github.com/IoTSharp/LVGLSharp/blob/main/CHANGELOG.md"
+          - label: "CI 工作流说明"
+            url: "/ci-workflows.html"
+          - label: "WSL 开发指南"
+            url: "/WSL-Developer-Guide.html"
+          - label: "本地预览说明"
+            url: "/preview-local.html"
+  - title: "按读者类型进入"
+    description: "从你的关注点出发，而不是从文件名猜内容。"
+    variant: link-lists
+    columns: 4
+    items:
+      - title: "第一次了解项目"
+        links:
+          - label: "项目首页"
+            url: "/"
+          - label: "为什么要做 WinForms over LVGL"
+            url: "/blog-winforms-over-lvgl.html"
+          - label: "英文首页"
+            url: "/index.en.html"
+      - title: "架构与工程化"
+        links:
+          - label: "项目架构拆解"
+            url: "/blog-architecture.html"
+          - label: "CI 工作流说明"
+            url: "/ci-workflows.html"
+          - label: "CI Workflow Guide"
+            url: "/ci-workflows.en.html"
+      - title: "Linux / 运行时宿主"
+        links:
+          - label: "Linux 图形宿主路线"
+            url: "/blog-linux-hosts.html"
+          - label: "WSL 开发指南"
+            url: "/WSL-Developer-Guide.html"
+          - label: "WSL Developer Guide"
+            url: "/WSL-Developer-Guide.en.html"
+      - title: "AOT / 发布"
+        links:
+          - label: "NativeAOT 与 GUI"
+            url: "/blog-nativeaot-gui.html"
+          - label: "更新记录"
+            url: "https://github.com/IoTSharp/LVGLSharp/blob/main/CHANGELOG.md"
+          - label: "路线图"
+            url: "https://github.com/IoTSharp/LVGLSharp/blob/main/ROADMAP.md"
+  - title: "双语对照入口"
+    description: "如果你要发给不同语言读者，可以从这里直接切换。"
+    variant: list
+    surface: true
+    items:
+      - label: "English Navigation"
+        url: "/navigation.en.html"
+      - label: "English Blog Index"
+        url: "/blog/index.en.html"
+      - label: "README English"
+        url: "https://github.com/IoTSharp/LVGLSharp/blob/main/README_en.md"
 ---
-
-<section class="section">
-	<div class="section-header">
-		<h1>文档导航</h1>
-		<p>把首页、博客、工程说明和运行时路线整理成可快速跳转的阅读地图。</p>
-	</div>
-
-	<div class="nav-grid">
-		<div class="nav-card">
-			<h3>站点入口</h3>
-			<ul>
-				<li><a href="./index.md">中文首页</a></li>
-				<li><a href="./index.en.md">English Home</a></li>
-				<li><a href="./navigation.en.md">English Navigation</a></li>
-				<li><a href="./blog/index.md">博客索引</a></li>
-			</ul>
-		</div>
-		<div class="nav-card">
-			<h3>项目文档</h3>
-			<ul>
-				<li><a href="../ROADMAP.md">路线图</a></li>
-				<li><a href="../CHANGELOG.md">更新记录</a></li>
-				<li><a href="./ci-workflows.md">CI 工作流说明</a></li>
-				<li><a href="./WSL-Developer-Guide.md">WSL 开发指南</a></li>
-				<li><a href="./preview-local.md">本地预览说明</a></li>
-			</ul>
-		</div>
-	</div>
-</section>
-
-<section class="section">
-	<div class="section-header">
-		<h2>按读者类型进入</h2>
-		<p>从你的关注点出发，而不是从文件名猜内容。</p>
-	</div>
-	<div class="article-grid">
-		<div class="article-card">
-			<h3>第一次了解项目</h3>
-			<ul>
-				<li><a href="./index.md">项目首页</a></li>
-				<li><a href="./blog-winforms-over-lvgl.md">为什么要做 WinForms over LVGL</a></li>
-				<li><a href="./index.en.md">英文首页</a></li>
-			</ul>
-		</div>
-		<div class="article-card">
-			<h3>架构与工程化</h3>
-			<ul>
-				<li><a href="./blog-architecture.md">项目架构拆解</a></li>
-				<li><a href="./ci-workflows.md">CI 工作流说明</a></li>
-				<li><a href="./ci-workflows.en.md">CI Workflow Guide</a></li>
-			</ul>
-		</div>
-		<div class="article-card">
-			<h3>Linux / 运行时宿主</h3>
-			<ul>
-				<li><a href="./blog-linux-hosts.md">Linux 图形宿主路线</a></li>
-				<li><a href="./WSL-Developer-Guide.md">WSL 开发指南</a></li>
-				<li><a href="./WSL-Developer-Guide.en.md">WSL Developer Guide</a></li>
-			</ul>
-		</div>
-		<div class="article-card">
-			<h3>AOT / 发布</h3>
-			<ul>
-				<li><a href="./blog-nativeaot-gui.md">NativeAOT 与 GUI</a></li>
-				<li><a href="../CHANGELOG.md">更新记录</a></li>
-				<li><a href="../ROADMAP.md">路线图</a></li>
-			</ul>
-		</div>
-	</div>
-</section>
-
-<section class="section surface">
-	<div class="section-header">
-		<h2>双语对照入口</h2>
-		<p>如果你要发给不同语言读者，可以从这里直接切换。</p>
-	</div>
-	<ul>
-		<li><a href="./navigation.en.md">English Navigation</a></li>
-		<li><a href="./blog/index.en.md">English Blog Index</a></li>
-		<li><a href="../README_en.md">README English</a></li>
-	</ul>
-</section>

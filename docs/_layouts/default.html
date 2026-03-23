@@ -1,66 +1,22 @@
 <!DOCTYPE html>
 <html lang="{{ page.lang | default: site.lang | default: 'zh-CN' }}">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
-    <meta name="description" content="{{ page.description | default: site.description }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
-    {% seo %}
-  </head>
+  {% include site-head.html %}
   <body class="site-shell">
-    <div class="site-bg"></div>
-    <header class="site-header">
-      <div class="container nav-wrap">
-        <a class="brand" href="{{ '/' | relative_url }}">
-          <span class="brand-mark">L</span>
-          <span class="brand-text">
-            <strong>LVGLSharp</strong>
-            <small>WinForms over LVGL</small>
-          </span>
-        </a>
-        <nav class="top-nav">
-          <a href="{{ '/index.md' | relative_url }}">中文</a>
-          <a href="{{ '/index.en.md' | relative_url }}">English</a>
-          <a href="{{ '/navigation.md' | relative_url }}">导航</a>
-          <a href="{{ '/blog/index.md' | relative_url }}">博客</a>
-          <a href="{{ '/preview-local.md' | relative_url }}">预览说明</a>
-          <a href="https://github.com/IoTSharp/LVGLSharp">GitHub</a>
-        </nav>
-      </div>
-    </header>
+    <div class="site-backdrop" aria-hidden="true"></div>
+    {% include site-header.html %}
 
-    <main class="site-main container">
-      {{ content }}
+    <main class="site-main">
+      <div class="container">
+        {% if page.template == 'structured' %}
+          {% include structured-page.html %}
+        {% else %}
+          <article class="doc-article">
+            {{ content }}
+          </article>
+        {% endif %}
+      </div>
     </main>
 
-    <footer class="site-footer">
-      <div class="container footer-grid">
-        <div>
-          <div class="footer-title">LVGLSharp</div>
-          <p>WinForms-style development experience backed by LVGL rendering and cross-platform runtimes.</p>
-        </div>
-        <div>
-          <div class="footer-title">Explore</div>
-          <ul>
-            <li><a href="{{ '/navigation.md' | relative_url }}">中文导航</a></li>
-            <li><a href="{{ '/navigation.en.md' | relative_url }}">English Navigation</a></li>
-            <li><a href="{{ '/blog/index.md' | relative_url }}">博客</a></li>
-          </ul>
-        </div>
-        <div>
-          <div class="footer-title">Project</div>
-          <ul>
-            <li><a href="https://github.com/IoTSharp/LVGLSharp">GitHub</a></li>
-            <li><a href="{{ '/README.md' | relative_url }}">README</a></li>
-            <li><a href="{{ '/ROADMAP.md' | relative_url }}">Roadmap</a></li>
-          </ul>
-        </div>
-      </div>
-    </footer>
+    {% include site-footer.html %}
   </body>
 </html>

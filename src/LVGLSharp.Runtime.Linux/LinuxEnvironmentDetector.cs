@@ -125,6 +125,17 @@ internal static class LinuxEnvironmentDetector
         return File.Exists(defaultDrmDevice) ? defaultDrmDevice : null;
     }
 
+    internal static int GetDrmConnectorId(int fallbackConnectorId = -1)
+    {
+        var configuredConnector = Environment.GetEnvironmentVariable("LVGLSHARP_DRM_CONNECTOR");
+        if (int.TryParse(configuredConnector, out var connectorId))
+        {
+            return connectorId;
+        }
+
+        return fallbackConnectorId;
+    }
+
     internal static bool ShouldUseSdl()
     {
         var explicitHostName = Environment.GetEnvironmentVariable("LVGLSHARP_LINUX_HOST");

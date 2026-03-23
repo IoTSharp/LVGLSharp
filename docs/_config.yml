@@ -10,22 +10,8 @@ url: https://lvglsharp.net
 baseurl: ""
 plugins:
   - jekyll-seo-tag
-minima:
-  skin: auto
-  social_links:
-    - title: GitHub
-      icon: github
-      url: https://github.com/IoTSharp/LVGLSharp
 defaults:
   - scope:
       path: ""
     values:
       layout: default
-header_pages:
-  - index.md
-  - index.en.md
-  - navigation.md
-  - navigation.en.md
-  - ci-workflows.md
-  - blog/index.md
-  - blog/index.en.md

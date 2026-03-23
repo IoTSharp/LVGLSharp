@@ -1,0 +1,212 @@
+{% if page.hero %}
+  <section class="hero-shell">
+    <div class="hero-main panel">
+      {% if page.hero.eyebrow %}
+        <p class="eyebrow">{{ page.hero.eyebrow }}</p>
+      {% endif %}
+      <h1>{{ page.hero.title }}</h1>
+      {% if page.hero.lead %}
+        <div class="hero-copy">
+          {{ page.hero.lead | markdownify }}
+        </div>
+      {% endif %}
+
+      {% if page.hero.actions %}
+        <div class="hero-actions">
+          {% for action in page.hero.actions %}
+            {% if action.url contains '://' %}
+              {% assign action_url = action.url %}
+            {% else %}
+              {% assign action_url = action.url | relative_url %}
+            {% endif %}
+            <a class="button {% if action.style == 'secondary' %}button-secondary{% else %}button-primary{% endif %}" href="{{ action_url }}">{{ action.label }}</a>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if page.hero.tags %}
+        <ul class="tag-row" aria-label="{% if page.lang == 'en' %}Highlights{% else %}亮点{% endif %}">
+          {% for tag in page.hero.tags %}
+            <li>{{ tag }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    <aside class="hero-side">
+      {% if page.hero.code %}
+        <section class="panel code-panel">
+          {% if page.hero.code_title %}
+            <p class="panel-label">{{ page.hero.code_title }}</p>
+          {% endif %}
+          <pre><code>{{ page.hero.code | escape }}</code></pre>
+        </section>
+      {% endif %}
+
+      {% if page.hero.note_title or page.hero.note_text %}
+        <section class="panel note-panel">
+          {% if page.hero.note_title %}
+            <h2>{{ page.hero.note_title }}</h2>
+          {% endif %}
+          {% if page.hero.note_text %}
+            <div class="note-copy">
+              {{ page.hero.note_text | markdownify }}
+            </div>
+          {% endif %}
+        </section>
+      {% endif %}
+    </aside>
+  </section>
+{% elsif page.intro %}
+  <section class="page-intro panel">
+    {% if page.intro.eyebrow %}
+      <p class="eyebrow">{{ page.intro.eyebrow }}</p>
+    {% endif %}
+    <h1>{{ page.intro.title }}</h1>
+    {% if page.intro.description %}
+      <div class="intro-copy">
+        {{ page.intro.description | markdownify }}
+      </div>
+    {% endif %}
+  </section>
+{% endif %}
+
+{% if page.stats %}
+  <section class="stats-grid">
+    {% for stat in page.stats %}
+      <div class="panel stat-card">
+        <span class="stat-label">{{ stat.label }}</span>
+        <strong class="stat-value">{{ stat.value }}</strong>
+      </div>
+    {% endfor %}
+  </section>
+{% endif %}
+
+{% for section in page.sections %}
+  {% assign columns = section.columns | default: 3 %}
+  <section class="content-section {% if section.surface %}panel panel-section{% endif %}">
+    {% if section.title or section.description %}
+      <header class="section-header">
+        {% if section.title %}
+          <h2>{{ section.title }}</h2>
+        {% endif %}
+        {% if section.description %}
+          <div class="section-copy">
+            {{ section.description | markdownify }}
+          </div>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {% case section.variant %}
+      {% when 'cards' %}
+        <div class="card-grid section-columns-{{ columns }}">
+          {% for item in section.items %}
+            <article class="panel info-card">
+              <h3>{{ item.title }}</h3>
+              {% if item.description %}
+                <div class="card-copy">
+                  {{ item.description | markdownify }}
+                </div>
+              {% endif %}
+            </article>
+          {% endfor %}
+        </div>
+
+      {% when 'quick-links' %}
+        <div class="card-grid section-columns-{{ columns }}">
+          {% for item in section.items %}
+            {% if item.url contains '://' %}
+              {% assign item_url = item.url %}
+            {% else %}
+              {% assign item_url = item.url | relative_url %}
+            {% endif %}
+            <a class="panel quick-card" href="{{ item_url }}">
+              <strong>{{ item.title }}</strong>
+              {% if item.description %}
+                <div class="card-copy">
+                  {{ item.description | markdownify }}
+                </div>
+              {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+
+      {% when 'link-lists' %}
+        <div class="card-grid section-columns-{{ columns }}">
+          {% for item in section.items %}
+            <article class="panel link-list-card">
+              <h3>{{ item.title }}</h3>
+              {% if item.description %}
+                <div class="card-copy">
+                  {{ item.description | markdownify }}
+                </div>
+              {% endif %}
+              {% if item.links %}
+                <ul class="card-links">
+                  {% for link in item.links %}
+                    {% if link.url contains '://' %}
+                      {% assign link_url = link.url %}
+                    {% else %}
+                      {% assign link_url = link.url | relative_url %}
+                    {% endif %}
+                    <li><a href="{{ link_url }}">{{ link.label }}</a></li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </article>
+          {% endfor %}
+        </div>
+
+      {% when 'list' %}
+        {% if section.ordered %}
+          <ol class="stack-list">
+            {% for item in section.items %}
+              <li>
+                {% if item.url %}
+                  {% if item.url contains '://' %}
+                    {% assign list_url = item.url %}
+                  {% else %}
+                    {% assign list_url = item.url | relative_url %}
+                  {% endif %}
+                  <a href="{{ list_url }}">{{ item.label }}</a>
+                {% else %}
+                  {{ item.label }}
+                {% endif %}
+                {% if item.description %}
+                  <span>{{ item.description }}</span>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ol>
+        {% else %}
+          <ul class="stack-list">
+            {% for item in section.items %}
+              <li>
+                {% if item.url %}
+                  {% if item.url contains '://' %}
+                    {% assign list_url = item.url %}
+                  {% else %}
+                    {% assign list_url = item.url | relative_url %}
+                  {% endif %}
+                  <a href="{{ list_url }}">{{ item.label }}</a>
+                {% else %}
+                  {{ item.label }}
+                {% endif %}
+                {% if item.description %}
+                  <span>{{ item.description }}</span>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+    {% endcase %}
+  </section>
+{% endfor %}
+
+{% capture rendered_content %}{{ content | strip }}{% endcapture %}
+{% if rendered_content != '' %}
+  <article class="doc-article structured-article">
+    {{ content }}
+  </article>
+{% endif %}

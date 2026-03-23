@@ -1,0 +1,33 @@
+{% assign is_en = page.lang == 'en' %}
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <section>
+      <h2>LVGLSharp</h2>
+      <p>
+        {% if is_en %}
+          Markdown-first documentation for a WinForms-style UI layer on top of LVGL.
+        {% else %}
+          面向 Markdown 优先写作的 LVGLSharp 文档站，聚焦 WinForms 风格 API、运行时与工程化。
+        {% endif %}
+      </p>
+    </section>
+
+    <section>
+      <h2>{% if is_en %}Docs{% else %}文档{% endif %}</h2>
+      <ul>
+        <li><a href="{{ '/navigation.html' | relative_url }}">{% if is_en %}Documentation map{% else %}文档导航{% endif %}</a></li>
+        <li><a href="{{ '/blog/index.html' | relative_url }}">{% if is_en %}Blog index{% else %}博客索引{% endif %}</a></li>
+        <li><a href="{{ '/ci-workflows.html' | relative_url }}">CI / Workflow</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>{% if is_en %}Project{% else %}项目{% endif %}</h2>
+      <ul>
+        <li><a href="https://github.com/IoTSharp/LVGLSharp">GitHub</a></li>
+        <li><a href="https://github.com/IoTSharp/LVGLSharp/blob/main/README.md">README</a></li>
+        <li><a href="https://github.com/IoTSharp/LVGLSharp/blob/main/ROADMAP.md">Roadmap</a></li>
+      </ul>
+    </section>
+  </div>
+</footer>

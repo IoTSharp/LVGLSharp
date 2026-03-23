@@ -1,0 +1,21 @@
+{% assign is_en = page.lang == 'en' %}
+<header class="site-header">
+  <div class="container header-shell">
+    <a class="brand" href="{{ '/' | relative_url }}">
+      <span class="brand-mark">L</span>
+      <span class="brand-copy">
+        <strong>LVGLSharp</strong>
+        <small>{% if is_en %}Cross-platform UI docs{% else %}跨平台 UI 文档站{% endif %}</small>
+      </span>
+    </a>
+
+    <nav class="site-nav" aria-label="{% if is_en %}Primary navigation{% else %}主导航{% endif %}">
+      <a href="{{ '/' | relative_url }}" class="{% if page.url == '/' %}is-active{% endif %}">{% if is_en %}中文{% else %}首页{% endif %}</a>
+      <a href="{{ '/index.en.html' | relative_url }}" class="{% if page.url == '/index.en.html' %}is-active{% endif %}">{% if is_en %}Home{% else %}English{% endif %}</a>
+      <a href="{{ '/navigation.html' | relative_url }}" class="{% if page.url == '/navigation.html' or page.url == '/navigation.en.html' %}is-active{% endif %}">{% if is_en %}Docs{% else %}导航{% endif %}</a>
+      <a href="{{ '/blog/index.html' | relative_url }}" class="{% if page.url == '/blog/index.html' or page.url == '/blog/index.en.html' %}is-active{% endif %}">{% if is_en %}Blog{% else %}博客{% endif %}</a>
+      <a href="{{ '/preview-local.html' | relative_url }}" class="{% if page.url == '/preview-local.html' %}is-active{% endif %}">{% if is_en %}Preview{% else %}预览{% endif %}</a>
+      <a href="https://github.com/IoTSharp/LVGLSharp">GitHub</a>
+    </nav>
+  </div>
+</header>

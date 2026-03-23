@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PublishAot>true</PublishAot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\LVGLSharp.Core\LVGLSharp.Core.csproj" />
+    <ProjectReference Include="..\..\LVGLSharp.Interop\LVGLSharp.Interop.csproj" />
+    <ProjectReference Include="..\..\LVGLSharp.Runtime.Linux\LVGLSharp.Runtime.Linux.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' != 'Release'">
+    <PackageReference Include="LVGLSharp.Native" Version="$(LVGLSharpNativePackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <ProjectReference Include="..\..\LVGLSharp.Native\LVGLSharp.Native.csproj" />
+  </ItemGroup>
+</Project>

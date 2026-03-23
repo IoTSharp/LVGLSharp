@@ -1,88 +1,86 @@
-﻿---
+---
 title: Documentation Navigation
 description: Browse LVGLSharp documentation and blog content by topic, audience, and language.
 lang: en
+template: structured
+intro:
+  eyebrow: "Documentation Map"
+  title: "Documentation Navigation"
+  description: "A structured map for the homepage, blog, engineering notes, and runtime strategy documents."
+sections:
+  - title: "Site entry points"
+    description: "A quick overview of the main places readers usually need first."
+    variant: link-lists
+    columns: 2
+    items:
+      - title: "Home and language switching"
+        links:
+          - label: "English Home"
+            url: "/index.en.html"
+          - label: "中文首页"
+            url: "/"
+          - label: "中文导航"
+            url: "/navigation.html"
+          - label: "Blog Index"
+            url: "/blog/index.en.html"
+      - title: "Project documents"
+        links:
+          - label: "Roadmap"
+            url: "https://github.com/IoTSharp/LVGLSharp/blob/main/ROADMAP.md"
+          - label: "Changelog"
+            url: "https://github.com/IoTSharp/LVGLSharp/blob/main/CHANGELOG.md"
+          - label: "CI Workflow Guide"
+            url: "/ci-workflows.en.html"
+          - label: "WSL Developer Guide"
+            url: "/WSL-Developer-Guide.en.html"
+          - label: "Local preview guide"
+            url: "/preview-local.html"
+  - title: "Browse by reader intent"
+    description: "Start from what you care about instead of guessing from file names."
+    variant: link-lists
+    columns: 4
+    items:
+      - title: "First-time readers"
+        links:
+          - label: "English Home"
+            url: "/index.en.html"
+          - label: "Why WinForms over LVGL"
+            url: "/blog/why-winforms-over-lvgl.en.html"
+          - label: "Chinese Home"
+            url: "/"
+      - title: "Architecture and engineering"
+        links:
+          - label: "Architecture Breakdown"
+            url: "/blog/architecture.en.html"
+          - label: "CI Workflow Guide"
+            url: "/ci-workflows.en.html"
+          - label: "CI 工作流说明"
+            url: "/ci-workflows.html"
+      - title: "Linux and runtime hosts"
+        links:
+          - label: "Linux Host Strategy"
+            url: "/blog/linux-hosts.en.html"
+          - label: "WSL Developer Guide"
+            url: "/WSL-Developer-Guide.en.html"
+          - label: "WSL 开发指南"
+            url: "/WSL-Developer-Guide.html"
+      - title: "AOT and release"
+        links:
+          - label: "NativeAOT and GUI"
+            url: "/blog/nativeaot-gui.en.html"
+          - label: "Changelog"
+            url: "https://github.com/IoTSharp/LVGLSharp/blob/main/CHANGELOG.md"
+          - label: "Roadmap"
+            url: "https://github.com/IoTSharp/LVGLSharp/blob/main/ROADMAP.md"
+  - title: "Bilingual entry points"
+    description: "Use these links when you want to switch between Chinese and English quickly."
+    variant: list
+    surface: true
+    items:
+      - label: "中文导航"
+        url: "/navigation.html"
+      - label: "中文博客索引"
+        url: "/blog/index.html"
+      - label: "README English"
+        url: "https://github.com/IoTSharp/LVGLSharp/blob/main/README_en.md"
 ---
-
-<section class="section">
-	<div class="section-header">
-		<h1>Documentation Navigation</h1>
-		<p>A structured map for the homepage, blog, engineering notes, and runtime strategy documents.</p>
-	</div>
-
-	<div class="nav-grid">
-		<div class="nav-card">
-			<h3>Site entry points</h3>
-			<ul>
-				<li><a href="./index.en.md">English Home</a></li>
-				<li><a href="./index.md">中文首页</a></li>
-				<li><a href="./navigation.md">中文导航</a></li>
-				<li><a href="./blog/index.en.md">Blog Index</a></li>
-			</ul>
-		</div>
-		<div class="nav-card">
-			<h3>Project documents</h3>
-			<ul>
-				<li><a href="../ROADMAP.md">Roadmap</a></li>
-				<li><a href="../CHANGELOG.md">Changelog</a></li>
-				<li><a href="./ci-workflows.en.md">CI Workflow Guide</a></li>
-				<li><a href="./WSL-Developer-Guide.en.md">WSL Developer Guide</a></li>
-				<li><a href="./preview-local.md">Local preview guide</a></li>
-			</ul>
-		</div>
-	</div>
-</section>
-
-<section class="section">
-	<div class="section-header">
-		<h2>Browse by reader intent</h2>
-		<p>Start from what you care about instead of guessing from file names.</p>
-	</div>
-	<div class="article-grid">
-		<div class="article-card">
-			<h3>First-time readers</h3>
-			<ul>
-				<li><a href="./index.en.md">English Home</a></li>
-				<li><a href="./blog/why-winforms-over-lvgl.en.md">Why WinForms over LVGL</a></li>
-				<li><a href="./index.md">Chinese Home</a></li>
-			</ul>
-		</div>
-		<div class="article-card">
-			<h3>Architecture and engineering</h3>
-			<ul>
-				<li><a href="./blog/architecture.en.md">Architecture Breakdown</a></li>
-				<li><a href="./ci-workflows.en.md">CI Workflow Guide</a></li>
-				<li><a href="./ci-workflows.md">CI 工作流说明</a></li>
-			</ul>
-		</div>
-		<div class="article-card">
-			<h3>Linux and runtime hosts</h3>
-			<ul>
-				<li><a href="./blog/linux-hosts.en.md">Linux Host Strategy</a></li>
-				<li><a href="./WSL-Developer-Guide.en.md">WSL Developer Guide</a></li>
-				<li><a href="./WSL-Developer-Guide.md">WSL 开发指南</a></li>
-			</ul>
-		</div>
-		<div class="article-card">
-			<h3>AOT and release</h3>
-			<ul>
-				<li><a href="./blog/nativeaot-gui.en.md">NativeAOT and GUI</a></li>
-				<li><a href="../CHANGELOG.md">Changelog</a></li>
-				<li><a href="../ROADMAP.md">Roadmap</a></li>
-			</ul>
-		</div>
-	</div>
-</section>
-
-<section class="section surface">
-	<div class="section-header">
-		<h2>Bilingual entry points</h2>
-		<p>Use these links when you want to switch between Chinese and English quickly.</p>
-	</div>
-	<ul>
-		<li><a href="./navigation.md">中文导航</a></li>
-		<li><a href="./blog/index.md">中文博客索引</a></li>
-		<li><a href="../README_en.md">README English</a></li>
-	</ul>
-</section>
-

@@ -2,13 +2,11 @@ name: 准备发布元数据
 
 on:
   workflow_call:
-    # inputs: 接收原始版本号或 tag 名，并在内部规范化。
     inputs:
       package_version:
         description: "版本号：支持 9.5.0.5 或 v9.5.0.5 格式"
         required: true
         type: string
-    # outputs: 向调用方返回规范化后的 package_version 与 release_tag。
     outputs:
       package_version:
         description: "规范化后的包版本号"

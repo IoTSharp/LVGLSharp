@@ -231,6 +231,7 @@ publish_demo() {
     rm -rf "$publish_dir"
 
     dotnet restore "$project_path" \
+        -p:Configuration="$CONFIGURATION" \
         -r "$RID" \
         --force-evaluate \
         "${NUGET_CONFIG_OPTION[@]}" \
@@ -246,6 +247,7 @@ publish_demo() {
         -o "$publish_dir" \
         --no-restore \
         "${NUGET_CONFIG_OPTION[@]}" \
+        -p:Configuration="$CONFIGURATION" \
         -p:EnableWindowsTargeting=true \
         -p:RestorePackagesPath="$LINUX_NUGET_PACKAGES" \
         -p:NuGetPackageFolders="$LINUX_NUGET_PACKAGES" \

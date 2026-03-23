@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Pages Preview",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "powershell",
+      "runtimeArgs": [
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Start-Process",
+        "http://127.0.0.1:4000/"
+      ],
+      "preLaunchTask": "Preview Pages HTML",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}

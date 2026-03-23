@@ -15,7 +15,7 @@
 - CI 文档：`docs/ci-workflows.md`
 - 英文 CI 文档：`docs/ci-workflows.en.md`
 - 中文导航：`docs/navigation.md`
-- 英文导航：`docs/navigation.en.md`
+- 英文导航：`docs/navigation.en.md` 
 - 中文博客索引：`docs/blog/index.md`
 - 英文博客索引：`docs/blog/index.en.md`
 
@@ -23,6 +23,13 @@
 
 - 中文首页：<https://lvglsharp.net/>
 - 英文首页：<https://lvglsharp.net/index.en.html>
+
+本地预览建议：
+
+- 可运行 `preview/preview-pages.ps1` 在本地生成并预览 Pages HTML。
+- 默认地址为 `http://127.0.0.1:4000/`。
+- 如只想生成 `_site` 而不启动预览，可使用 `preview/preview-pages.ps1 -NoServe`。
+- 在 VS Code 中可直接运行任务：`Preview Pages HTML` 或 `Build Pages HTML Only`。
 
 > ⚠️ 项目目前处于试验阶段，尚不可用于生产环境。
 

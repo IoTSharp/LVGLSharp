@@ -37,46 +37,51 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 准备 Pages 站点目录
+      - name: 配置 Pages
+        uses: actions/configure-pages@v5
+
+      - name: 准备 Jekyll 源目录
         shell: bash
         run: |
-          rm -rf _site
-          mkdir -p _site/blog
-          cp docs/_config.yml _site/_config.yml
-          cp docs/index.md _site/index.md
-          cp docs/index.en.md _site/index.en.md
-          cp docs/navigation.md _site/navigation.md
-          cp docs/navigation.en.md _site/navigation.en.md
-          cp docs/ci-workflows.md _site/ci-workflows.md
-          cp docs/ci-workflows.en.md _site/ci-workflows.en.md
-          cp docs/WSL-Developer-Guide.md _site/WSL-Developer-Guide.md
-          cp docs/WSL-Developer-Guide.en.md _site/WSL-Developer-Guide.en.md
-          cp docs/blog-winforms-over-lvgl.md _site/blog-winforms-over-lvgl.md
-          cp docs/blog-nativeaot-gui.md _site/blog-nativeaot-gui.md
-          cp docs/blog-linux-hosts.md _site/blog-linux-hosts.md
-          cp docs/blog-architecture.md _site/blog-architecture.md
-          cp docs/blog/index.md _site/blog/index.md
-          cp docs/blog/index.en.md _site/blog/index.en.md
-          cp docs/blog-architecture.md _site/blog/architecture.md
-          cp docs/blog-nativeaot-gui.md _site/blog/nativeaot-gui.md
-          cp docs/blog-linux-hosts.md _site/blog/linux-hosts.md
-          cp docs/blog-winforms-over-lvgl.md _site/blog/winforms-over-lvgl.md
-          cp docs/blog/architecture.en.md _site/blog/architecture.en.md
-          cp docs/blog/nativeaot-gui.en.md _site/blog/nativeaot-gui.en.md
-          cp docs/blog/linux-hosts.en.md _site/blog/linux-hosts.en.md
-          cp docs/blog/why-winforms-over-lvgl.en.md _site/blog/why-winforms-over-lvgl.en.md
-          cp ROADMAP.md _site/ROADMAP.md
-          cp CHANGELOG.md _site/CHANGELOG.md
-          cp docs/CNAME _site/CNAME
+          rm -rf pages-src _site
+          mkdir -p pages-src/blog
+          cp docs/_config.yml pages-src/_config.yml
+          cp docs/index.md pages-src/index.md
+          cp docs/index.en.md pages-src/index.en.md
+          cp docs/navigation.md pages-src/navigation.md
+          cp docs/navigation.en.md pages-src/navigation.en.md
+          cp docs/ci-workflows.md pages-src/ci-workflows.md
+          cp docs/ci-workflows.en.md pages-src/ci-workflows.en.md
+          cp docs/WSL-Developer-Guide.md pages-src/WSL-Developer-Guide.md
+          cp docs/WSL-Developer-Guide.en.md pages-src/WSL-Developer-Guide.en.md
+          cp docs/blog-winforms-over-lvgl.md pages-src/blog-winforms-over-lvgl.md
+          cp docs/blog-nativeaot-gui.md pages-src/blog-nativeaot-gui.md
+          cp docs/blog-linux-hosts.md pages-src/blog-linux-hosts.md
+          cp docs/blog-architecture.md pages-src/blog-architecture.md
+          cp docs/blog/index.md pages-src/blog/index.md
+          cp docs/blog/index.en.md pages-src/blog/index.en.md
+          cp docs/blog-architecture.md pages-src/blog/architecture.md
+          cp docs/blog-nativeaot-gui.md pages-src/blog/nativeaot-gui.md
+          cp docs/blog-linux-hosts.md pages-src/blog/linux-hosts.md
+          cp docs/blog-winforms-over-lvgl.md pages-src/blog/winforms-over-lvgl.md
+          cp docs/blog/architecture.en.md pages-src/blog/architecture.en.md
+          cp docs/blog/nativeaot-gui.en.md pages-src/blog/nativeaot-gui.en.md
+          cp docs/blog/linux-hosts.en.md pages-src/blog/linux-hosts.en.md
+          cp docs/blog/why-winforms-over-lvgl.en.md pages-src/blog/why-winforms-over-lvgl.en.md
+          cp ROADMAP.md pages-src/ROADMAP.md
+          cp CHANGELOG.md pages-src/CHANGELOG.md
+          cp docs/CNAME pages-src/CNAME
 
           if [ -d docs/images ]; then
-            mkdir -p _site/images
-            cp -R docs/images/. _site/images/
+            mkdir -p pages-src/images
+            cp -R docs/images/. pages-src/images/
           fi
 
-          cat > _site/.nojekyll <<'EOF'
-          
-          EOF
+      - name: 构建 Jekyll 站点
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: pages-src
+          destination: _site
 
       - name: 上传 Pages 产物
         uses: actions/upload-pages-artifact@v3

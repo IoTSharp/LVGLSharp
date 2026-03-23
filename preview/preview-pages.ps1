@@ -58,13 +58,22 @@ if (Test-Path (Join-Path $repoRoot 'docs\images')) {
 Push-Location $repoRoot
 try {
     $bundle = Get-Command bundle -ErrorAction SilentlyContinue
-    if ($bundle) {
-        Write-Host 'Building site with Jekyll (bundle exec jekyll build)...' -ForegroundColor Cyan
-        & bundle exec jekyll build --source $pagesSrc --destination $siteDir
+    if (-not $bundle) {
+        throw "未找到 Bundler。请先安装 Ruby + Bundler，并在仓库根目录执行：bundle install"
     }
-    else {
-        Write-Warning 'Ruby/Bundler 未安装，改用 GitHub Pages 等效的静态预览方式：直接复制 Markdown 源到 _site。此模式仅用于快速查看文件结构，不会生成最终 HTML。'
-        Copy-Item (Join-Path $pagesSrc '*') $siteDir -Recurse -Force
+
+    Write-Host 'Checking Jekyll/GitHub Pages dependencies...' -ForegroundColor Cyan
+    & bundle exec jekyll --version | Out-Host
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Jekyll 不可用。请先在仓库根目录执行：bundle install"
+    }
+
+    Write-Host 'Building site with Jekyll (bundle exec jekyll build)...' -ForegroundColor Cyan
+    & bundle exec jekyll build --source $pagesSrc --destination $siteDir
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Jekyll 构建失败，请检查 bundle install 输出和站点配置。"
     }
 
     if ($NoServe) {

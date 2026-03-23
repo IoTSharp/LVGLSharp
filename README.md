@@ -15,7 +15,7 @@
 - CI 文档：`docs/ci-workflows.md`
 - 英文 CI 文档：`docs/ci-workflows.en.md`
 - 中文导航：`docs/navigation.md`
-- 英文导航：`docs/navigation.en.md` 
+- 英文导航：`docs/navigation.en.md`
 - 中文博客索引：`docs/blog/index.md`
 - 英文博客索引：`docs/blog/index.en.md`
 
@@ -26,6 +26,8 @@
 
 本地预览建议：
 
+- 本地预览基于 Jekyll，与 GitHub Pages 保持一致。
+- 首次使用前，请先安装 Ruby 与 Bundler，并在仓库根目录执行 `bundle install`。
 - 可运行 `preview/preview-pages.ps1` 在本地生成并预览 Pages HTML。
 - 默认地址为 `http://127.0.0.1:4000/`。
 - 如只想生成 `_site` 而不启动预览，可使用 `preview/preview-pages.ps1 -NoServe`。

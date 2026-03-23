@@ -2,7 +2,6 @@ name: 发布 NuGet 与 Release 资产
 
 'on':
   workflow_call:
-    # inputs: 接收发布标签与发布目标开关，执行 Release / NuGet / GitHub Packages 发布。
     inputs:
       release_tag:
         description: "发布标签：通常为 v9.5.0.5 形式"
@@ -16,7 +15,6 @@ name: 发布 NuGet 与 Release 资产
         description: "是否发布到 GitHub Packages"
         required: true
         type: boolean
-    # outputs: 当前工作流只执行发布动作，不向调用方返回结构化 outputs。
 
 jobs:
   publish:

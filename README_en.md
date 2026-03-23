@@ -8,7 +8,12 @@
 
 - Chinese home: `docs/index.md`
 - English home: `docs/index.en.md`
-- CI documentation: `docs/ci-workflows.md`
+- Chinese CI documentation: `docs/ci-workflows.md`
+- English CI documentation: `docs/ci-workflows.en.md`
+- Chinese navigation: `docs/navigation.md`
+- English navigation: `docs/navigation.en.md`
+- Chinese blog index: `docs/blog/index.md`
+- English blog index: `docs/blog/index.en.md`
 
 > ⚠️ This project is currently in the experimental phase and is not yet suitable for production use.
 

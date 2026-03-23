@@ -2,7 +2,19 @@
 
 > 用 WinForms 的开发体验，连接 LVGL 的跨平台渲染能力。
 
-[English](./index.en.md) | 中文 | [文档导航](./navigation.md)
+[中文首页](./index.md) · [English Home](./index.en.md) · [中文导航](./navigation.md) · [English Navigation](./navigation.en.md)
+
+---
+
+## 双语入口
+
+**当前语言：中文**
+
+- 首页：[`index.md`](./index.md) · [`index.en.md`](./index.en.md)
+- 导航：[`navigation.md`](./navigation.md) · [`navigation.en.md`](./navigation.en.md)
+- 博客：[`blog/index.md`](./blog/index.md) · [`blog/index.en.md`](./blog/index.en.md)
+
+> 建议：分享给中文读者可直接发送 `index.md`，需要双语对照时优先从导航页进入。
 
 ---
 
@@ -31,6 +43,34 @@
 ## 语言切换
 
 > 当前页面：**中文** ｜ 切换到：[English Home](./index.en.md) · [English Navigation](./navigation.en.md) · [English Blog](./blog/index.en.md)
+
+---
+
+## 按角色开始阅读
+
+### 第一次了解项目
+
+- [项目首页](./index.md)
+- [为什么要做 WinForms over LVGL](./blog-winforms-over-lvgl.md)
+- [英文首页](./index.en.md)
+
+### 架构与工程读者
+
+- [项目架构拆解](./blog-architecture.md)
+- [CI 工作流说明](./ci-workflows.md)
+- [CI Workflow Guide](./ci-workflows.en.md)
+
+### Linux / 运行时宿主读者
+
+- [Linux 图形宿主路线](./blog-linux-hosts.md)
+- [WSL 开发指南](./WSL-Developer-Guide.md)
+- [WSL Developer Guide](./WSL-Developer-Guide.en.md)
+
+### AOT / 发布读者
+
+- [NativeAOT 与 GUI](./blog-nativeaot-gui.md)
+- [更新记录](../CHANGELOG.md)
+- [路线图](../ROADMAP.md)
 
 ---
 

@@ -2,7 +2,19 @@
 
 > Bringing a WinForms-style development experience to LVGL-powered cross-platform UI.
 
-English | [Chinese](./index.md) | [Navigation](./navigation.en.md)
+[Chinese Home](./index.md) ， [English Home](./index.en.md) ， [Chinese Navigation](./navigation.md) ， [English Navigation](./navigation.en.md)
+
+---
+
+## Bilingual Entry Points
+
+**Current language: English**
+
+- Home: [`index.md`](./index.md) ， [`index.en.md`](./index.en.md)
+- Navigation: [`navigation.md`](./navigation.md) ， [`navigation.en.md`](./navigation.en.md)
+- Blog: [`blog/index.md`](./blog/index.md) ， [`blog/index.en.md`](./blog/index.en.md)
+
+> Tip: share `index.en.md` with English readers, and start from the navigation pages when you want a bilingual comparison path.
 
 ---
 
@@ -30,6 +42,34 @@ English | [Chinese](./index.md) | [Navigation](./navigation.en.md)
 ## Language Switch
 
 > Current page: **English** | Switch to: [Chinese Home](./index.md) | [Chinese Navigation](./navigation.md) | [Chinese Blog](./blog/index.md)
+
+---
+
+## Start Reading by Role
+
+### First-Time Readers
+
+- [English Home](./index.en.md)
+- [Why WinForms over LVGL](./blog/why-winforms-over-lvgl.en.md)
+- [Chinese Home](./index.md)
+
+### Architecture and Engineering Readers
+
+- [Architecture Breakdown](./blog/architecture.en.md)
+- [CI Workflow Guide](./ci-workflows.en.md)
+- [CI Workflow Guide (Chinese)](./ci-workflows.md)
+
+### Linux and Runtime-Host Readers
+
+- [Linux Host Strategy](./blog/linux-hosts.en.md)
+- [WSL Developer Guide](./WSL-Developer-Guide.en.md)
+- [WSL Developer Guide (Chinese)](./WSL-Developer-Guide.md)
+
+### AOT and Release Readers
+
+- [NativeAOT and GUI](./blog/nativeaot-gui.en.md)
+- [Changelog](../CHANGELOG.md)
+- [Roadmap](../ROADMAP.md)
 
 ---
 

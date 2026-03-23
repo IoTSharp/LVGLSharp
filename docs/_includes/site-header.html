@@ -13,20 +13,20 @@
 <header class="site-header">
   <div class="container header-shell">
     <div class="header-start">
-      <div class="lang-switch" aria-label="{% if is_en %}Language switch{% else %}语言切换{% endif %}">
-        <a href="{{ '/zh/' | relative_url }}" class="{% unless is_en %}is-active{% endunless %}">中文</a>
-        <a href="{{ '/en/' | relative_url }}" class="{% if is_en %}is-active{% endif %}">EN</a>
-      </div>
-
       <a class="brand" href="{{ home_url | relative_url }}">
         <span class="brand-mark">
           <img src="{{ '/assets/brand/lvgl64x64.png' | relative_url }}" alt="LVGL logo">
         </span>
         <span class="brand-copy">
           <strong>LVGLSharp</strong>
-          <small>{% if is_en %}Cross-platform UI docs{% else %}跨平台 UI 文档站{% endif %}</small>
+          <small>{% if is_en %}Cross-platform UI docs{% else %}跨平台 UI 文档{% endif %}</small>
         </span>
       </a>
+
+      <div class="lang-switch" aria-label="{% if is_en %}Language switch{% else %}语言切换{% endif %}">
+        <a href="{{ '/zh/' | relative_url }}" class="{% unless is_en %}is-active{% endunless %}">中文</a>
+        <a href="{{ '/en/' | relative_url }}" class="{% if is_en %}is-active{% endif %}">EN</a>
+      </div>
     </div>
 
     <nav class="site-nav" aria-label="{% if is_en %}Primary navigation{% else %}主导航{% endif %}">

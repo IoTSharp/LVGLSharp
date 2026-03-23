@@ -9,6 +9,12 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $pagesSrc = Join-Path $repoRoot 'pages-src'
 $siteDir = Join-Path $repoRoot '_site'
 
+$machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+$userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+if ($machinePath -or $userPath) {
+    $env:Path = @($machinePath, $userPath) -join ';'
+}
+
 Write-Host 'Preparing local Pages preview source...' -ForegroundColor Cyan
 
 if (Test-Path $pagesSrc) {

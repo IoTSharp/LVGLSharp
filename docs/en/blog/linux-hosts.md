@@ -1,5 +1,5 @@
 ---
-title: Linux Host Strategy: From X11 to Wayland and Beyond
+title: "Linux Host Strategy: From X11 to Wayland and Beyond"
 description: Reviews the Linux host options and how the runtime evolves from desktop to device-side environments.
 lang: en
 ---

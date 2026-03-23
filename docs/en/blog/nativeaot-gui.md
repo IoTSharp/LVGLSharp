@@ -1,5 +1,5 @@
 ---
-title: NativeAOT and GUI: Why This Direction Matters
+title: "NativeAOT and GUI: Why This Direction Matters"
 description: Explains why NativeAOT is a strategic fit for the LVGLSharp runtime and packaging model.
 lang: en
 ---

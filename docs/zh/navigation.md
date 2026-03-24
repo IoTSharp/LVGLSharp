@@ -64,6 +64,8 @@ sections:
             url: "/zh/blog/architecture.html"
           - label: "LVGL 编译参数说明"
             url: "/zh/blog/lvgl-build-options.html"
+          - label: "全志 T113-S3 编译参数说明"
+            url: "/zh/blog/allwinner-t113-s3-build-options.html"
           - label: "CI 工作流说明"
             url: "/zh/ci-workflows.html"
           - label: "NuGet 安装"
@@ -72,6 +74,8 @@ sections:
         links:
           - label: "Linux 图形宿主路线"
             url: "/zh/blog/linux-hosts.html"
+          - label: "全志 T113-S3 编译参数说明"
+            url: "/zh/blog/allwinner-t113-s3-build-options.html"
           - label: "X11 Demo 带起记录"
             url: "/zh/blog/x11-demo-bringup.html"
           - label: "全志 T113-S3 + Tina Linux 成功移植案例"

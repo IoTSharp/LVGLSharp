@@ -3,6 +3,7 @@ namespace LVGLSharp.Runtime.MacOs;
 public sealed class MacOsSurfaceSkeleton : IMacOsSurface
 {
     private bool _disposed;
+    private readonly MacOsInputState _inputState = new();
 
     public MacOsSurfaceSkeleton(MacOsViewOptions options)
     {
@@ -25,6 +26,18 @@ public sealed class MacOsSurfaceSkeleton : IMacOsSurface
 
     public bool IsCreated { get; private set; }
 
+    public bool IsCloseRequested => false;
+
+    public (int X, int Y) CurrentMousePosition => _inputState.CurrentMousePosition;
+
+    public uint CurrentMouseButton => _inputState.CurrentMouseButton;
+
+    public bool IsMousePressed => _inputState.IsMousePressed;
+
+    public uint CurrentKey => _inputState.CurrentKey;
+
+    public bool IsKeyPressed => _inputState.IsKeyPressed;
+
     public void Create()
     {
         ThrowIfDisposed();
@@ -36,8 +49,29 @@ public sealed class MacOsSurfaceSkeleton : IMacOsSurface
         ThrowIfDisposed();
         if (!IsCreated)
         {
-            throw new InvalidOperationException("MacOs surface ÉÐÎ´´´½¨¡£");
+            throw new InvalidOperationException("MacOs surface å°šæœªåˆ›å»ºã€‚");
         }
+    }
+
+    public int ConsumeWheelDiff() => 0;
+
+    public string? ConsumePendingText() => null;
+
+    public uint ConsumeEditingKeyPress() => 0;
+
+    public void Present(byte[] bgra8888Bytes, int width, int height, int stride)
+    {
+        ThrowIfDisposed();
+    }
+
+    public void StartTextInput()
+    {
+        ThrowIfDisposed();
+    }
+
+    public void StopTextInput()
+    {
+        ThrowIfDisposed();
     }
 
     public void Dispose()

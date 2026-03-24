@@ -18,6 +18,7 @@ namespace LVGLSharp.Forms
         protected override bool AllowsNativeScrolling => Multiline;
 
         public bool Multiline { get; set; }
+        public bool ReadOnly { get; set; }
         public string? PlaceholderText { get; set; }
 
         public int SelectionStart

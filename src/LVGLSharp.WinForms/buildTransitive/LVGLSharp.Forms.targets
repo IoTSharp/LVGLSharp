@@ -10,9 +10,10 @@
 
   <Target Name="LVGLSharpGenerateRuntimeRegistration" DependsOnTargets="ResolveReferences" BeforeTargets="CoreCompile" Condition="'$(UseLVGLSharpForms)' == 'true'">
     <ItemGroup>
-      <_LVGLSharpRuntimeReference Include="@(ReferencePath)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows' Or '%(FileName)' == 'LVGLSharp.Runtime.Linux'" />
+      <_LVGLSharpRuntimeReference Include="@(ReferencePath)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows' Or '%(FileName)' == 'LVGLSharp.Runtime.Linux' Or '%(FileName)' == 'LVGLSharp.Runtime.MacOs'" />
       <_LVGLSharpWindowsRuntimeReference Include="@(_LVGLSharpRuntimeReference)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows'" />
       <_LVGLSharpLinuxRuntimeReference Include="@(_LVGLSharpRuntimeReference)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Linux'" />
+      <_LVGLSharpMacOsRuntimeReference Include="@(_LVGLSharpRuntimeReference)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.MacOs'" />
     </ItemGroup>
 
     <Delete Files="$(_LVGLSharpGeneratedRuntimeRegistrationFile)" Condition="'@(_LVGLSharpRuntimeReference)' == ''" />
@@ -24,6 +25,7 @@
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using LVGLSharp.Forms%3B" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using LVGLSharp.Runtime.Windows%3B" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using LVGLSharp.Runtime.Linux%3B" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using LVGLSharp.Runtime.MacOs%3B" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="internal static class LVGLSharpGeneratedRuntimeRegistration" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="{" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    [ModuleInitializer]" />
@@ -31,6 +33,7 @@
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    {" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        ApplicationConfiguration.RegisterWindowsRuntimeInitializer(ConfigureWindowsRuntime)%3B" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        ApplicationConfiguration.RegisterLinuxRuntimeInitializer(ConfigureLinuxRuntime)%3B" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        ApplicationConfiguration.RegisterMacOsRuntimeInitializer(ConfigureMacOsRuntime)%3B" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    }" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    private static void ConfigureWindowsRuntime()" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    {" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
@@ -48,6 +51,14 @@
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; LinuxView.CurrentMousePosition)%3B" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        Image.RegisterFactory(static path =&gt; new LinuxImageSource(path))%3B" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    }" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    private static void ConfigureMacOsRuntime()" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    {" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        Application.UseRuntime(" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static options =&gt; new MacOsView(new MacOsViewOptions { Title = options.Title, Width = options.Width, Height = options.Height, Dpi = 96f })," Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; MacOsView.CurrentMouseButton," Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; MacOsView.CurrentMousePosition)%3B" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        Image.RegisterFactory(static path =&gt; new MacOsImageSource(path))%3B" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    }" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
       <_LVGLSharpGeneratedRuntimeRegistrationLines Include="}" />
     </ItemGroup>
 
@@ -60,8 +71,8 @@
 
   <Target Name="LVGLSharpValidateRuntimePackageReference" BeforeTargets="CoreCompile">
     <ItemGroup>
-      <_LVGLSharpRuntimeReference Include="@(ReferencePath)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows' Or '%(FileName)' == 'LVGLSharp.Runtime.Linux'" />
+      <_LVGLSharpRuntimeReference Include="@(ReferencePath)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows' Or '%(FileName)' == 'LVGLSharp.Runtime.Linux' Or '%(FileName)' == 'LVGLSharp.Runtime.MacOs'" />
     </ItemGroup>
-    <Warning Condition="'@(_LVGLSharpRuntimeReference)' == ''" Text="LVGLSharp.Forms requires a platform runtime reference. Add LVGLSharp.Runtime.Windows and/or LVGLSharp.Runtime.Linux so the runtime can be registered automatically during ApplicationConfiguration.Initialize(), or call Application.UseRuntime(...) and Image.RegisterFactory(...) manually." />
+    <Warning Condition="'@(_LVGLSharpRuntimeReference)' == ''" Text="LVGLSharp.Forms requires a platform runtime reference. Add LVGLSharp.Runtime.Windows, LVGLSharp.Runtime.Linux, and/or LVGLSharp.Runtime.MacOs so the runtime can be registered automatically during ApplicationConfiguration.Initialize(), or call Application.UseRuntime(...) and Image.RegisterFactory(...) manually." />
   </Target>
 </Project>

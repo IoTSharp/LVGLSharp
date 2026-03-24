@@ -6,6 +6,7 @@ namespace LVGLSharp.Forms
     {
         private static Action? s_windowsRuntimeInitializer;
         private static Action? s_linuxRuntimeInitializer;
+        private static Action? s_macOsRuntimeInitializer;
 
         public static void Initialize()
         {
@@ -20,6 +21,10 @@ namespace LVGLSharp.Forms
             if (OperatingSystem.IsLinux())
             {
                 s_linuxRuntimeInitializer?.Invoke();
+            }
+            if (OperatingSystem.IsMacOS())
+            {
+                s_macOsRuntimeInitializer?.Invoke();
             }
         }
 
@@ -53,6 +58,22 @@ namespace LVGLSharp.Forms
             }
 
             s_linuxRuntimeInitializer = runtimeInitializer;
+        }
+
+        /// <summary>
+        /// Registers the macOS runtime initializer that runs as part of <see cref="Initialize"/> on macOS.
+        /// </summary>
+        /// <param name="runtimeInitializer">The macOS runtime initializer to execute.</param>
+        public static void RegisterMacOsRuntimeInitializer(Action runtimeInitializer)
+        {
+            ArgumentNullException.ThrowIfNull(runtimeInitializer);
+
+            if (s_macOsRuntimeInitializer is not null)
+            {
+                throw new InvalidOperationException("A macOS runtime initializer has already been registered.");
+            }
+
+            s_macOsRuntimeInitializer = runtimeInitializer;
         }
     }
 }

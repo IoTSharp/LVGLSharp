@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using LVGLSharp.Interop;
 
 namespace LVGLSharp.Runtime.Remote.Vnc
 {
@@ -10,6 +12,7 @@ namespace LVGLSharp.Runtime.Remote.Vnc
     /// 极简 VNC 服务器实现：监听端口、推送帧、接收输入。
     /// 仅支持最基础的 RFB 协议流程，适合演示和自定义扩展。
     /// </summary>
+
     public sealed class VncTransport : RemoteTransportBase, IDisposable
     {
         private readonly VncSessionOptions _options;
@@ -31,7 +34,7 @@ namespace LVGLSharp.Runtime.Remote.Vnc
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _options.Validate();
         }
-using LVGLSharp.Interop;
+
 
         public void Start()
         {
@@ -108,15 +111,14 @@ using LVGLSharp.Interop;
                                 await stream.ReadAsync(inputBuffer, 1, 7, token); // 1+7=8字节
                                 bool down = inputBuffer[1] != 0;
                                 uint key = (uint)((inputBuffer[4] << 24) | (inputBuffer[5] << 16) | (inputBuffer[6] << 8) | inputBuffer[7]);
-                                // 转为 RemoteInputEvent 并注入 LVGL
-                                InjectKeyEvent(key, down);
+                                unsafe { InjectKeyEvent(key, down); }
                                 break;
                             case 5: // PointerEvent
                                 await stream.ReadAsync(inputBuffer, 1, 5, token); // 1+5=6字节
                                 byte buttonMask = inputBuffer[1];
                                 ushort x = (ushort)((inputBuffer[2] << 8) | inputBuffer[3]);
                                 ushort y = (ushort)((inputBuffer[4] << 8) | inputBuffer[5]);
-                                InjectPointerEvent(x, y, buttonMask);
+                                unsafe { InjectPointerEvent(x, y, buttonMask); }
                                 break;
                             default:
                                 // 其它消息类型暂不处理，直接跳过
@@ -134,24 +136,23 @@ using LVGLSharp.Interop;
             {
                 lock (_clientsLock) _clients.Remove(client);
             }
+        }
 
         // 静态输入事件注入方法，AOT安全
-        private static void InjectKeyEvent(uint key, bool down)
+        private static unsafe void InjectKeyEvent(uint key, bool down)
         {
             var indev = VncView.GetKeyboardIndev();
             if (indev == null) return;
             var state = down ? lv_indev_state_t.LV_INDEV_STATE_PRESSED : lv_indev_state_t.LV_INDEV_STATE_RELEASED;
-            // 构造 lv_indev_data_t 并注入
             var data = new lv_indev_data_t
             {
                 state = state,
                 key = key
             };
-            // 这里只能通过事件注入，实际 LVGL 需有专用 API
-            LVGLSharp.Interop.Lvgl.lv_indev_send_event(indev, lv_event_code_t.LV_EVENT_KEY, &data);
+            Lvgl.lv_indev_send_event(indev, lv_event_code_t.LV_EVENT_KEY, &data);
         }
 
-        private static void InjectPointerEvent(ushort x, ushort y, byte buttonMask)
+        private static unsafe void InjectPointerEvent(ushort x, ushort y, byte buttonMask)
         {
             var indev = VncView.GetPointerIndev();
             if (indev == null) return;
@@ -161,13 +162,11 @@ using LVGLSharp.Interop;
                 state = state,
                 point = new lv_point_t { x = x, y = y }
             };
-            LVGLSharp.Interop.Lvgl.lv_indev_send_event(indev, lv_event_code_t.LV_EVENT_PRESSED, &data);
-        }
+            Lvgl.lv_indev_send_event(indev, lv_event_code_t.LV_EVENT_PRESSED, &data);
         }
 
         public override Task SendFrameAsync(RemoteFrame frame, CancellationToken cancellationToken = default)
         {
-            // 记录最新帧，FramePushLoop 会自动分发
             _latestFrame = frame;
             return Task.CompletedTask;
         }
@@ -181,6 +180,7 @@ using LVGLSharp.Interop;
         public void Dispose()
         {
             Stop();
+        }
 
         private async Task FramePushLoop(CancellationToken token)
         {
@@ -199,9 +199,6 @@ using LVGLSharp.Interop;
                             if (client.Connected)
                             {
                                 var stream = client.GetStream();
-                                // 按RFB协议推送原始像素数据（极简实现，未分块/未压缩）
-                                // 这里只推送全量 ARGB8888 像素，客户端需自定义解析
-                                // 实际生产应严格按RFB协议分块、压缩、同步
                                 var pixelBytes = frame.Argb8888Bytes;
                                 await stream.WriteAsync(pixelBytes, 0, pixelBytes.Length, token);
                                 await stream.FlushAsync(token);
@@ -215,7 +212,6 @@ using LVGLSharp.Interop;
                 }
                 await Task.Delay(100, token);
             }
-        }
         }
     }
 }

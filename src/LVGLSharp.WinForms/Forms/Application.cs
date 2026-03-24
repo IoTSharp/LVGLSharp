@@ -73,6 +73,19 @@ namespace LVGLSharp.Forms
             throw new NotSupportedException("`Application.UseLinuxRuntime()` is not AOT-safe. Reference `LVGLSharp.Runtime.Linux` so the runtime is registered automatically during `ApplicationConfiguration.Initialize()`, or call `Application.UseRuntime(...)` and `Image.RegisterFactory(...)` explicitly.");
         }
 
+        /// <summary>
+        /// Registers the macOS runtime for <see cref="Run(Form)"/>.
+        /// </summary>
+        public static void UseMacOsRuntime()
+        {
+            if (WindowHostFactory.IsRegistered && Image.IsFactoryRegistered && RuntimeInputState.IsRegistered)
+            {
+                return;
+            }
+
+            throw new NotSupportedException("`Application.UseMacOsRuntime()` is not AOT-safe. Reference `LVGLSharp.Runtime.MacOs` so the runtime is registered automatically during `ApplicationConfiguration.Initialize()`, or call `Application.UseRuntime(...)` and `Image.RegisterFactory(...)` explicitly.");
+        }
+
         public static void Run(Form main)
         {
             ArgumentNullException.ThrowIfNull(main);

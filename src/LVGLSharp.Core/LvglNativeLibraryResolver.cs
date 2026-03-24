@@ -129,6 +129,17 @@ namespace LVGLSharp
                     Architecture.Arm64 => "linux-arm64",
                     _ => "linux-x64"
                 };
+
+                yield break;
+            }
+
+            if (OperatingSystem.IsMacOS())
+            {
+                yield return RuntimeInformation.ProcessArchitecture switch
+                {
+                    Architecture.Arm64 => "osx-arm64",
+                    _ => "osx-x64"
+                };
             }
         }
 
@@ -146,6 +157,12 @@ namespace LVGLSharp
                 // shared library consistently before falling back to the unversioned name.
                 yield return "liblvgl.so.9";
                 yield return "liblvgl.so";
+                yield break;
+            }
+
+            if (OperatingSystem.IsMacOS())
+            {
+                yield return "liblvgl.dylib";
                 yield break;
             }
 

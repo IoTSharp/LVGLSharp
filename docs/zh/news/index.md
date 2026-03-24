@@ -16,6 +16,14 @@ sections:
       - title: "我把 WinFormsVncDemo 真正带到了 VNC 链路上"
         description: "这一篇用第一人称记录了远程运行时整理、Demo 简化、Windows 发布补强，以及案例截图正式进入文档的结果。"
         url: "/zh/news/winformsvncdemo-vnc-update.html"
+  - title: "版本纪要"
+    description: "若欲追溯 9.5 一线何以同时整饬运行时、文档与依赖边界，可自此入。"
+    variant: quick-links
+    columns: 1
+    items:
+      - title: "v9.5.0.2 发布纪要：述 LVGL 9.5 基线下运行时、文档与依赖之整饬"
+        description: "此文述 `Headless`、`MacOs`、`Remote`、`OffscreenDemo`、结构化文档站及 Native 依赖切换逻辑，何以并见于此版。"
+        url: "/zh/news/v9502-release-notes.html"
   - title: "这一栏会记录什么"
     description: "我们会优先把最能代表阶段价值的变化写进这里，而不是简单罗列提交记录。"
     variant: cards

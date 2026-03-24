@@ -100,6 +100,7 @@ jobs:
           dotnet pack src/LVGLSharp.Interop/LVGLSharp.Interop.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
+            -p:LVGLSharpNativePackageVersion=${{ inputs.package_version }} \
             --output nupkgs
 
       - name: Pack LVGLSharp.Core
@@ -107,6 +108,7 @@ jobs:
           dotnet pack src/LVGLSharp.Core/LVGLSharp.Core.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
+            -p:LVGLSharpNativePackageVersion=${{ inputs.package_version }} \
             --output nupkgs
 
       - name: Pack LVGLSharp.Runtime.Windows
@@ -114,6 +116,7 @@ jobs:
           dotnet pack src/LVGLSharp.Runtime.Windows/LVGLSharp.Runtime.Windows.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
+            -p:LVGLSharpNativePackageVersion=${{ inputs.package_version }} \
             --output nupkgs
 
       - name: Pack LVGLSharp.Runtime.Linux
@@ -121,6 +124,31 @@ jobs:
           dotnet pack src/LVGLSharp.Runtime.Linux/LVGLSharp.Runtime.Linux.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
+            -p:LVGLSharpNativePackageVersion=${{ inputs.package_version }} \
+            --output nupkgs
+
+      - name: Pack LVGLSharp.Runtime.Headless
+        run: |
+          dotnet pack src/LVGLSharp.Runtime.Headless/LVGLSharp.Runtime.Headless.csproj \
+            -c Release \
+            -p:Version=${{ inputs.package_version }} \
+            -p:LVGLSharpNativePackageVersion=${{ inputs.package_version }} \
+            --output nupkgs
+
+      - name: Pack LVGLSharp.Runtime.MacOs
+        run: |
+          dotnet pack src/LVGLSharp.Runtime.MacOs/LVGLSharp.Runtime.MacOs.csproj \
+            -c Release \
+            -p:Version=${{ inputs.package_version }} \
+            -p:LVGLSharpNativePackageVersion=${{ inputs.package_version }} \
+            --output nupkgs
+
+      - name: Pack LVGLSharp.Runtime.Remote
+        run: |
+          dotnet pack src/LVGLSharp.Runtime.Remote/LVGLSharp.Runtime.Remote.csproj \
+            -c Release \
+            -p:Version=${{ inputs.package_version }} \
+            -p:LVGLSharpNativePackageVersion=${{ inputs.package_version }} \
             --output nupkgs
 
       - name: Pack LVGLSharp.Forms
@@ -128,6 +156,7 @@ jobs:
           dotnet pack src/LVGLSharp.WinForms/LVGLSharp.Forms.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
+            -p:LVGLSharpNativePackageVersion=${{ inputs.package_version }} \
             --output nupkgs
 
       - name: Upload NuGet packages

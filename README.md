@@ -2,103 +2,67 @@
 
 中文 | [English](./README_en.md)
 
-**LVGLSharp** 是一个跨平台的 WinForms API 兼容层项目，以 [LVGL](https://github.com/lvgl/lvgl) 作为底层渲染引擎。当前核心 UI 兼容层仍然是 `LVGLSharp.Forms`，目标是实现**所见即所得**——在 Visual Studio Windows Forms 设计器中设计的界面，可以在 Linux（arm / arm64 / x64）等嵌入式平台上以高度一致的效果运行。
+**LVGLSharp** 是一个基于 [LVGL](https://github.com/lvgl/lvgl) 的跨平台 WinForms API 兼容层，核心包为 `LVGLSharp.Forms`。目标是尽量保留熟悉的 Windows Forms 开发方式，让同一套界面继续运行在 Windows、Linux 与嵌入式场景中。
 
-📘 文档站点（GitHub Pages）：
+当前稳定基线：`9.5.0.5`
 
-- GitHub 仓库：`https://github.com/IoTSharp/LVGLSharp`
-- 正式站点：`https://lvglsharp.net/`
-- 备用镜像：`https://gtiee.com/IoTSharp/LVGLSharp`
+- 文档：<https://lvglsharp.net/>
+- 路线图：<https://github.com/IoTSharp/LVGLSharp/blob/main/ROADMAP.md>
+- 变更日志：<https://github.com/IoTSharp/LVGLSharp/blob/main/CHANGELOG.md>
 
-- 中文首页：`docs/index.md`
-- 英文首页：`docs/index.en.md`
-- CI 文档：`docs/ci-workflows.md`
-- 英文 CI 文档：`docs/ci-workflows.en.md`
-- 中文导航：`docs/navigation.md`
-- 英文导航：`docs/navigation.en.md`
-- 中文博客索引：`docs/blog/index.md`
-- 英文博客索引：`docs/blog/index.en.md`
+> 项目仍在快速演进中，暂不建议直接用于生产环境。
 
-站点访问建议：
+## 特性
 
-- 中文首页：<https://lvglsharp.net/>
-- 英文首页：<https://lvglsharp.net/index.en.html>
+- WinForms API 兼容：`Control`、`Form`、`Button`、`Label`、`TextBox`、`CheckBox`、`RadioButton`、`ComboBox`、`ListBox`、`PictureBox`、`Panel`、`GroupBox`、`FlowLayoutPanel`、`TableLayoutPanel`、`ProgressBar`、`TrackBar`、`NumericUpDown`、`RichTextBox` 等常用控件已具备可用基础。
+- LVGL 全量互操作：`LVGLSharp.Interop` 通过 ClangSharpPInvokeGenerator 自动生成 P/Invoke 绑定，可直接访问 LVGL C API。
+- 跨平台运行时：当前提供 Windows、Linux 与 Headless 路径，Linux 侧已包含 `WSLg`、`X11`、`Wayland`、`SDL`、`FrameBuffer` 宿主；`DRM/KMS`、`macOS` 与 Remote 路径正在继续补齐。
+- NativeAOT 与原生库分发：支持 NativeAOT 发布，并通过 `LVGLSharp.Native` 提供多 RID 原生库包。
+- 自动运行时注册：引用运行时包后，`ApplicationConfiguration.Initialize()` 会通过 `buildTransitive` 完成平台注册。
+- 无头渲染与快照：`LVGLSharp.Runtime.Headless` 提供 `OffscreenView`、PNG 导出与快照回归测试入口，适合截图、自动化验证和远程帧源复用。
+- 跨平台绘图抽象：`LVGLSharp.Drawing` 提供 `Size`、`Point`、`Color` 等类型，不依赖 `System.Drawing`。
 
-本地预览建议：
+## 预览
 
-- 本地预览基于 Jekyll，与 GitHub Pages 保持一致。
-- 首次使用前，请先安装 Ruby 与 Bundler，并在仓库根目录执行 `bundle install`。
-- 可运行 `preview/preview-pages.ps1` 在本地生成并预览 Pages HTML。
-- 默认地址为 `http://127.0.0.1:4000/`。
-- 如只想生成 `_site` 而不启动预览，可使用 `preview/preview-pages.ps1 -NoServe`。
-- 在 VS Code 中可直接运行任务：`Preview Pages HTML` 或 `Build Pages HTML Only`。
+以下预览图来自 `docs/images` 中已收录的部分运行效果截图。
 
-> ⚠️ 项目目前处于试验阶段，尚不可用于生产环境。
+<p align="center">
+  <img src="./docs/images/x11-pictureboxdemo.png" alt="LVGLSharp X11 PictureBoxDemo" width="48%" />
+  <img src="./docs/images/x11-musicdemo.png" alt="LVGLSharp X11 MusicDemo" width="48%" />
+</p>
 
----
+<p align="center">
+  <img src="./docs/images/x11-smartwatchdemo.png" alt="LVGLSharp X11 SmartWatchDemo" width="48%" />
+  <img src="./docs/images/wslg-pictureboxdemo-wayland-embedded-font-check.png" alt="LVGLSharp WSLg Wayland Embedded Font Check" width="48%" />
+</p>
 
-## 📢 当前发布版本
+<p align="center">
+  <img src="./docs/images/winformsvncdemo-vnc-case.png" alt="LVGLSharp WinFormsVncDemo over VNC" width="48%" />
+</p>
 
-- **版本号**：`9.5.0.5`
-- **发布 Tag**：`v9.5.0.5`
-- **发布定位**：自初始版本演进而来的首个完整文档化发布，统一整理当前能力、包结构与发布说明。
+## NuGet 包
 
-### 9.5.0.5 发布摘要
+| NuGet名称 | 版本 | 下载量 | 说明 |
+|---|---|---|---|
+| `LVGLSharp.Forms` | [![LVGLSharp.Forms](https://img.shields.io/nuget/v/LVGLSharp.Forms.svg)](https://www.nuget.org/packages/LVGLSharp.Forms/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Forms) | WinForms API 兼容层与 `buildTransitive` 集成入口。 |
+| `LVGLSharp.Core` | [![LVGLSharp.Core](https://img.shields.io/nuget/v/LVGLSharp.Core.svg)](https://www.nuget.org/packages/LVGLSharp.Core/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Core) | 共享运行时抽象、字体与公共辅助能力。 |
+| `LVGLSharp.Interop` | [![LVGLSharp.Interop](https://img.shields.io/nuget/v/LVGLSharp.Interop.svg)](https://www.nuget.org/packages/LVGLSharp.Interop/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Interop) | LVGL P/Invoke 绑定。 |
+| `LVGLSharp.Native` | [![LVGLSharp.Native](https://img.shields.io/nuget/v/LVGLSharp.Native.svg)](https://www.nuget.org/packages/LVGLSharp.Native/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Native) | 多 RID 原生库分发包。 |
+| `LVGLSharp.Runtime.Windows` | [![LVGLSharp.Runtime.Windows](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Windows.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Windows/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Windows) | Windows 运行时。 |
+| `LVGLSharp.Runtime.Linux` | [![LVGLSharp.Runtime.Linux](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Linux.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Linux/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Linux) | Linux 运行时。 |
+| `LVGLSharp.Runtime.Headless` | 待发布 | - | 无头渲染、截图与自动化验证运行时。 |
+| `LVGLSharp.Runtime.MacOs` | 待发布 | - | macOS 运行时骨架与诊断结构。 |
+| `LVGLSharp.Runtime.Remote` | 待发布 | - | Remote 抽象层与 `VNC` / `RDP` 骨架。 |
 
-- 延续初始版本中基于 LVGL 的 WinForms API 兼容层方向，补齐核心控件、运行时宿主与打包说明，并统一切换到 `LVGLSharp` 仓库名。
-- 明确 `LVGLSharp.Forms`、`LVGLSharp.Core`、平台运行时包与 `LVGLSharp.Native` 的职责划分。
-- 补充 `Application.Run(Form)` 生命周期支持、LVGL 事件桥接与 NativeAOT 发布能力说明。
-- 将当前稳定可对外说明的能力同步到 [`CHANGELOG.md`](./CHANGELOG.md)，便于后续基于 tag 自动生成发布记录。
+当前已发布到 NuGet 的是前 6 个包；`LVGLSharp.Runtime.Headless`、`LVGLSharp.Runtime.MacOs` 与 `LVGLSharp.Runtime.Remote` 目前仍以仓库内工程为主，尚未单独发布。
 
-如需查看从初始版本开始的完整发布记录，请参考 [`CHANGELOG.md`](./CHANGELOG.md)。
+`LVGLSharp.Forms` 包内已携带分析器。一般应用只需要选择 `LVGLSharp.Forms` 和目标运行时包；`LVGLSharp.Native` 通常会由依赖链自动带入。
 
----
+## 快速开始
 
-## ✨ 特性
+### 1. 项目文件
 
-- 🖥️ **WinForms API 兼容**：使用与 `System.Windows.Forms` 高度相似的 API，轻松迁移现有代码。
-- 🔤 **LVGL 全 API 互操作**：基于 ClangSharpPInvokeGenerator 自动生成的 P/Invoke 绑定，覆盖 LVGL 全部 C API。
-- 🚀 **NativeAOT 支持**：支持发布为无依赖的原生可执行文件（已验证 win-x64 / linux-arm）。
-- 🌍 **跨平台**：支持 Windows（x86 / x64 / arm64）、Linux（x64 / arm / arm64）。
-- 🧩 **内置常用控件**：Button、Label、TextBox、CheckBox、RadioButton、ComboBox、ListBox、ProgressBar、TrackBar、NumericUpDown、PictureBox、Panel、GroupBox、FlowLayoutPanel、TableLayoutPanel、RichTextBox 等。
-- 🎨 **自定义绘图类型**：提供 `LVGLSharp.Drawing` 命名空间下的 `Size`、`Point`、`Color` 等类型，无需依赖 `System.Drawing`，天然跨平台。
-
----
-
-## 📷 预览
-
-以下为经过 NativeAOT 发布的 win-x64 / linux-arm 应用程序预览（无任何额外依赖）：
-
-<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116237182962589&bvid=BV12Fwjz5EuZ&cid=36733586714&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
-
----
-
-## 📦 NuGet 包
-
-| 包名 | 说明 |
-|------|------|
-| `LVGLSharp.Forms` | WinForms API 兼容层 |
-| `LVGLSharp.Core` | 运行时共享抽象与公共字体/宿主辅助能力 |
-| `LVGLSharp.Runtime.Windows` | Windows 平台运行时 |
-| `LVGLSharp.Runtime.Linux` | Linux 平台运行时 |
-| `LVGLSharp.Runtime.Headless` | 无头渲染运行时 |
-| `LVGLSharp.Interop` | LVGL P/Invoke 绑定（自动生成） |
-| `LVGLSharp.Native` | 各平台 LVGL 原生库（win-x86 / win-x64 / win-arm64、linux-arm 等） |
-
----
-
-## 🚀 快速开始
-
-### 1. 创建项目
-
- 推荐按仓库中的示例采用多目标框架方式：
-
-- `net10.0-windows` 目标使用 `UseWindowsForms=true`，只走标准 WinForms 路径
-- `net10.0` 目标使用 `UseLVGLSharpForms=true`，走 `LVGLSharp.Forms` 路径
-
-是否使用 WinForms 还是 `LVGLSharp.Forms`，只由 `UseWindowsForms` 与 `UseLVGLSharpForms` 决定，不通过 `WINDOWS` 这类 OS 符号判断。
-
-典型工程文件配置如下：
+推荐使用多目标框架，把 WinForms 设计器路径与 `LVGLSharp.Forms` 路径放在同一个工程里：
 
 ```xml
 <PropertyGroup>
@@ -113,151 +77,55 @@
   <UseLVGLSharpForms>true</UseLVGLSharpForms>
   <PublishAot>true</PublishAot>
 </PropertyGroup>
+
+<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+  <PackageReference Include="LVGLSharp.Forms" Version="9.5.0.5" />
+  <PackageReference Include="LVGLSharp.Runtime.Windows" Version="9.5.0.5" />
+  <PackageReference Include="LVGLSharp.Runtime.Linux" Version="9.5.0.5" />
+</ItemGroup>
 ```
 
-在 `UseLVGLSharpForms=true` 的目标下：
-
-- 引用 `LVGLSharp.Forms`
-- 引用 `LVGLSharp.Runtime.Windows`
-- 引用 `LVGLSharp.Runtime.Linux`
-- 如需无头渲染 / 截图 / 自动化验证，单独引用 `LVGLSharp.Runtime.Headless`
-- `buildTransitive` 会根据已引用的运行时包自动生成对应平台的注册代码，并在 `ApplicationConfiguration.Initialize()` 中完成运行时初始化
-- Linux 侧当前默认宿主仍以 `WSLg`、`X11`、`Wayland`、`SDL`、`FrameBuffer` 为主；`DRM/KMS` 已进入首批扩展实现。`Offscreen` 已独立收敛到 `LVGLSharp.Runtime.Headless`，不再作为 `LinuxView` 的宿主分支
-
-可参考示例工程：[`src/Demos/PictureBoxDemo/PictureBoxDemo.csproj`](./src/Demos/PictureBoxDemo/PictureBoxDemo.csproj)。
+如果需要无头渲染、截图或自动化验证，再额外引用 `LVGLSharp.Runtime.Headless`。
 
 ### 2. 入口程序
 
- `UseWindowsForms=true` 的目标无需任何 `LVGLSharp` 运行时注册。
-
- `UseLVGLSharpForms=true` 的目标只需要正常调用 `ApplicationConfiguration.Initialize()`；如果已引用 `LVGLSharp.Runtime.Windows`、`LVGLSharp.Runtime.Linux`，运行时会自动注册：
+`UseLVGLSharpForms=true` 的目标只需要正常调用 `ApplicationConfiguration.Initialize()`：
 
 ```csharp
 ApplicationConfiguration.Initialize();
-
 Application.Run(new frmMain());
 ```
 
-如果只引用 Windows 运行时，则只生成 Windows 注册；如果只引用 Linux 运行时，则只生成 Linux 注册；如果两者都引用，则会在启动时按当前平台自动选择对应的 `LVGL` 宿主与图片加载实现。
-
-### 3. `LVGLSharp 布局`
-
-`LVGLSharp 布局` 是本仓库推荐的界面组织方式，用于让 LVGL 后端在不同平台上获得更稳定、一致的控件排布效果。
-
-其核心约束如下：
-
-- 外层使用一个 `TableLayoutPanel` 只做纵向分区。
-- 每一行放一个 `FlowLayoutPanel`，由该行的 `FlowLayoutPanel` 承载实际业务控件。
-- 主 `TableLayoutPanel` 使用固定绝对行高，不使用百分比行高。
-- 不要把 `Button`、`TextBox`、`ComboBox` 等业务控件直接挂到主 `TableLayoutPanel` 上。
-
-它与 WinForms 中常见布局方式的区别在于：
-
-- 在传统 WinForms 中，控件通常可以直接放进 `TableLayoutPanel` 单元格，设计器也经常使用百分比行高或列宽。
-- 在 `LVGLSharp 布局` 中，主 `TableLayoutPanel` 只负责分区，不直接承载业务控件；实际控件应放入每行的 `FlowLayoutPanel`。
-- 在传统 WinForms 中，布局更依赖设计器自动生成的网格参数；而在 `LVGLSharp 布局` 中，强调可预测的固定行高与行内容器，以降低不同平台和不同字体度量下的排布偏差。
-
-如果你的窗体在 Windows 设计器中看起来正常，但迁移到 LVGL 运行时后出现控件重叠、裁剪或行高不稳定，优先检查是否遵循了 `LVGLSharp 布局`。
-
-### 4. 在 Linux 上运行
-
-使用 NativeAOT 发布：
+### 3. 发布示例
 
 ```bash
-dotnet publish -r linux-arm64 -c Release
-```
-
-Windows 目标发布示例：
-
-```powershell
+dotnet publish -f net10.0 -r linux-arm64 -c Release
+dotnet publish -f net10.0 -r linux-x64 -c Release
 dotnet publish -f net10.0-windows -r win-x64 -c Release
 ```
 
-Linux / `LVGLSharp.Forms` 目标发布示例：
+## 当前状态
 
-```bash
-dotnet publish -f net10.0 -r linux-x64 -c Release
-```
+| 方向 | 状态 | 说明 |
+|---|---|---|
+| WinForms API 兼容层 | 可用 | 核心控件、`Form` 生命周期与基础布局模式已经可用 |
+| Windows 运行时 | 可用 | 当前稳定路径之一 |
+| Linux `WSLg` / `X11` | 可用 | 当前桌面侧主路径 |
+| Linux `FrameBuffer` | 可用 | 当前设备侧主路径 |
+| Linux `Wayland` / `SDL` | 实验性 | 已实现，仍需更多验证与发布纪律 |
+| Headless `Offscreen` | 可用 | 已支持 PNG 快照、截图与回归测试入口 |
+| Linux `DRM/KMS` | 骨架中 | `DrmView` 已预留，原生后端待补齐 |
+| macOS 运行时 | 骨架中 | 诊断、上下文与 surface 骨架已在仓库内 |
+| Remote 运行时 | 骨架中 | `VNC` / `RDP` 抽象与 skeleton 已落仓 |
 
----
+更完整的状态和下一阶段优先级见路线图。
 
-## 🏗️ 项目结构
+## 交流
 
-```
-src/
-├── LVGLSharp.WinForms/     # WinForms API 兼容层（核心）
-│   ├── Forms/              # 控件实现（Control、Form、Button 等）
-│   ├── Drawing/            # 跨平台绘图类型（Size、Point、Color 等）
-│   └── Runtime/            # 公共运行时注册入口与共享胶水代码
-├── LVGLSharp.Core/         # 公共核心库
-├── LVGLSharp.Runtime.Headless/# 无头渲染运行时
-├── LVGLSharp.Runtime.Windows/ # Windows 平台运行时
-├── LVGLSharp.Runtime.Linux/# Linux 平台运行时
-├── LVGLSharp.Runtime.MacOs/# MacOs 平台运行时骨架
-├── LVGLSharp.Runtime.Remote/# 跨平台远程运行时抽象骨架
-├── LVGLSharp.Interop/      # LVGL P/Invoke 自动生成绑定
-├── LVGLSharp.Native/       # 各平台原生库
-└── Demos/
-    ├── WinFormsDemo/       # 基础 WinForms / LVGLSharp.Forms 对照演示
-    ├── PictureBoxDemo/     # PictureBox 控件演示
-    ├── MusicDemo/          # MusicDemo 演示项目
-  ├── OffscreenDemo/      # Offscreen 无头渲染与 PNG 输出演示
-    ├── SmartWatchDemo/     # SmartWatch 界面演示
-    └── SerialPort/         # SerialPort 演示项目
-libs/
-└── lvgl/                   # LVGL 源码（submodule）
-```
+欢迎通过文档站、Issue 或微信群交流项目使用、跨平台适配与问题排查经验。
 
----
+![LVGLSharp 微信交流群](https://raw.githubusercontent.com/IoTSharp/LVGLSharp/main/preview/wechat-group.png)
 
-## 📚 开发文档
+## 许可证
 
-- [`ROADMAP.md`](./ROADMAP.md)：汇总当前已完成的里程碑、各运行时路径状态与下一阶段建议优先项。
-- [`docs/WSL-Developer-Guide.md`](./docs/WSL-Developer-Guide.md)：`WSL2/WSLg` 下运行、验证与调试 demo 的开发者手册。
-- [`docs/navigation.md`](./docs/navigation.md)：文档站点导航页，可快速跳转到首页、专题文档、博客和更新记录。
-
-当前 Linux 宿主选择补充说明：
-
-- 当前 `LinuxView` 会自动探测并选择宿主；后续会进一步收敛到统一的显式选项对象。
-- 目前已识别值包括：`wslg`、`wayland`、`x11`、`sdl`、`framebuffer`、`drm` / `kms`。
-- 其中 `drm` / `kms` 当前为扩展中的 Linux 宿主；无头渲染请直接使用 `LVGLSharp.Runtime.Headless` 中的 `OffscreenView`。
-
-当前新增独立示例：
-
-- `src/Demos/OffscreenDemo/OffscreenDemo.csproj`：演示 `OffscreenView` 的无头渲染与 PNG 导出。
-- `src/Demos/MacOsAotDemo/MacOsAotDemo.csproj`：基于 `LVGLSharp.Forms` 的 macOS AOT demo，当前用于验证 Forms 入口、`MacOsHostDiagnostics` / `MacOsHostContext` 摘要与占位骨架链路。
-- 可通过命令行参数显式指定输出文件路径、宽高、DPI、快照文本内容与背景色。
-- `OffscreenDemo`、`LVGLSharp.Runtime.Headless`、`LVGLSharp.Runtime.Remote` 与 `LVGLSharp.Runtime.MacOs` 已纳入 `LVGLSharp.sln`，可直接参与统一解决方案构建。
-- `tests/LVGLSharp.Headless.Tests` 提供了首批无头快照回归测试入口，用于验证尺寸、背景色与基础渲染流程。
-
-当前新增骨架能力：
-
-- `src/LVGLSharp.Runtime.Headless/`：无头渲染运行时，当前承载 `OffscreenView` 与 `OffscreenOptions`，已提供 `RenderFrame()`、`RenderSnapshot()`、`CaptureImage()`、`RenderSnapshotToPng()`、`SavePng()` 与 `SaveSnapshot()` 等基础快照导出入口。
-- `src/LVGLSharp.Runtime.MacOs/`：macOS 运行时骨架，已补充 `MacOsViewOptions`、`IMacOsSurface`、`MacOsSurfaceSkeleton`、`MacOsHostDiagnostics`、`MacOsFrameBuffer`，以及更明确的生命周期状态与宿主诊断信息。
-- `src/LVGLSharp.Runtime.Remote/`：跨平台远程运行时抽象骨架，当前已补充协议无关会话选项、输入事件、传输接口、帧编码入口、`Headless -> Remote` 帧源适配器，以及 `VNC` / `RDP` 的第一版 transport skeleton 与工厂入口。
-
----
-
-## 🙏 致谢
-
-- **[imxcstar / LVGLSharp](https://github.com/imxcstar/LVGLSharp)**：提供了最底层的 LVGL .NET 封装支撑，本项目基于此构建。
-- **[LVGL](https://github.com/lvgl/lvgl)**：轻量级、高性能的嵌入式 GUI 库。
-- **[ClangSharpPInvokeGenerator](https://github.com/dotnet/ClangSharp)**：用于自动生成 LVGL 全量 P/Invoke 绑定。
-- **[SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp)**：跨平台图像处理库。
-- **[SixLabors.Fonts](https://github.com/SixLabors/Fonts)**：跨平台字体解析库。
-
----
-
-## 💬 交流
-
-欢迎加入微信群，与我们交流项目使用、跨平台适配、控件实现与问题排查经验。
-
-如果你对 LVGLSharp.Forms 感兴趣，欢迎扫码加入微信群交流。
-
-![LVGLSharp 微信交流群](./preview/wechat-group.png)
-
----
-
-## 📄 许可证
-
-本项目基于 [MIT License](./LICENSE.txt) 开源。
+本项目基于 [MIT License](https://github.com/IoTSharp/LVGLSharp/blob/main/LICENSE.txt) 开源。

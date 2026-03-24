@@ -28,9 +28,11 @@ hero:
   note_text: "For a first integration, start with `LVGLSharp.Forms` and then add the runtime package that matches your target platform. Add both Windows and Linux runtimes only if your project is intentionally multi-platform."
 stats:
   - label: "Current baseline"
-    value: "9.5.0"
-  - label: "Main package set"
+    value: "9.5.0.5"
+  - label: "Published packages"
     value: "6"
+  - label: "Pending packages"
+    value: "3"
   - label: "Startup sample"
     value: "2 snippets"
   - label: "Hosting org"
@@ -78,6 +80,24 @@ sections:
       - label: "Add `LVGLSharp.Runtime.Headless` only when you need screenshots or automation"
       - label: "Keep `ApplicationConfiguration.Initialize()` as the unified startup entry"
 ---
+
+## Package Overview
+
+This table follows the same presentation used on the repository homepage. Version and download counts are shown through live NuGet badges.
+
+| NuGet package | Version | Downloads | Description |
+|---|---|---|---|
+| `LVGLSharp.Forms` | [![LVGLSharp.Forms](https://img.shields.io/nuget/v/LVGLSharp.Forms.svg)](https://www.nuget.org/packages/LVGLSharp.Forms/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Forms) | WinForms-style compatibility layer and `buildTransitive` integration entry point. |
+| `LVGLSharp.Core` | [![LVGLSharp.Core](https://img.shields.io/nuget/v/LVGLSharp.Core.svg)](https://www.nuget.org/packages/LVGLSharp.Core/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Core) | Shared runtime abstractions, fonts, and common helpers. |
+| `LVGLSharp.Interop` | [![LVGLSharp.Interop](https://img.shields.io/nuget/v/LVGLSharp.Interop.svg)](https://www.nuget.org/packages/LVGLSharp.Interop/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Interop) | LVGL P/Invoke bindings. |
+| `LVGLSharp.Native` | [![LVGLSharp.Native](https://img.shields.io/nuget/v/LVGLSharp.Native.svg)](https://www.nuget.org/packages/LVGLSharp.Native/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Native) | Multi-RID native library distribution package. |
+| `LVGLSharp.Runtime.Windows` | [![LVGLSharp.Runtime.Windows](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Windows.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Windows/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Windows) | Windows runtime. |
+| `LVGLSharp.Runtime.Linux` | [![LVGLSharp.Runtime.Linux](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Linux.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Linux/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Linux) | Linux runtime. |
+| `LVGLSharp.Runtime.Headless` | Pending release | - | Headless rendering, snapshots, and automation runtime. |
+| `LVGLSharp.Runtime.MacOs` | Pending release | - | macOS runtime skeleton and diagnostics structure. |
+| `LVGLSharp.Runtime.Remote` | Pending release | - | Remote abstraction layer with `VNC` / `RDP` skeletons. |
+
+The first 6 packages are currently published on NuGet. `LVGLSharp.Runtime.Headless`, `LVGLSharp.Runtime.MacOs`, and `LVGLSharp.Runtime.Remote` are still pending standalone publication.
 
 ```xml
 <PropertyGroup>

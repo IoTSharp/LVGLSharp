@@ -16,6 +16,14 @@ sections:
       - title: "I finally brought WinFormsVncDemo onto a real VNC path"
         description: "This first-person update covers the remote runtime cleanup, demo simplification, Windows publishing fix, and the new screenshot-backed documentation case."
         url: "/en/news/winformsvncdemo-vnc-update.html"
+  - title: "Release notes and milestones"
+    description: "Use this section when you want the historical release context behind the current 9.5 line."
+    variant: quick-links
+    columns: 1
+    items:
+      - title: "v9.5.0.2 Release Notes: where the LVGL 9.5 line gained clearer runtime, docs, and dependency boundaries"
+        description: "This article looks back at why `Headless`, `MacOs`, `Remote`, `OffscreenDemo`, the structured docs site, and the Native dependency split all converged in that version."
+        url: "/en/news/v9502-release-notes.html"
   - title: "What this section will track"
     description: "We will focus on the changes that best represent project momentum instead of restating every commit."
     variant: cards

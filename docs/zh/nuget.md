@@ -28,12 +28,14 @@ hero:
   note_text: "如果只是先跑通整体开发体验，先从 `LVGLSharp.Forms` + 对应运行时包开始。是否同时引用 Windows 和 Linux 运行时，取决于你是否真的要做跨平台目标构建。"
 stats:
   - label: "当前基线版本"
-    value: "9.5.0"
-  - label: "常用核心包"
+    value: "9.5.0.5"
+  - label: "已发布包"
     value: "6"
+  - label: "待发布包"
+    value: "3"
   - label: "最小入口"
     value: "2 段代码"
-  - label: "默认组织"
+  - label: "发布组织"
     value: "IoTSharp"
 sections:
   - title: "常用包"
@@ -78,6 +80,24 @@ sections:
       - label: "如果需要截图与自动化，再增加 `LVGLSharp.Runtime.Headless`"
       - label: "保持 `ApplicationConfiguration.Initialize()` 作为统一入口"
 ---
+
+## NuGet 包概览
+
+下表与仓库首页保持一致，版本与下载量均由 NuGet 实时徽章显示。
+
+| NuGet名称 | 版本 | 下载量 | 说明 |
+|---|---|---|---|
+| `LVGLSharp.Forms` | [![LVGLSharp.Forms](https://img.shields.io/nuget/v/LVGLSharp.Forms.svg)](https://www.nuget.org/packages/LVGLSharp.Forms/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Forms) | WinForms API 兼容层与 `buildTransitive` 集成入口。 |
+| `LVGLSharp.Core` | [![LVGLSharp.Core](https://img.shields.io/nuget/v/LVGLSharp.Core.svg)](https://www.nuget.org/packages/LVGLSharp.Core/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Core) | 共享运行时抽象、字体与公共辅助能力。 |
+| `LVGLSharp.Interop` | [![LVGLSharp.Interop](https://img.shields.io/nuget/v/LVGLSharp.Interop.svg)](https://www.nuget.org/packages/LVGLSharp.Interop/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Interop) | LVGL P/Invoke 绑定。 |
+| `LVGLSharp.Native` | [![LVGLSharp.Native](https://img.shields.io/nuget/v/LVGLSharp.Native.svg)](https://www.nuget.org/packages/LVGLSharp.Native/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Native) | 多 RID 原生库分发包。 |
+| `LVGLSharp.Runtime.Windows` | [![LVGLSharp.Runtime.Windows](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Windows.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Windows/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Windows) | Windows 运行时。 |
+| `LVGLSharp.Runtime.Linux` | [![LVGLSharp.Runtime.Linux](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Linux.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Linux/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Linux) | Linux 运行时。 |
+| `LVGLSharp.Runtime.Headless` | 待发布 | - | 无头渲染、截图与自动化验证运行时。 |
+| `LVGLSharp.Runtime.MacOs` | 待发布 | - | macOS 运行时骨架与诊断结构。 |
+| `LVGLSharp.Runtime.Remote` | 待发布 | - | Remote 抽象层与 `VNC` / `RDP` 骨架。 |
+
+当前已发布到 NuGet 的是前 6 个包；`LVGLSharp.Runtime.Headless`、`LVGLSharp.Runtime.MacOs` 与 `LVGLSharp.Runtime.Remote` 仍待后续单独发布。
 
 ```xml
 <PropertyGroup>

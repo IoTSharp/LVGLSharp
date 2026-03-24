@@ -1,12 +1,11 @@
-﻿namespace WinFormsVncDemo
+namespace WinFormsVncDemo;
+
+internal static class Program
 {
-    internal static class Program
+    [STAThread]
+    private static void Main()
     {
-        [STAThread]
-        static void Main(string[] args)
-        {
-            ApplicationConfiguration.Initialize();
-            Application.Run(new frmMain());
-        }
+        ApplicationConfiguration.Initialize();
+        Application.Run(new frmMain());
     }
 }

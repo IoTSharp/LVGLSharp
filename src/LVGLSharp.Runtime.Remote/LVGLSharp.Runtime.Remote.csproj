@@ -19,11 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="RdpView.cs" />
-    <Compile Remove="WinFormsRemoteFrameSource.cs" />
-    <Compile Remove="Rdp\RdpView.cs" />
-    <Compile Remove="Vnc\VncTransport.cs" />
-    <Compile Remove="Vnc\VncView.cs" />
+    <Compile Remove="Frames\Sources\WinFormsRemoteFrameSource.cs" />
   </ItemGroup>
 
   <ItemGroup>

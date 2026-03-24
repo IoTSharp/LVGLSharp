@@ -23,7 +23,7 @@ sections:
         description: "如果你正在改 `lv_conf.h`、CMake 开关或 Linux 后端，这篇会把参数放在哪里、谁覆盖谁讲清楚。"
         url: "/zh/blog/lvgl-build-options.html"
       - title: "全志 T113-S3 编译参数说明"
-        description: "如果你在看设备板级移植，这篇会把 T113-S3 的配方和当前仓库参数体系的差异讲清楚。"
+        description: "如果你在看设备板级移植，这篇会把 T113-S3 的配方和当前仓库参数体系的差异讲清楚，文末还附了原始 `mk` 配方。"
         url: "/zh/blog/allwinner-t113-s3-build-options.html"
       - title: "NativeAOT 与 GUI"
         description: "如果你关心设备部署、运行时体积、裁剪和 AOT 约束，这篇会更对路。"
@@ -75,6 +75,6 @@ sections:
         description: "按当前仓库的 `lv_conf.h` 与构建脚本理解编译期开关。"
         url: "/zh/blog/lvgl-build-options.html"
       - title: "全志 T113-S3 编译参数说明"
-        description: "从板级 Buildroot 配方看设备侧 `lv_conf.h` 是怎么生成和裁剪的。"
+        description: "从板级 Buildroot 配方看设备侧 `lv_conf.h` 是怎么生成和裁剪的，附录可直接对照原始 `mk`。"
         url: "/zh/blog/allwinner-t113-s3-build-options.html"
 ---

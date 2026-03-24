@@ -12,14 +12,16 @@ namespace LVGLSharp.Forms
                 return;
             }
 
-            var root = lv_scr_act();
-            if (root == null)
+            var font = LvglRuntimeFontRegistry.GetActiveTextFont();
+            if (font == null)
             {
                 return;
             }
 
-            var font = lv_obj_get_style_text_font(root, (uint)lv_part_t.LV_PART_MAIN);
-            if (font == null)
+            // Guard against invalid sentinel values so we don't hand LVGL a bogus
+            // pointer during control creation. If no managed font is registered,
+            // we let the control inherit LVGL's default text font.
+            if ((nuint)font <= 0xFFFF)
             {
                 return;
             }

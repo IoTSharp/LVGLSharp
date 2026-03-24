@@ -10,6 +10,7 @@ using SixLabors.ImageSharp.Processing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace LVGLSharp
 {
@@ -17,6 +18,7 @@ namespace LVGLSharp
     {
         public lv_font_glyph_dsc_t Dsc;
         public IntPtr Bitmap;
+        public FontRectangle Bounds;
     }
 
     public unsafe class SixLaborsFontManager : IDisposable
@@ -30,6 +32,8 @@ namespace LVGLSharp
 
         private static readonly Dictionary<IntPtr, SixLaborsFontManager> s_fontManagers = new();
         private static readonly object s_lock = new();
+        private static readonly bool s_traceGlyphs =
+            string.Equals(Environment.GetEnvironmentVariable("LVGLSHARP_TRACE_GLYPHS"), "1", StringComparison.Ordinal);
 
         private readonly Dictionary<uint, GlyphCacheItem> _glyphCache = new();
 
@@ -157,8 +161,16 @@ namespace LVGLSharp
             manager._glyphCache[unicode_letter] = new GlyphCacheItem
             {
                 Dsc = dsc,
-                Bitmap = IntPtr.Zero
+                Bitmap = IntPtr.Zero,
+                Bounds = bbox
             };
+
+            if (s_traceGlyphs)
+            {
+                Console.Error.WriteLine(
+                    FormattableString.Invariant(
+                        $"glyph U+{unicode_letter:X4} '{FormatGlyph(unicode_letter)}' adv={dsc.adv_w} box={dsc.box_w}x{dsc.box_h} ofs=({dsc.ofs_x},{dsc.ofs_y}) bbox=({bbox.Left:F2},{bbox.Top:F2},{bbox.Width:F2},{bbox.Height:F2}) bounds=({bounds.Left:F2},{bounds.Top:F2},{bounds.Width:F2},{bounds.Height:F2})"));
+            }
 
             return true;
         }
@@ -175,14 +187,6 @@ namespace LVGLSharp
             if (!manager._glyphCache.TryGetValue(unicodeCodePoint, out var cacheItem))
                 return null;
 
-            if (cacheItem.Bitmap != IntPtr.Zero)
-            {
-                var destSpan = new Span<byte>(draw_buf->data, dsc->box_w * dsc->box_h);
-                var srcSpan = new Span<byte>((void*)cacheItem.Bitmap, dsc->box_w * dsc->box_h);
-                srcSpan.CopyTo(destSpan);
-                return draw_buf;
-            }
-
             string characterToDraw = char.ConvertFromUtf32((int)unicodeCodePoint);
 
             using var image = new Image<A8>(manager._configuration, dsc->box_w, dsc->box_h);
@@ -195,19 +199,22 @@ namespace LVGLSharp
             }, characterToDraw, Color.Black));
 
             int bufferSize = dsc->box_w * dsc->box_h;
-            if (draw_buf->data_size < bufferSize)
+            if (draw_buf == null || draw_buf->data == null || draw_buf->data_size < bufferSize)
+            {
                 return null;
+            }
+
+            if (s_traceGlyphs)
+            {
+                Console.Error.WriteLine(
+                    FormattableString.Invariant(
+                        $"bitmap U+{unicodeCodePoint:X4} '{FormatGlyph(unicodeCodePoint)}' req={dsc->box_w}x{dsc->box_h} stride={dsc->stride} draw_buf=({draw_buf->header.w}x{draw_buf->header.h} stride={draw_buf->header.stride} cf={draw_buf->header.cf} size={draw_buf->data_size})"));
+            }
 
             var destinationSpan = new Span<byte>(draw_buf->data, bufferSize);
             image.CopyPixelDataTo(destinationSpan);
 
-            IntPtr bitmapPtr = Marshal.AllocHGlobal(bufferSize);
-            var bitmapSpan = new Span<byte>((void*)bitmapPtr, bufferSize);
-            destinationSpan.CopyTo(bitmapSpan);
-
-            cacheItem.Bitmap = bitmapPtr;
-
-            return draw_buf;
+            return draw_buf->data;
         }
 
         [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -223,7 +230,6 @@ namespace LVGLSharp
                     Marshal.FreeHGlobal(cacheItem.Bitmap);
                     cacheItem.Bitmap = IntPtr.Zero;
                 }
-                manager._glyphCache.Remove(letterId);
             }
         }
 
@@ -233,6 +239,13 @@ namespace LVGLSharp
             {
                 return s_fontManagers.TryGetValue((IntPtr)font->dsc, out manager);
             }
+        }
+
+        private static string FormatGlyph(uint unicodeLetter)
+        {
+            return Rune.TryCreate(unicodeLetter, out var rune)
+                ? rune.ToString().Replace("\n", "\\n", StringComparison.Ordinal)
+                : "?";
         }
 
         public void Dispose()

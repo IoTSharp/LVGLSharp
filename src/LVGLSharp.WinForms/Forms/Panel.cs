@@ -33,7 +33,15 @@ namespace LVGLSharp.Forms
 
             foreach (var child in Controls)
             {
-                child.CreateLvglObject(_lvglObjectHandle);
+                LvglCreateTrace.Before(child);
+                try
+                {
+                    child.CreateLvglObject(_lvglObjectHandle);
+                }
+                finally
+                {
+                    LvglCreateTrace.After();
+                }
             }
         }
 

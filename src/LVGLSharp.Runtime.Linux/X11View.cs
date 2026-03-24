@@ -406,7 +406,12 @@ public unsafe partial class X11View : ViewLifetimeBase
         _fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
         _fontGlyphDiagnosticSummary = LinuxSystemFontResolver.GetGlyphDiagnosticSummary();
 
-        _resolvedSystemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
+        bool disableCustomFont = string.Equals(
+            Environment.GetEnvironmentVariable("LVGLSHARP_DISABLE_CUSTOM_FONT"),
+            "1",
+            StringComparison.Ordinal);
+
+        _resolvedSystemFontPath = disableCustomFont ? null : LinuxSystemFontResolver.TryResolveFontPath();
         if (!string.IsNullOrWhiteSpace(_resolvedSystemFontPath))
         {
             _fontManager = new SixLaborsFontManager(
@@ -526,6 +531,7 @@ public unsafe partial class X11View : ViewLifetimeBase
             _display = IntPtr.Zero;
         }
 
+        LvglRuntimeFontRegistry.ClearActiveTextFont();
         _fontManager?.Dispose();
         _fontManager = null;
         _resolvedSystemFontPath = null;

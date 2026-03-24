@@ -23,12 +23,16 @@ namespace LVGLSharp.Runtime.Linux
 
         internal static lv_style_t* ApplyDefaultFontStyle(lv_obj_t* root, lv_font_t* font)
         {
-            var defaultFontStyle = (lv_style_t*)NativeMemory.Alloc((nuint)sizeof(lv_style_t));
-            NativeMemory.Clear(defaultFontStyle, (nuint)sizeof(lv_style_t));
-            lv_style_init(defaultFontStyle);
-            lv_style_set_text_font(defaultFontStyle, font);
-            lv_obj_add_style(root, defaultFontStyle, 0);
-            return defaultFontStyle;
+            if (root == null || font == null)
+            {
+                return null;
+            }
+
+            // Apply the font directly to the root object so we don't depend on
+            // manually allocating lv_style_t from managed code.
+            LvglRuntimeFontRegistry.SetActiveTextFont(font);
+            lv_obj_set_style_text_font(root, font, 0);
+            return null;
         }
     }
 }

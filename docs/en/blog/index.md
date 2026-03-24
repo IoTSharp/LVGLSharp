@@ -1,12 +1,12 @@
 ﻿---
 title: Blog Index
-description: A curated entry page for LVGLSharp articles about architecture, runtime hosts, and NativeAOT.
+description: A curated entry page for LVGLSharp articles about architecture, runtime hosts, X11 bring-up work, and NativeAOT.
 lang: en
 template: structured
 intro:
   eyebrow: "Design Notes"
   title: "Blog Index"
-  description: "Explore the project rationale, architecture, Linux host strategy, and NativeAOT direction from one place."
+  description: "Explore the project rationale, architecture, Linux host strategy, X11 bring-up work, and NativeAOT direction from one place."
 sections:
   - title: "Article entry points"
     description: "These are the best starting points for understanding the project story and technical direction."
@@ -25,6 +25,9 @@ sections:
       - title: "Linux Host Strategy"
         description: "Best if you are following Linux desktop, device-side hosts, and the longer runtime roadmap."
         url: "/en/blog/linux-hosts.html"
+      - title: "X11 Demo Bring-up Notes"
+        description: "Best if you want the practical debugging story behind getting `PictureBoxDemo`, `MusicDemo`, and `SmartWatchDemo` running on X11."
+        url: "/en/blog/x11-demo-bringup.html"
   - title: "Suggested reading order"
     description: "If this is your first pass through the blog, this order builds context most effectively."
     variant: list
@@ -35,10 +38,12 @@ sections:
         url: "/en/blog/why-winforms-over-lvgl.html"
       - label: "Architecture Breakdown"
         url: "/en/blog/architecture.html"
-      - label: "NativeAOT and GUI"
-        url: "/en/blog/nativeaot-gui.html"
       - label: "Linux Host Strategy"
         url: "/en/blog/linux-hosts.html"
+      - label: "X11 Demo Bring-up Notes"
+        url: "/en/blog/x11-demo-bringup.html"
+      - label: "NativeAOT and GUI"
+        url: "/en/blog/nativeaot-gui.html"
   - title: "Continue reading"
     description: "Once you finish the core articles, these pages are the next best places to continue."
     variant: quick-links
@@ -54,4 +59,3 @@ sections:
         description: "Start here if you are ready to install packages and try a minimal setup."
         url: "/en/nuget.html"
 ---
-

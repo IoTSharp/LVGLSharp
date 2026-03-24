@@ -165,6 +165,8 @@ AutoTest.Net/
 
 # Web workbench (sass)
 .sass-cache/
+.bundle/
+/vendor/bundle/
 
 # Installshield output folder
 [Ee]xpress/
@@ -370,4 +372,3 @@ dist/
 /_site
 /_site_*
 /pages-src
-

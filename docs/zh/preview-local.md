@@ -28,6 +28,26 @@ sections:
         image: "/images/wslg-pictureboxdemo-wayland-embedded-font-check.png"
         alt: "WSLg Wayland PictureBox embedded font check"
         description: "用于记录 Linux 图形宿主下的字体和渲染验证情况。"
+  - title: "本轮 X11 实测"
+    description: "这一组截图来自本轮 X11 带起工作，可与 [X11 Demo 带起记录](/zh/blog/x11-demo-bringup.html) 配合阅读。"
+    variant: showcase
+    columns: 3
+    items:
+      - title: "PictureBoxDemo on X11"
+        badge: "X11"
+        image: "/images/x11-pictureboxdemo.png"
+        alt: "PictureBoxDemo running on X11"
+        description: "`PictureBoxDemo` 已能在 X11 下起窗并形成案例截图。当前稳定截图走的是内置字体回退路径，因此中文控件文案仍待后续恢复。"
+      - title: "MusicDemo on X11"
+        badge: "X11"
+        image: "/images/x11-musicdemo.png"
+        alt: "MusicDemo running on X11"
+        description: "在修正字体样式安装和字形位图回调后，`MusicDemo` 已能在 X11 下稳定起窗并沉淀截图。"
+      - title: "SmartWatchDemo on X11"
+        badge: "X11"
+        image: "/images/x11-smartwatchdemo.png"
+        alt: "SmartWatchDemo running on X11"
+        description: "`SmartWatchDemo` 也已经走通 X11 首屏与截图链路，是当前复杂多页界面的代表性案例。"
   - title: "后续建议补充"
     description: "这个页面后面可以继续按场景扩展，不需要混到文章正文里。"
     variant: cards
@@ -44,7 +64,7 @@ sections:
     variant: list
     surface: true
     items:
-      - label: "把截图文件放到 `docs/images/showcase/` 下"
+      - label: "把截图文件放到 `docs/images/` 下；如果是通用展陈图，也可以继续放到 `docs/images/showcase/`"
       - label: "在当前页面 front matter 的 `sections.items` 里追加一条截图记录"
       - label: "优先补能体现平台宿主差异、真实运行效果和代表性 Demo 的画面"
 ---

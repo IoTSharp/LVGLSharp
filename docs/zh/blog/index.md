@@ -1,12 +1,12 @@
 ﻿---
 title: 博客索引
-description: 汇总 LVGLSharp 当前的设计、架构、运行时与 NativeAOT 相关文章。
+description: 汇总 LVGLSharp 当前的设计、架构、运行时、X11 带起记录与 NativeAOT 相关文章。
 lang: zh-CN
 template: structured
 intro:
   eyebrow: "Design Notes"
   title: "博客索引"
-  description: "集中查看项目的设计背景、架构拆解、Linux 宿主路线和 NativeAOT 方向。"
+  description: "集中查看项目的设计背景、架构拆解、Linux 宿主路线、X11 带起记录和 NativeAOT 方向。"
 sections:
   - title: "文章入口"
     description: "先从这些文章建立项目的技术背景和长期路线。"
@@ -25,6 +25,9 @@ sections:
       - title: "Linux 图形宿主路线"
         description: "适合关注 Linux 桌面、设备侧图形宿主与未来演进方向的读者。"
         url: "/zh/blog/linux-hosts.html"
+      - title: "X11 Demo 带起记录"
+        description: "记录把 `PictureBoxDemo`、`MusicDemo`、`SmartWatchDemo` 带起来时踩到的显示、字体和截图链路问题。"
+        url: "/zh/blog/x11-demo-bringup.html"
   - title: "推荐阅读顺序"
     description: "如果你第一次来到项目博客，按这个顺序最容易建立整体认知。"
     variant: list
@@ -35,10 +38,12 @@ sections:
         url: "/zh/blog/why-winforms-over-lvgl.html"
       - label: "项目架构拆解"
         url: "/zh/blog/architecture.html"
-      - label: "NativeAOT 与 GUI"
-        url: "/zh/blog/nativeaot-gui.html"
       - label: "Linux 图形宿主路线"
         url: "/zh/blog/linux-hosts.html"
+      - label: "X11 Demo 带起记录"
+        url: "/zh/blog/x11-demo-bringup.html"
+      - label: "NativeAOT 与 GUI"
+        url: "/zh/blog/nativeaot-gui.html"
   - title: "继续阅读"
     description: "如果你已经看完核心文章，可以继续从这些入口往下读。"
     variant: quick-links
@@ -54,4 +59,3 @@ sections:
         description: "如果你准备实际接入项目，可以从安装说明开始。"
         url: "/zh/nuget.html"
 ---
-

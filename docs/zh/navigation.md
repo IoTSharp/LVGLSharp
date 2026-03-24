@@ -66,6 +66,8 @@ sections:
         links:
           - label: "Linux 图形宿主路线"
             url: "/zh/blog/linux-hosts.html"
+          - label: "X11 Demo 带起记录"
+            url: "/zh/blog/x11-demo-bringup.html"
           - label: "WSL 开发指南"
             url: "/zh/WSL-Developer-Guide.html"
           - label: "界面截图"
@@ -92,4 +94,3 @@ sections:
       - label: "关于团队"
         url: "/zh/about.html"
 ---
-

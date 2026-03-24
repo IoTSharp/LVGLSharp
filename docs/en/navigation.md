@@ -66,6 +66,8 @@ sections:
         links:
           - label: "Linux Host Strategy"
             url: "/en/blog/linux-hosts.html"
+          - label: "X11 Demo Bring-up Notes"
+            url: "/en/blog/x11-demo-bringup.html"
           - label: "WSL Developer Guide"
             url: "/en/WSL-Developer-Guide.html"
           - label: "Screenshot Gallery"
@@ -92,4 +94,3 @@ sections:
       - label: "About"
         url: "/en/about.html"
 ---
-

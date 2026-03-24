@@ -28,6 +28,11 @@ sections:
         image: "/images/wslg-pictureboxdemo-wayland-embedded-font-check.png"
         alt: "WSLg Wayland PictureBox embedded font check"
         description: "Tracks Linux-host rendering and embedded-font validation in a real WSLg / Wayland scenario."
+      - title: "WinFormsVncDemo over VNC"
+        badge: "Windows / VNC"
+        image: "/images/winformsvncdemo-vnc-case.png"
+        alt: "WinFormsVncDemo shown through a desktop VNC viewer on Windows"
+        description: "A Windows-side validation capture for `WinFormsVncDemo`, showing the demo surface being exposed through `VncView` and opened from a desktop VNC viewer."
   - title: "The X11 screenshots we added in this round"
     description: "If you want to read the [X11 Demo Bring-up Notes](/en/blog/x11-demo-bringup.html) side by side with the actual results, these are the matching screenshots."
     variant: showcase

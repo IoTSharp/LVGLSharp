@@ -28,6 +28,11 @@ sections:
         image: "/images/wslg-pictureboxdemo-wayland-embedded-font-check.png"
         alt: "WSLg Wayland PictureBox embedded font check"
         description: "如果你在看 Linux 图形宿主下的字体和渲染验证，这张图能快速给你上下文。"
+      - title: "WinFormsVncDemo 的 VNC 案例"
+        badge: "Windows / VNC"
+        image: "/images/winformsvncdemo-vnc-case.png"
+        alt: "WinFormsVncDemo running through a desktop VNC viewer on Windows"
+        description: "这是 `WinFormsVncDemo` 在 Windows 桌面端通过 VNC Viewer 访问时的实际截图，可用来说明 `VncView` 远程宿主链路已经跑通。"
   - title: "这次我们补上的 X11 截图"
     description: "如果你想配合 [X11 Demo 带起记录](/zh/blog/x11-demo-bringup.html) 一起看，这一组截图就是对应的实际结果。"
     variant: showcase

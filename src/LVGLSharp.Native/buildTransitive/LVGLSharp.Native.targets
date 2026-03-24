@@ -4,12 +4,13 @@
     <LVGLSharpNativeRuntimesPath>$(LVGLSharpNativePackageRoot)runtimes\</LVGLSharpNativeRuntimesPath>
   </PropertyGroup>
 
-  <ItemGroup Condition="Exists('$(LVGLSharpNativeRuntimesPath)') And '$(PublishSingleFile)' != 'true'">
+  <ItemGroup Condition="Exists('$(LVGLSharpNativeRuntimesPath)')">
     <Content Include="$(LVGLSharpNativeRuntimesPath)**\*">
       <Link>runtimes\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <TargetPath>runtimes\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <Visible>false</Visible>
       <Pack>false</Pack>
     </Content>

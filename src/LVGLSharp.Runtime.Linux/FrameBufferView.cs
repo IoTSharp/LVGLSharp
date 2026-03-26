@@ -13,13 +13,13 @@ namespace LVGLSharp.Runtime.Linux
 {
 public unsafe class FrameBufferView : ViewLifetimeBase
     {
-        [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_fbdev_create")]
+        [DllImport("lvgl", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_fbdev_create")]
         private static extern lv_display_t* lv_linux_fbdev_create_native();
 
-        [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_fbdev_set_file")]
+        [DllImport("lvgl", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_fbdev_set_file")]
         private static extern lv_result_t lv_linux_fbdev_set_file_native(lv_display_t* disp, byte* file);
 
-        [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_evdev_create")]
+        [DllImport("lvgl", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_evdev_create")]
         private static extern lv_indev_t* lv_evdev_create_native(lv_indev_type_t indev_type, byte* dev_path);
 
         static lv_display_t* g_display;

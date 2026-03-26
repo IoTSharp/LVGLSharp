@@ -10,28 +10,28 @@ namespace LVGLSharp.Runtime.Linux;
 
 public unsafe sealed class DrmView : ViewLifetimeBase
 {
-    [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_create")]
+    [DllImport("lvgl", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_create")]
     private static extern lv_display_t* lv_linux_drm_create_native();
 
-    [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_set_file")]
+    [DllImport("lvgl", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_set_file")]
     private static extern lv_result_t lv_linux_drm_set_file_native(lv_display_t* display, byte* file, long connectorId);
 
-    [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_find_device_path")]
+    [DllImport("lvgl", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_find_device_path")]
     private static extern byte* lv_linux_drm_find_device_path_native();
 
-    [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_set_mode_cb")]
+    [DllImport("lvgl", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_set_mode_cb")]
     private static extern void lv_linux_drm_set_mode_cb_native(lv_display_t* display, delegate* unmanaged[Cdecl]<lv_display_t*, IntPtr, nuint, nuint> callback);
 
-    [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_mode_get_horizontal_resolution")]
+    [DllImport("lvgl", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_mode_get_horizontal_resolution")]
     private static extern int lv_linux_drm_mode_get_horizontal_resolution_native(IntPtr mode);
 
-    [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_mode_get_vertical_resolution")]
+    [DllImport("lvgl", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_mode_get_vertical_resolution")]
     private static extern int lv_linux_drm_mode_get_vertical_resolution_native(IntPtr mode);
 
-    [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_mode_get_refresh_rate")]
+    [DllImport("lvgl", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_mode_get_refresh_rate")]
     private static extern int lv_linux_drm_mode_get_refresh_rate_native(IntPtr mode);
 
-    [DllImport("LVGL", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_mode_is_preferred")]
+    [DllImport("lvgl", CallingConvention = CallingConvention.Cdecl, EntryPoint = "lv_linux_drm_mode_is_preferred")]
     [return: MarshalAs(UnmanagedType.I1)]
     private static extern bool lv_linux_drm_mode_is_preferred_native(IntPtr mode);
 
@@ -81,7 +81,7 @@ public unsafe sealed class DrmView : ViewLifetimeBase
         _display = lv_linux_drm_create_native();
         if (_display == null)
         {
-            throw new InvalidOperationException("DRM display ´´½¨Ê§°Ü¡£");
+            throw new InvalidOperationException("DRM display ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü¡ï¿½");
         }
 
         _resolvedDevicePath = ResolveDevicePath();
@@ -96,7 +96,7 @@ public unsafe sealed class DrmView : ViewLifetimeBase
             var result = lv_linux_drm_set_file_native(_display, devicePtr, _connectorId);
             if (result != LV_RESULT_OK)
             {
-                throw new InvalidOperationException($"DRM Éè±¸³õÊ¼»¯Ê§°Ü¡£Device={_resolvedDevicePath}, Connector={_connectorId}, Result={result}.");
+                throw new InvalidOperationException($"DRM ï¿½è±¸ï¿½ï¿½Ê¼ï¿½ï¿½Ê§ï¿½Ü¡ï¿½Device={_resolvedDevicePath}, Connector={_connectorId}, Result={result}.");
             }
         }
 

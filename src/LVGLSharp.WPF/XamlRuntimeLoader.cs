@@ -95,17 +95,17 @@ public static class XamlRuntimeLoader
 
         if (control is Controls.Grid grid)
         {
-            var gridLayout = CreateGridLayoutContext(grid, element);
+            var gridPlacement = ConfigureGridLayout(grid, element);
             foreach (var childElement in EnumerateContainerChildren(element, isGrid: true))
             {
-                AddChildControl(grid, CreateControlTree(childElement, assembly), childElement, gridLayout);
+                AddChildControl(grid, CreateControlTree(childElement, assembly), childElement, gridPlacement);
             }
         }
         else if (control is Controls.StackPanel stackPanel)
         {
             foreach (var childElement in EnumerateContainerChildren(element, isGrid: false))
             {
-                AddChildControl(stackPanel, CreateControlTree(childElement, assembly), childElement, gridLayout: null);
+                AddChildControl(stackPanel, CreateControlTree(childElement, assembly), childElement, gridPlacement: null);
             }
         }
 
@@ -483,7 +483,7 @@ public static class XamlRuntimeLoader
                string.Equals(name, "Grid.ColumnDefinitions", StringComparison.Ordinal);
     }
 
-    private static GridLayoutContext CreateGridLayoutContext(Controls.Grid grid, XElement gridElement)
+    private static GridPlacementContext ConfigureGridLayout(Controls.Grid grid, XElement gridElement)
     {
         var rowDefinitions = ReadGridDefinitions(gridElement, "Grid.RowDefinitions", "RowDefinition", "Height");
         var columnDefinitions = ReadGridDefinitions(gridElement, "Grid.ColumnDefinitions", "ColumnDefinition", "Width");
@@ -506,13 +506,24 @@ public static class XamlRuntimeLoader
         var rowCount = Math.Max(1, Math.Max(rowDefinitions.Count, maxAttachedRow + 1));
         var columnCount = Math.Max(1, Math.Max(columnDefinitions.Count, maxAttachedColumn + 1));
 
-        var totalHeight = grid.Height > 0 ? grid.Height : 1;
-        var totalWidth = grid.Width > 0 ? grid.Width : 1;
+        grid.RowCount = rowCount;
+        grid.ColumnCount = columnCount;
+        grid.RowStyles.Clear();
+        grid.ColumnStyles.Clear();
 
-        var rowHeights = ComputeGridCellLengths(totalHeight, rowCount, rowDefinitions);
-        var columnWidths = ComputeGridCellLengths(totalWidth, columnCount, columnDefinitions);
+        for (var i = 0; i < rowCount; i++)
+        {
+            var spec = i < rowDefinitions.Count ? rowDefinitions[i] : GridDefinitionSpec.Auto();
+            grid.RowStyles.Add(CreateRowStyle(spec));
+        }
 
-        return new GridLayoutContext(rowHeights, columnWidths);
+        for (var i = 0; i < columnCount; i++)
+        {
+            var spec = i < columnDefinitions.Count ? columnDefinitions[i] : GridDefinitionSpec.Auto();
+            grid.ColumnStyles.Add(CreateColumnStyle(spec));
+        }
+
+        return new GridPlacementContext(rowCount, columnCount);
     }
 
     private static List<GridDefinitionSpec> ReadGridDefinitions(XElement gridElement, string collectionElementName, string itemElementName, string valueAttributeName)
@@ -569,58 +580,24 @@ public static class XamlRuntimeLoader
             : GridDefinitionSpec.Auto();
     }
 
-    private static int[] ComputeGridCellLengths(int totalLength, int fallbackCount, List<GridDefinitionSpec> definitions)
+    private static RowStyle CreateRowStyle(GridDefinitionSpec spec)
     {
-        var count = Math.Max(1, Math.Max(definitions.Count, fallbackCount));
-        var lengths = new int[count];
-
-        if (definitions.Count == 0)
+        return spec.Mode switch
         {
-            var each = count > 0 ? totalLength / count : totalLength;
-            for (var i = 0; i < count; i++)
-            {
-                lengths[i] = each;
-            }
+            GridDefinitionMode.Absolute => new RowStyle(SizeType.Absolute, (float)Math.Max(0d, spec.Value)),
+            GridDefinitionMode.Star => new RowStyle(),
+            _ => new RowStyle(),
+        };
+    }
 
-            return lengths;
-        }
-
-        var remaining = totalLength;
-        var flexWeight = 0d;
-
-        for (var i = 0; i < count; i++)
+    private static ColumnStyle CreateColumnStyle(GridDefinitionSpec spec)
+    {
+        return spec.Mode switch
         {
-            var spec = i < definitions.Count ? definitions[i] : GridDefinitionSpec.Auto();
-            if (spec.Mode == GridDefinitionMode.Absolute)
-            {
-                lengths[i] = Math.Max(0, (int)Math.Round(spec.Value));
-                remaining -= lengths[i];
-            }
-            else
-            {
-                flexWeight += spec.Mode == GridDefinitionMode.Star ? spec.Value : 1d;
-            }
-        }
-
-        remaining = Math.Max(0, remaining);
-        if (flexWeight <= 0d)
-        {
-            return lengths;
-        }
-
-        for (var i = 0; i < count; i++)
-        {
-            var spec = i < definitions.Count ? definitions[i] : GridDefinitionSpec.Auto();
-            if (spec.Mode == GridDefinitionMode.Absolute)
-            {
-                continue;
-            }
-
-            var weight = spec.Mode == GridDefinitionMode.Star ? spec.Value : 1d;
-            lengths[i] = Math.Max(lengths[i], (int)Math.Round(remaining * (weight / flexWeight)));
-        }
-
-        return lengths;
+            GridDefinitionMode.Absolute => new ColumnStyle(SizeType.Absolute, (float)Math.Max(0d, spec.Value)),
+            GridDefinitionMode.Star => new ColumnStyle(),
+            _ => new ColumnStyle(),
+        };
     }
 
     private static bool TryGetAttachedIntAttribute(XElement element, string fullName, out int value)
@@ -639,37 +616,12 @@ public static class XamlRuntimeLoader
         return !string.IsNullOrWhiteSpace(text) && int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
     }
 
-    private static int SumRange(IReadOnlyList<int> values, int start, int length)
-    {
-        var end = Math.Min(values.Count, start + Math.Max(0, length));
-        var total = 0;
-        for (var i = start; i < end; i++)
-        {
-            total += values[i];
-        }
-
-        return total;
-    }
-
-    private static int OffsetOf(IReadOnlyList<int> values, int index)
-    {
-        var total = 0;
-        var limit = Math.Min(values.Count, Math.Max(0, index));
-        for (var i = 0; i < limit; i++)
-        {
-            total += values[i];
-        }
-
-        return total;
-    }
-
-    private static void AddChildControl(Control parent, Control child, XElement childElement, GridLayoutContext? gridLayout)
+    private static void AddChildControl(Control parent, Control child, XElement childElement, GridPlacementContext? gridPlacement)
     {
         switch (parent)
         {
             case Controls.Grid grid:
-                LayoutGridChild(child, childElement, gridLayout ?? throw new InvalidOperationException("Grid layout context is required."));
-                grid.Children.Add(child);
+                LayoutGridChild(grid, child, childElement, gridPlacement ?? throw new InvalidOperationException("Grid placement context is required."));
                 break;
             case Controls.StackPanel stackPanel:
                 LayoutStackPanelChild(stackPanel, child);
@@ -678,16 +630,16 @@ public static class XamlRuntimeLoader
         }
     }
 
-    private static void LayoutGridChild(Control child, XElement childElement, GridLayoutContext gridLayout)
+    private static void LayoutGridChild(Controls.Grid grid, Control child, XElement childElement, GridPlacementContext gridPlacement)
     {
         var hasRow = TryGetAttachedIntAttribute(childElement, "Grid.Row", out var row);
         var hasColumn = TryGetAttachedIntAttribute(childElement, "Grid.Column", out var column);
 
         if (!hasRow && !hasColumn)
         {
-            row = gridLayout.NextAutoIndex / gridLayout.ColumnCount;
-            column = gridLayout.NextAutoIndex % gridLayout.ColumnCount;
-            gridLayout.NextAutoIndex++;
+            row = gridPlacement.NextAutoIndex / gridPlacement.ColumnCount;
+            column = gridPlacement.NextAutoIndex % gridPlacement.ColumnCount;
+            gridPlacement.NextAutoIndex++;
         }
         else
         {
@@ -702,8 +654,8 @@ public static class XamlRuntimeLoader
             }
         }
 
-        row = Math.Clamp(row, 0, gridLayout.RowCount - 1);
-        column = Math.Clamp(column, 0, gridLayout.ColumnCount - 1);
+        row = Math.Clamp(row, 0, gridPlacement.RowCount - 1);
+        column = Math.Clamp(column, 0, gridPlacement.ColumnCount - 1);
 
         var rowSpan = TryGetAttachedIntAttribute(childElement, "Grid.RowSpan", out var parsedRowSpan)
             ? Math.Max(1, parsedRowSpan)
@@ -712,22 +664,24 @@ public static class XamlRuntimeLoader
             ? Math.Max(1, parsedColumnSpan)
             : 1;
 
-        var x = OffsetOf(gridLayout.ColumnWidths, column);
-        var y = OffsetOf(gridLayout.RowHeights, row);
-        var width = SumRange(gridLayout.ColumnWidths, column, columnSpan);
-        var height = SumRange(gridLayout.RowHeights, row, rowSpan);
+        rowSpan = Math.Clamp(rowSpan, 1, gridPlacement.RowCount - row);
+        columnSpan = Math.Clamp(columnSpan, 1, gridPlacement.ColumnCount - column);
 
-        child.Left += x;
-        child.Top += y;
+        grid.Controls.Add(child, column, row);
 
-        if (child.Width <= 0 && width > 0)
+        if (columnSpan > 1)
         {
-            child.Width = width;
+            grid.SetColumnSpan(child, columnSpan);
         }
 
-        if (child.Height <= 0 && height > 0)
+        if (rowSpan > 1)
         {
-            child.Height = height;
+            grid.SetRowSpan(child, rowSpan);
+        }
+
+        if (columnSpan > 1 || rowSpan > 1)
+        {
+            grid.PerformLayout(child, nameof(Controls.Grid));
         }
     }
 
@@ -754,21 +708,17 @@ public static class XamlRuntimeLoader
         }
     }
 
-    private sealed class GridLayoutContext
+    private sealed class GridPlacementContext
     {
-        public GridLayoutContext(int[] rowHeights, int[] columnWidths)
+        public GridPlacementContext(int rowCount, int columnCount)
         {
-            RowHeights = rowHeights;
-            ColumnWidths = columnWidths;
+            RowCount = Math.Max(1, rowCount);
+            ColumnCount = Math.Max(1, columnCount);
         }
 
-        public int[] RowHeights { get; }
+        public int RowCount { get; }
 
-        public int[] ColumnWidths { get; }
-
-        public int RowCount => RowHeights.Length;
-
-        public int ColumnCount => ColumnWidths.Length;
+        public int ColumnCount { get; }
 
         public int NextAutoIndex { get; set; }
     }

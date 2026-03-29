@@ -36,7 +36,7 @@ public class ProgressBar : LVGLSharp.Forms.ProgressBar
 {
 }
 
-public class Grid : LVGLSharp.Forms.Panel
+public class Grid : LVGLSharp.Forms.TableLayoutPanel
 {
 }
 

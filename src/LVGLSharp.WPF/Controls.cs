@@ -39,3 +39,8 @@ public class ProgressBar : LVGLSharp.Forms.ProgressBar
 public class Grid : LVGLSharp.Forms.Panel
 {
 }
+
+public class StackPanel : LVGLSharp.Forms.Panel
+{
+	public Orientation Orientation { get; set; } = Orientation.Vertical;
+}

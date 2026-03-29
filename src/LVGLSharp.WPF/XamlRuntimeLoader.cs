@@ -12,7 +12,7 @@ public static class XamlRuntimeLoader
         ArgumentNullException.ThrowIfNull(window);
         ArgumentException.ThrowIfNullOrWhiteSpace(xamlRelativePath);
 
-        var doc = LoadXamlDocument(window.GetType().Assembly, xamlRelativePath);
+        var doc = LoadXamlDocument(window.GetType().Assembly, EmbeddedResourceFileSystem.NormalizePath(xamlRelativePath));
         var root = doc.Root ?? throw new InvalidOperationException("XAML root element is missing.");
 
         if (!string.Equals(root.Name.LocalName, "Window", StringComparison.Ordinal))
@@ -28,7 +28,7 @@ public static class XamlRuntimeLoader
             return;
         }
 
-        window.Content = CreateControlTree(contentElement);
+        window.Content = CreateControlTree(contentElement, window.GetType().Assembly);
     }
 
     public static ApplicationDefinition? TryLoadApplicationDefinition(System.Reflection.Assembly assembly, string appXamlRelativePath)
@@ -36,7 +36,7 @@ public static class XamlRuntimeLoader
         ArgumentNullException.ThrowIfNull(assembly);
         ArgumentException.ThrowIfNullOrWhiteSpace(appXamlRelativePath);
 
-        var stream = OpenResourceStream(assembly, appXamlRelativePath);
+        var stream = EmbeddedResourceFileSystem.TryOpenRead(assembly, EmbeddedResourceFileSystem.NormalizePath(appXamlRelativePath));
         if (stream is null)
         {
             return null;
@@ -53,38 +53,19 @@ public static class XamlRuntimeLoader
 
             return new ApplicationDefinition
             {
-                StartupUri = GetAttribute(root, "StartupUri")
+                StartupUri = EmbeddedResourceFileSystem.NormalizePath(GetAttribute(root, "StartupUri"))
             };
         }
     }
 
     private static XDocument LoadXamlDocument(System.Reflection.Assembly assembly, string xamlRelativePath)
     {
-        using var stream = OpenResourceStream(assembly, xamlRelativePath);
-        if (stream is null)
-        {
-            throw new FileNotFoundException($"XAML embedded resource not found: {xamlRelativePath}", xamlRelativePath);
-        }
+        using var stream = EmbeddedResourceFileSystem.OpenRead(assembly, xamlRelativePath);
 
         return XDocument.Load(stream, LoadOptions.None);
     }
 
-    private static Stream? OpenResourceStream(System.Reflection.Assembly assembly, string xamlRelativePath)
-    {
-        string normalized = xamlRelativePath.Replace('\\', '/').TrimStart('/');
-
-        var stream = assembly.GetManifestResourceStream(normalized);
-        if (stream is not null)
-        {
-            return stream;
-        }
-
-        var matchedName = assembly
-            .GetManifestResourceNames()
-            .FirstOrDefault(n => n.EndsWith(normalized, StringComparison.OrdinalIgnoreCase));
-
-        return matchedName is null ? null : assembly.GetManifestResourceStream(matchedName);
-    }
+    public static string NormalizeResourcePath(string? path) => EmbeddedResourceFileSystem.NormalizePath(path);
 
     private static void ApplyWindowAttributes(Window window, XElement element)
     {
@@ -105,17 +86,17 @@ public static class XamlRuntimeLoader
         }
     }
 
-    private static Control CreateControlTree(XElement element)
+    private static Control CreateControlTree(XElement element, System.Reflection.Assembly assembly)
     {
         Control control = CreateControl(element.Name.LocalName);
         ApplyCommonProperties(control, element);
-        ApplySpecificProperties(control, element);
+        ApplySpecificProperties(control, element, assembly);
 
         if (control is Controls.Grid grid)
         {
             foreach (var childElement in element.Elements())
             {
-                grid.Children.Add(CreateControlTree(childElement));
+                grid.Children.Add(CreateControlTree(childElement, assembly));
             }
         }
 
@@ -167,7 +148,7 @@ public static class XamlRuntimeLoader
         }
     }
 
-    private static void ApplySpecificProperties(Control control, XElement element)
+    private static void ApplySpecificProperties(Control control, XElement element, System.Reflection.Assembly assembly)
     {
         switch (control)
         {
@@ -176,12 +157,27 @@ public static class XamlRuntimeLoader
                 break;
             case Controls.CheckBox checkBox:
                 checkBox.Content = GetAttribute(element, "Content") ?? checkBox.Content;
+                if (TryGetBoolAttribute(element, "IsChecked", out var checkBoxIsChecked))
+                {
+                    checkBox.IsChecked = checkBoxIsChecked;
+                }
                 break;
             case Controls.Label label:
                 label.Content = GetAttribute(element, "Content") ?? label.Content;
                 break;
             case Controls.RadioButton radioButton:
                 radioButton.Content = GetAttribute(element, "Content") ?? radioButton.Content;
+                if (TryGetBoolAttribute(element, "IsChecked", out var radioButtonIsChecked))
+                {
+                    radioButton.Checked = radioButtonIsChecked;
+                }
+                break;
+            case Controls.ComboBox comboBox:
+                ApplyComboBoxItems(comboBox, element);
+                if (TryGetIntAttribute(element, "SelectedIndex", out var selectedIndex))
+                {
+                    comboBox.SelectedIndex = selectedIndex;
+                }
                 break;
             case Controls.TextBlock textBlock:
                 textBlock.Text = GetAttribute(element, "Text") ?? textBlock.Text;
@@ -201,10 +197,32 @@ public static class XamlRuntimeLoader
                 var source = GetAttribute(element, "Source");
                 if (!string.IsNullOrWhiteSpace(source))
                 {
-                    image.Source = NormalizeImageSource(source);
+                    image.Source = ResolveImageSourcePath(assembly, source);
                 }
                 break;
         }
+    }
+
+    private static string ResolveImageSourcePath(System.Reflection.Assembly assembly, string source)
+    {
+        var normalized = NormalizeImageSource(source);
+        if (string.IsNullOrWhiteSpace(normalized))
+        {
+            return normalized;
+        }
+
+        if (File.Exists(normalized))
+        {
+            return normalized;
+        }
+
+        if (!EmbeddedResourceFileSystem.Exists(assembly, normalized))
+        {
+            return normalized;
+        }
+
+        string cacheDir = Path.Combine(AppContext.BaseDirectory, ".lvglsharp-wpf-assets");
+        return EmbeddedResourceFileSystem.MaterializeToCache(assembly, normalized, cacheDir);
     }
 
     private static string NormalizeImageSource(string source)
@@ -329,6 +347,13 @@ public static class XamlRuntimeLoader
         return true;
     }
 
+    private static bool TryGetBoolAttribute(XElement element, string name, out bool value)
+    {
+        value = default;
+        var text = GetAttribute(element, name);
+        return !string.IsNullOrWhiteSpace(text) && bool.TryParse(text, out value);
+    }
+
     private static bool TryGetDoubleAttribute(XElement element, string name, out double value)
     {
         value = default;
@@ -388,6 +413,28 @@ public static class XamlRuntimeLoader
     private static bool TryParseDouble(string text, out double value)
     {
         return double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+    }
+
+    private static void ApplyComboBoxItems(Controls.ComboBox comboBox, XElement element)
+    {
+        foreach (var child in element.Elements())
+        {
+            if (string.Equals(child.Name.LocalName, "ComboBoxItem", StringComparison.Ordinal))
+            {
+                var content = GetAttribute(child, "Content");
+                if (!string.IsNullOrWhiteSpace(content))
+                {
+                    comboBox.Items.Add(content);
+                    continue;
+                }
+
+                var text = child.Value?.Trim();
+                if (!string.IsNullOrWhiteSpace(text))
+                {
+                    comboBox.Items.Add(text);
+                }
+            }
+        }
     }
 
     public sealed class ApplicationDefinition

@@ -139,7 +139,7 @@
       <_LVGLSharpWpfGeneratedProgramLines Include="            &quot;$(LVGLWpfAppXaml)&quot;," />
       <_LVGLSharpWpfGeneratedProgramLines Include="            &quot;$(LVGLWpfStartupXaml)&quot;," />
       <_LVGLSharpWpfGeneratedProgramLines Include="            static () =&gt; new global::$(LVGLWpfStartupType)()," />
-      <_LVGLSharpWpfGeneratedProgramLines Include="            static startupXaml =&gt; string.Equals(global::System.IO.Path.GetFileName(startupXaml), &quot;$(LVGLWpfStartupXaml)&quot;, global::System.StringComparison.OrdinalIgnoreCase) ? new global::$(LVGLWpfStartupType)() : null)%3B" />
+      <_LVGLSharpWpfGeneratedProgramLines Include="            static startupXaml =&gt; string.Equals(global::LVGLSharp.WPF.XamlRuntimeLoader.NormalizeResourcePath(startupXaml), global::LVGLSharp.WPF.XamlRuntimeLoader.NormalizeResourcePath(&quot;$(LVGLWpfStartupXaml)&quot;), global::System.StringComparison.OrdinalIgnoreCase) ? new global::$(LVGLWpfStartupType)() : null)%3B" />
       <_LVGLSharpWpfGeneratedProgramLines Include="    }" />
       <_LVGLSharpWpfGeneratedProgramLines Include="}" />
     </ItemGroup>

@@ -42,6 +42,12 @@ public enum TextWrapping
     Wrap,
 }
 
+public enum Orientation
+{
+    Horizontal,
+    Vertical,
+}
+
 public readonly struct Thickness
 {
     public Thickness(double uniform)

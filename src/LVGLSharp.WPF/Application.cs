@@ -47,8 +47,15 @@ public class Application
 
         var appDefinition = XamlRuntimeLoader.TryLoadApplicationDefinition(assembly, appXamlPath);
 
-        string startupXaml = appDefinition?.StartupUri ?? fallbackStartupXaml;
-        var window = startupResolver?.Invoke(startupXaml) ?? fallbackFactory();
+        string startupXaml = XamlRuntimeLoader.NormalizeResourcePath(appDefinition?.StartupUri ?? fallbackStartupXaml);
+        string normalizedFallbackStartupXaml = XamlRuntimeLoader.NormalizeResourcePath(fallbackStartupXaml);
+        bool isFallbackStartup = string.Equals(
+            startupXaml,
+            normalizedFallbackStartupXaml,
+            StringComparison.OrdinalIgnoreCase);
+
+        var window = startupResolver?.Invoke(startupXaml)
+                     ?? (isFallbackStartup ? fallbackFactory() : new Window());
 
         // If custom startup window ctor did not initialize content, load from StartupUri XAML.
         if (window.Content is null)

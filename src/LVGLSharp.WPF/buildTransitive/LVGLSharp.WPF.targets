@@ -9,6 +9,14 @@
     <_LVGLSharpWpfCompatRootNamespace Condition="'$(_LVGLSharpWpfCompatRootNamespace)' == ''">$(AssemblyName)</_LVGLSharpWpfCompatRootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(UseLVGLWpf)' == 'true' And '$(LVGLWpfStartupXaml)' == ''">
+    <LVGLWpfStartupXaml>MainWindow.xaml</LVGLWpfStartupXaml>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(UseLVGLWpf)' == 'true' And '$(LVGLWpfAppXaml)' == ''">
+    <LVGLWpfAppXaml>App.xaml</LVGLWpfAppXaml>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(UseLVGLWpf)' == 'true' And '$(LVGLWpfStartupType)' == ''">
     <LVGLWpfStartupType>$(_LVGLSharpWpfCompatRootNamespace).MainWindow</LVGLWpfStartupType>
   </PropertyGroup>
@@ -20,7 +28,29 @@
   <ItemGroup Condition="'$(UseLVGLWpf)' == 'true'">
     <Using Include="LVGLSharp.WPF" />
     <Using Include="LVGLSharp.WPF.Controls" />
+    <None Remove="**\*.xaml" />
+    <EmbeddedResource Include="**\*.xaml" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
+
+  <Target Name="LVGLSharpGenerateWpfInitializeComponent" BeforeTargets="CoreCompile" Condition="'$(UseLVGLWpf)' == 'true' And ('$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe')">
+    <ItemGroup>
+      <_LVGLSharpWpfCompatWindowLines Include="// &lt;auto-generated /&gt;" />
+      <_LVGLSharpWpfCompatWindowLines Include="namespace $(_LVGLSharpWpfCompatRootNamespace)%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="public partial class MainWindow" />
+      <_LVGLSharpWpfCompatWindowLines Include="{" />
+      <_LVGLSharpWpfCompatWindowLines Include="    private void InitializeComponent()" />
+      <_LVGLSharpWpfCompatWindowLines Include="    {" />
+      <_LVGLSharpWpfCompatWindowLines Include="        global::LVGLSharp.WPF.XamlRuntimeLoader.LoadIntoWindow(this, &quot;$(LVGLWpfStartupXaml)&quot;)%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="    }" />
+      <_LVGLSharpWpfCompatWindowLines Include="}" />
+    </ItemGroup>
+
+    <WriteLinesToFile File="$(_LVGLSharpWpfGeneratedInitializeComponentFile)" Lines="@(_LVGLSharpWpfCompatWindowLines)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+
+    <ItemGroup>
+      <Compile Include="$(_LVGLSharpWpfGeneratedInitializeComponentFile)" Visible="false" AutoGen="true" />
+    </ItemGroup>
+  </Target>
 
   <Target Name="LVGLSharpValidateWpfSelection" BeforeTargets="CoreCompile" Condition="'$(UseWPF)' == 'true' And '$(UseLVGLWpf)' == 'true'">
     <Error Text="`UseWPF` and `UseLVGLWpf` cannot both be `true` for the same target." />
@@ -85,38 +115,6 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="LVGLSharpGenerateWpfInitializeComponent" BeforeTargets="CoreCompile" Condition="'$(UseLVGLWpf)' == 'true' And ('$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe')">
-    <ItemGroup>
-      <_LVGLSharpWpfCompatWindowLines Include="// &lt;auto-generated /&gt;" />
-      <_LVGLSharpWpfCompatWindowLines Include="namespace $(_LVGLSharpWpfCompatRootNamespace)%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="public partial class MainWindow" />
-      <_LVGLSharpWpfCompatWindowLines Include="{" />
-      <_LVGLSharpWpfCompatWindowLines Include="    private void InitializeComponent()" />
-      <_LVGLSharpWpfCompatWindowLines Include="    {" />
-      <_LVGLSharpWpfCompatWindowLines Include="        Title = &quot;MainWindow&quot;%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="        Width = 800%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="        Height = 450%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="        var grid = new global::LVGLSharp.WPF.Controls.Grid { Width = 800, Height = 450 }%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.Button { Content = &quot;Button&quot;, Width = 100, Height = 32, Margin = new global::LVGLSharp.WPF.Thickness(75, 70, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top })%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.CheckBox { Content = &quot;CheckBox&quot;, Width = 120, Height = 30, Margin = new global::LVGLSharp.WPF.Thickness(170, 165, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top })%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.ComboBox { Width = 120, Height = 30, Margin = new global::LVGLSharp.WPF.Thickness(170, 245, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top })%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.Label { Content = &quot;Label&quot;, Width = 80, Height = 30, Margin = new global::LVGLSharp.WPF.Thickness(390, 120, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top })%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.RadioButton { Content = &quot;RadioButton&quot;, Width = 120, Height = 30, Margin = new global::LVGLSharp.WPF.Thickness(320, 200, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top })%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.TextBlock { Text = &quot;TextBlock&quot;, Width = 53, Height = 20, Margin = new global::LVGLSharp.WPF.Thickness(120, 290, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top, TextWrapping = global::LVGLSharp.WPF.TextWrapping.Wrap })%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.TextBox { Text = &quot;TextBox&quot;, Width = 120, Height = 30, Margin = new global::LVGLSharp.WPF.Thickness(310, 320, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top, TextWrapping = global::LVGLSharp.WPF.TextWrapping.Wrap })%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.Image { Width = 180, Height = 157, Margin = new global::LVGLSharp.WPF.Thickness(558, 50, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top, Source = &quot;lvgl128x128.png&quot; })%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="        Content = grid%3B" />
-      <_LVGLSharpWpfCompatWindowLines Include="    }" />
-      <_LVGLSharpWpfCompatWindowLines Include="}" />
-    </ItemGroup>
-
-    <WriteLinesToFile File="$(_LVGLSharpWpfGeneratedInitializeComponentFile)" Lines="@(_LVGLSharpWpfCompatWindowLines)" Overwrite="true" WriteOnlyWhenDifferent="true" />
-
-    <ItemGroup>
-      <Compile Include="$(_LVGLSharpWpfGeneratedInitializeComponentFile)" Visible="false" AutoGen="true" />
-    </ItemGroup>
-  </Target>
-
   <Target Name="LVGLSharpValidateWpfReference" BeforeTargets="CoreCompile" Condition="'$(UseLVGLWpf)' == 'true' And !Exists('$(_LVGLSharpWpfProjectPath)')">
     <Error Text="UseLVGLWpf=true 需要可用的 LVGLSharp.WPF 项目引用。缺少 $(_LVGLSharpWpfProjectPath)。" />
   </Target>
@@ -136,7 +134,12 @@
       <_LVGLSharpWpfGeneratedProgramLines Include="    [global::System.STAThreadAttribute]" />
       <_LVGLSharpWpfGeneratedProgramLines Include="    private static void Main()" />
       <_LVGLSharpWpfGeneratedProgramLines Include="    {" />
-      <_LVGLSharpWpfGeneratedProgramLines Include="        global::LVGLSharp.WPF.Application.Run&lt;global::$(LVGLWpfStartupType)&gt;()%3B" />
+      <_LVGLSharpWpfGeneratedProgramLines Include="        global::LVGLSharp.WPF.Application.RunFromAppXaml(" />
+      <_LVGLSharpWpfGeneratedProgramLines Include="            typeof(global::$(LVGLWpfStartupType)).Assembly," />
+      <_LVGLSharpWpfGeneratedProgramLines Include="            &quot;$(LVGLWpfAppXaml)&quot;," />
+      <_LVGLSharpWpfGeneratedProgramLines Include="            &quot;$(LVGLWpfStartupXaml)&quot;," />
+      <_LVGLSharpWpfGeneratedProgramLines Include="            static () =&gt; new global::$(LVGLWpfStartupType)()," />
+      <_LVGLSharpWpfGeneratedProgramLines Include="            static startupXaml =&gt; string.Equals(global::System.IO.Path.GetFileName(startupXaml), &quot;$(LVGLWpfStartupXaml)&quot;, global::System.StringComparison.OrdinalIgnoreCase) ? new global::$(LVGLWpfStartupType)() : null)%3B" />
       <_LVGLSharpWpfGeneratedProgramLines Include="    }" />
       <_LVGLSharpWpfGeneratedProgramLines Include="}" />
     </ItemGroup>

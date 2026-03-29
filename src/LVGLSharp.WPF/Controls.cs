@@ -24,6 +24,10 @@ public class TextBlock : LVGLSharp.Forms.Label
 {
 }
 
+public class Label : LVGLSharp.Forms.Label
+{
+}
+
 public class TextBox : LVGLSharp.Forms.TextBox
 {
 }

@@ -27,6 +27,12 @@ public class Window
     {
         if (_content is not null)
         {
+            // Match WPF root content behavior: stretch to fill the window by default.
+            if (_content.Dock == DockStyle.None)
+            {
+                _content.Dock = DockStyle.Fill;
+            }
+
             form.Controls.Add(_content);
         }
     }

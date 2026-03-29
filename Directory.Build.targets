@@ -1,4 +1,6 @@
 <Project>
   <Import Project="$(MSBuildThisFileDirectory)src\LVGLSharp.WinForms\buildTransitive\LVGLSharp.Forms.targets"
           Condition="'$(UseLVGLSharpForms)' == 'true' And Exists('$(MSBuildThisFileDirectory)src\LVGLSharp.WinForms\buildTransitive\LVGLSharp.Forms.targets')" />
+  <Import Project="$(MSBuildThisFileDirectory)src\LVGLSharp.WPF\buildTransitive\LVGLSharp.WPF.targets"
+          Condition="'$(UseLVGLWpf)' == 'true' And Exists('$(MSBuildThisFileDirectory)src\LVGLSharp.WPF\buildTransitive\LVGLSharp.WPF.targets')" />
 </Project>

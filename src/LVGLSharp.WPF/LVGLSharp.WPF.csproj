@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IsTrimmable>true</IsTrimmable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>LVGLSharp.WPF</PackageId>
+    <Title>LVGLSharp.WPF</Title>
+    <Description>WPF-like application bootstrap for LVGLSharp.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LVGLSharp.WinForms\LVGLSharp.Forms.csproj" />
+    <ProjectReference Include="..\LVGLSharp.Runtime.Windows\LVGLSharp.Runtime.Windows.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="buildTransitive\LVGLSharp.WPF.targets" Pack="true" PackagePath="buildTransitive\" Visible="false" />
+  </ItemGroup>
+</Project>

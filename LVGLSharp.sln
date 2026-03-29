@@ -68,6 +68,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsRdpDemo", "src\Demo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp", "src\Demos\WpfApp\WpfApp.csproj", "{226FB961-7805-4987-9C69-06DB7ECE9F23}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVGLSharp.WPF", "src\LVGLSharp.WPF\LVGLSharp.WPF.csproj", "{FDA20958-DA02-5E72-C25C-D7D76F660175}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -318,6 +320,18 @@ Global
 		{226FB961-7805-4987-9C69-06DB7ECE9F23}.Release|x64.Build.0 = Release|Any CPU
 		{226FB961-7805-4987-9C69-06DB7ECE9F23}.Release|x86.ActiveCfg = Release|Any CPU
 		{226FB961-7805-4987-9C69-06DB7ECE9F23}.Release|x86.Build.0 = Release|Any CPU
+		{FDA20958-DA02-5E72-C25C-D7D76F660175}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA20958-DA02-5E72-C25C-D7D76F660175}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA20958-DA02-5E72-C25C-D7D76F660175}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FDA20958-DA02-5E72-C25C-D7D76F660175}.Debug|x64.Build.0 = Debug|Any CPU
+		{FDA20958-DA02-5E72-C25C-D7D76F660175}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FDA20958-DA02-5E72-C25C-D7D76F660175}.Debug|x86.Build.0 = Debug|Any CPU
+		{FDA20958-DA02-5E72-C25C-D7D76F660175}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA20958-DA02-5E72-C25C-D7D76F660175}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDA20958-DA02-5E72-C25C-D7D76F660175}.Release|x64.ActiveCfg = Release|Any CPU
+		{FDA20958-DA02-5E72-C25C-D7D76F660175}.Release|x64.Build.0 = Release|Any CPU
+		{FDA20958-DA02-5E72-C25C-D7D76F660175}.Release|x86.ActiveCfg = Release|Any CPU
+		{FDA20958-DA02-5E72-C25C-D7D76F660175}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

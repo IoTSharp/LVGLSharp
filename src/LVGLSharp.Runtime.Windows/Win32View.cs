@@ -1,4 +1,4 @@
-using LVGLSharp;
+﻿using LVGLSharp;
 using LVGLSharp.Interop;
 using SixLabors.Fonts;
 using System;
@@ -171,38 +171,47 @@ namespace LVGLSharp.Runtime.Windows
 
         static unsafe void UpdateImeCompositionWindow(lv_obj_t* target)
         {
-            if (target == null)
+            try
             {
-                return;
+                if (target == null)
+                {
+                    return;
+                }
+
+                var labelObj = lv_textarea_get_label(target);
+                if (labelObj == null)
+                {
+                    return;
+                }
+
+                lv_area_t labelArea;
+                lv_obj_get_coords(labelObj, &labelArea);
+
+                lv_point_t cursorPoint;
+                lv_label_get_letter_pos(labelObj, lv_textarea_get_cursor_pos(target), &cursorPoint);
+
+                var font = lv_obj_get_style_text_font(target, lv_part_t.LV_PART_MAIN);
+                int ime_x = labelArea.x1 + cursorPoint.x;
+                int ime_y = labelArea.y1 + cursorPoint.y + (font != null ? font->line_height : 0);
+
+                // 设置 IME 候选框位置
+                IntPtr hIMC = ImmGetContext(g_hwnd);
+                if (hIMC != IntPtr.Zero)
+                {
+                    COMPOSITIONFORM compForm = new COMPOSITIONFORM();
+                    compForm.dwStyle = CFS_POINT;
+                    compForm.ptCurrentPos.x = ime_x;
+                    compForm.ptCurrentPos.y = ime_y;
+
+                    ImmSetCompositionWindow(hIMC, ref compForm);
+                    ImmReleaseContext(g_hwnd, hIMC);
+                }
             }
-
-            var labelObj = lv_textarea_get_label(target);
-            if (labelObj == null)
+            catch (NullReferenceException)
             {
-                return;
-            }
-
-            lv_area_t labelArea;
-            lv_obj_get_coords(labelObj, &labelArea);
-
-            lv_point_t cursorPoint;
-            lv_label_get_letter_pos(labelObj, lv_textarea_get_cursor_pos(target), &cursorPoint);
-
-            var font = lv_obj_get_style_text_font(target, lv_part_t.LV_PART_MAIN);
-            int ime_x = labelArea.x1 + cursorPoint.x;
-            int ime_y = labelArea.y1 + cursorPoint.y + (font != null ? font->line_height : 0);
-
-            // 设置 IME 候选框位置
-            IntPtr hIMC = ImmGetContext(g_hwnd);
-            if (hIMC != IntPtr.Zero)
-            {
-                COMPOSITIONFORM compForm = new COMPOSITIONFORM();
-                compForm.dwStyle = CFS_POINT;
-                compForm.ptCurrentPos.x = ime_x;
-                compForm.ptCurrentPos.y = ime_y;
-
-                ImmSetCompositionWindow(hIMC, ref compForm);
-                ImmReleaseContext(g_hwnd, hIMC);
+                // LVGL 样式链尚未就绪时（如 textarea 初始化前 IME 事件触发），
+                // 原生 P/Invoke 可能产生 SEH 异常并映射为 NullReferenceException。
+                // IME 位置更新是纯修饰功能，跳过不影响输入。
             }
         }
 

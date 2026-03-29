@@ -1,0 +1,150 @@
+<Project>
+  <PropertyGroup Condition="'$(UseLVGLWpf)' == 'true'">
+    <DefineConstants>$(DefineConstants);LVGLSHARP_WPF</DefineConstants>
+    <_LVGLSharpWpfGeneratedProgramFile>$(IntermediateOutputPath)LVGLSharp.Wpf.Program.g.cs</_LVGLSharpWpfGeneratedProgramFile>
+    <_LVGLSharpWpfGeneratedRuntimeRegistrationFile>$(IntermediateOutputPath)LVGLSharp.Wpf.RuntimeRegistration.g.cs</_LVGLSharpWpfGeneratedRuntimeRegistrationFile>
+    <_LVGLSharpWpfGeneratedInitializeComponentFile>$(IntermediateOutputPath)LVGLSharp.Wpf.InitializeComponent.g.cs</_LVGLSharpWpfGeneratedInitializeComponentFile>
+    <_LVGLSharpWpfProjectPath>$(MSBuildThisFileDirectory)..\LVGLSharp.WPF.csproj</_LVGLSharpWpfProjectPath>
+    <_LVGLSharpWpfCompatRootNamespace Condition="'$(RootNamespace)' != ''">$(RootNamespace)</_LVGLSharpWpfCompatRootNamespace>
+    <_LVGLSharpWpfCompatRootNamespace Condition="'$(_LVGLSharpWpfCompatRootNamespace)' == ''">$(AssemblyName)</_LVGLSharpWpfCompatRootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(UseLVGLWpf)' == 'true' And '$(LVGLWpfStartupType)' == ''">
+    <LVGLWpfStartupType>$(_LVGLSharpWpfCompatRootNamespace).MainWindow</LVGLWpfStartupType>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(UseLVGLWpf)' == 'true' And Exists('$(_LVGLSharpWpfProjectPath)') And '$(MSBuildProjectFullPath)' != '$(_LVGLSharpWpfProjectPath)'">
+    <ProjectReference Include="$(_LVGLSharpWpfProjectPath)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLVGLWpf)' == 'true'">
+    <Using Include="LVGLSharp.WPF" />
+    <Using Include="LVGLSharp.WPF.Controls" />
+  </ItemGroup>
+
+  <Target Name="LVGLSharpValidateWpfSelection" BeforeTargets="CoreCompile" Condition="'$(UseWPF)' == 'true' And '$(UseLVGLWpf)' == 'true'">
+    <Error Text="`UseWPF` and `UseLVGLWpf` cannot both be `true` for the same target." />
+  </Target>
+
+  <Target Name="LVGLSharpGenerateWpfRuntimeRegistration" DependsOnTargets="ResolveReferences" BeforeTargets="CoreCompile" Condition="'$(UseLVGLWpf)' == 'true'">
+    <ItemGroup>
+      <_LVGLSharpRuntimeReference Include="@(ReferencePath)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows' Or '%(FileName)' == 'LVGLSharp.Runtime.Linux' Or '%(FileName)' == 'LVGLSharp.Runtime.MacOs'" />
+      <_LVGLSharpWindowsRuntimeReference Include="@(_LVGLSharpRuntimeReference)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows'" />
+      <_LVGLSharpLinuxRuntimeReference Include="@(_LVGLSharpRuntimeReference)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Linux'" />
+      <_LVGLSharpMacOsRuntimeReference Include="@(_LVGLSharpRuntimeReference)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.MacOs'" />
+    </ItemGroup>
+
+    <Delete Files="$(_LVGLSharpWpfGeneratedRuntimeRegistrationFile)" Condition="'@(_LVGLSharpRuntimeReference)' == ''" />
+
+    <ItemGroup Condition="'@(_LVGLSharpRuntimeReference)' != ''">
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="// &lt;auto-generated /&gt;" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using System.Runtime.CompilerServices%3B" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using LVGLSharp.Runtime.Windows%3B" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using LVGLSharp.Runtime.Linux%3B" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="using LVGLSharp.Runtime.MacOs%3B" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="internal static class LVGLSharpWpfGeneratedRuntimeRegistration" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="{" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    [ModuleInitializer]" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    internal static void Register()" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    {" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        global::LVGLSharp.Forms.ApplicationConfiguration.RegisterWindowsRuntimeInitializer(ConfigureWindowsRuntime)%3B" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        global::LVGLSharp.Forms.ApplicationConfiguration.RegisterLinuxRuntimeInitializer(ConfigureLinuxRuntime)%3B" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        global::LVGLSharp.Forms.ApplicationConfiguration.RegisterMacOsRuntimeInitializer(ConfigureMacOsRuntime)%3B" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    }" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    private static void ConfigureWindowsRuntime()" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    {" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        global::LVGLSharp.Forms.Application.UseRuntime(" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static options =&gt; new Win32View(options.Title, (uint)options.Width, (uint)options.Height, options.Borderless)," Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; Win32View.CurrentMouseButton," Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; Win32View.CurrentMousePosition)%3B" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        global::LVGLSharp.Drawing.Image.RegisterFactory(static path =&gt; new WindowsImageSource(path))%3B" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    }" Condition="'@(_LVGLSharpWindowsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    private static void ConfigureLinuxRuntime()" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    {" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        global::LVGLSharp.Forms.Application.UseRuntime(" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static options =&gt; new LinuxView(options.Title, options.Width, options.Height, borderless: options.Borderless)," Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; LinuxView.CurrentMouseButton," Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; LinuxView.CurrentMousePosition)%3B" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        global::LVGLSharp.Drawing.Image.RegisterFactory(static path =&gt; new LinuxImageSource(path))%3B" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    }" Condition="'@(_LVGLSharpLinuxRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    private static void ConfigureMacOsRuntime()" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    {" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        global::LVGLSharp.Forms.Application.UseRuntime(" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static options =&gt; new MacOsView(new MacOsViewOptions { Title = options.Title, Width = options.Width, Height = options.Height, Dpi = 96f })," Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; MacOsView.CurrentMouseButton," Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="            static () =&gt; MacOsView.CurrentMousePosition)%3B" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="        global::LVGLSharp.Drawing.Image.RegisterFactory(static path =&gt; new MacOsImageSource(path))%3B" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="    }" Condition="'@(_LVGLSharpMacOsRuntimeReference)' != ''" />
+      <_LVGLSharpGeneratedRuntimeRegistrationLines Include="}" />
+    </ItemGroup>
+
+    <WriteLinesToFile File="$(_LVGLSharpWpfGeneratedRuntimeRegistrationFile)" Lines="@(_LVGLSharpGeneratedRuntimeRegistrationLines)" Overwrite="true" WriteOnlyWhenDifferent="true" Condition="'@(_LVGLSharpRuntimeReference)' != ''" />
+
+    <ItemGroup Condition="Exists('$(_LVGLSharpWpfGeneratedRuntimeRegistrationFile)')">
+      <Compile Include="$(_LVGLSharpWpfGeneratedRuntimeRegistrationFile)" Visible="false" AutoGen="true" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="LVGLSharpGenerateWpfInitializeComponent" BeforeTargets="CoreCompile" Condition="'$(UseLVGLWpf)' == 'true' And ('$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe')">
+    <ItemGroup>
+      <_LVGLSharpWpfCompatWindowLines Include="// &lt;auto-generated /&gt;" />
+      <_LVGLSharpWpfCompatWindowLines Include="namespace $(_LVGLSharpWpfCompatRootNamespace)%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="public partial class MainWindow" />
+      <_LVGLSharpWpfCompatWindowLines Include="{" />
+      <_LVGLSharpWpfCompatWindowLines Include="    private void InitializeComponent()" />
+      <_LVGLSharpWpfCompatWindowLines Include="    {" />
+      <_LVGLSharpWpfCompatWindowLines Include="        Title = &quot;MainWindow&quot;%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="        Width = 800%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="        Height = 450%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="        var grid = new global::LVGLSharp.WPF.Controls.Grid { Width = 800, Height = 450 }%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.Button { Content = &quot;Button&quot;, Width = 100, Height = 32, Margin = new global::LVGLSharp.WPF.Thickness(75, 70, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top })%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.CheckBox { Content = &quot;CheckBox&quot;, Width = 120, Height = 30, Margin = new global::LVGLSharp.WPF.Thickness(170, 165, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top })%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.ComboBox { Width = 120, Height = 30, Margin = new global::LVGLSharp.WPF.Thickness(170, 245, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top })%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.Label { Content = &quot;Label&quot;, Width = 80, Height = 30, Margin = new global::LVGLSharp.WPF.Thickness(390, 120, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top })%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.RadioButton { Content = &quot;RadioButton&quot;, Width = 120, Height = 30, Margin = new global::LVGLSharp.WPF.Thickness(320, 200, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top })%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.TextBlock { Text = &quot;TextBlock&quot;, Width = 53, Height = 20, Margin = new global::LVGLSharp.WPF.Thickness(120, 290, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top, TextWrapping = global::LVGLSharp.WPF.TextWrapping.Wrap })%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.TextBox { Text = &quot;TextBox&quot;, Width = 120, Height = 30, Margin = new global::LVGLSharp.WPF.Thickness(310, 320, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top, TextWrapping = global::LVGLSharp.WPF.TextWrapping.Wrap })%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="        grid.Children.Add(new global::LVGLSharp.WPF.Controls.Image { Width = 180, Height = 157, Margin = new global::LVGLSharp.WPF.Thickness(558, 50, 0, 0), HorizontalAlignment = global::LVGLSharp.WPF.HorizontalAlignment.Left, VerticalAlignment = global::LVGLSharp.WPF.VerticalAlignment.Top, Source = &quot;lvgl128x128.png&quot; })%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="        Content = grid%3B" />
+      <_LVGLSharpWpfCompatWindowLines Include="    }" />
+      <_LVGLSharpWpfCompatWindowLines Include="}" />
+    </ItemGroup>
+
+    <WriteLinesToFile File="$(_LVGLSharpWpfGeneratedInitializeComponentFile)" Lines="@(_LVGLSharpWpfCompatWindowLines)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+
+    <ItemGroup>
+      <Compile Include="$(_LVGLSharpWpfGeneratedInitializeComponentFile)" Visible="false" AutoGen="true" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="LVGLSharpValidateWpfReference" BeforeTargets="CoreCompile" Condition="'$(UseLVGLWpf)' == 'true' And !Exists('$(_LVGLSharpWpfProjectPath)')">
+    <Error Text="UseLVGLWpf=true 需要可用的 LVGLSharp.WPF 项目引用。缺少 $(_LVGLSharpWpfProjectPath)。" />
+  </Target>
+
+  <Target Name="LVGLSharpValidateWpfRuntimeReference" BeforeTargets="CoreCompile" Condition="'$(UseLVGLWpf)' == 'true'">
+    <ItemGroup>
+      <_LVGLSharpRuntimeReference Include="@(ReferencePath)" Condition="'%(FileName)' == 'LVGLSharp.Runtime.Windows' Or '%(FileName)' == 'LVGLSharp.Runtime.Linux' Or '%(FileName)' == 'LVGLSharp.Runtime.MacOs'" />
+    </ItemGroup>
+    <Warning Condition="'@(_LVGLSharpRuntimeReference)' == ''" Text="LVGLSharp.WPF requires at least one platform runtime reference. Add LVGLSharp.Runtime.Windows, LVGLSharp.Runtime.Linux, and/or LVGLSharp.Runtime.MacOs so runtime registration can be selected automatically by operating system during ApplicationConfiguration.Initialize()." />
+  </Target>
+
+  <Target Name="LVGLSharpGenerateWpfEntryPoint" BeforeTargets="CoreCompile" Condition="'$(UseLVGLWpf)' == 'true' And ('$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe')">
+    <ItemGroup>
+      <_LVGLSharpWpfGeneratedProgramLines Include="// &lt;auto-generated /&gt;" />
+      <_LVGLSharpWpfGeneratedProgramLines Include="internal static class LVGLSharpWpfGeneratedProgram" />
+      <_LVGLSharpWpfGeneratedProgramLines Include="{" />
+      <_LVGLSharpWpfGeneratedProgramLines Include="    [global::System.STAThreadAttribute]" />
+      <_LVGLSharpWpfGeneratedProgramLines Include="    private static void Main()" />
+      <_LVGLSharpWpfGeneratedProgramLines Include="    {" />
+      <_LVGLSharpWpfGeneratedProgramLines Include="        global::LVGLSharp.WPF.Application.Run&lt;global::$(LVGLWpfStartupType)&gt;()%3B" />
+      <_LVGLSharpWpfGeneratedProgramLines Include="    }" />
+      <_LVGLSharpWpfGeneratedProgramLines Include="}" />
+    </ItemGroup>
+
+    <WriteLinesToFile File="$(_LVGLSharpWpfGeneratedProgramFile)" Lines="@(_LVGLSharpWpfGeneratedProgramLines)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+
+    <ItemGroup>
+      <Compile Include="$(_LVGLSharpWpfGeneratedProgramFile)" Visible="false" AutoGen="true" />
+    </ItemGroup>
+  </Target>
+</Project>

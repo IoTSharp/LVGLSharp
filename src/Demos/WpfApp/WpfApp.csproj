@@ -13,8 +13,6 @@
 
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
 		<UseLVGLWpf>true</UseLVGLWpf>
-		<EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
-		<EnableDefaultPageItems>false</EnableDefaultPageItems>
 		<LVGLSharpWpfProjectPath>..\..\LVGLSharp.WPF\LVGLSharp.WPF.csproj</LVGLSharpWpfProjectPath>
 	</PropertyGroup>
 
@@ -23,22 +21,6 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-		<Compile Remove="App.xaml.cs" />
-		<Compile Remove="MainWindow.xaml.cs" />
-		<Compile Remove="AssemblyInfo.cs" />
-		<Page Remove="App.xaml" />
-		<Page Remove="MainWindow.xaml" />
 		<Using Include="LVGLSharp.WPF" />
 	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0' And Exists('$(LVGLSharpWpfProjectPath)')">
-		<ProjectReference Include="$(LVGLSharpWpfProjectPath)" />
-	</ItemGroup>
-
-	<Target Name="ValidateLVGLWpfReference" BeforeTargets="CoreCompile" Condition="'$(TargetFramework)' == 'net10.0' And !Exists('$(LVGLSharpWpfProjectPath)')">
-		<Error Text="UseLVGLWpf=true 需要可用的 LVGLSharp.WPF 项目引用。请先提供 $(LVGLSharpWpfProjectPath)，然后再构建 net10.0 目标。" />
-	</Target>
-
-
-
 </Project>

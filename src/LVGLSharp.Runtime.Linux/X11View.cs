@@ -29,6 +29,7 @@ public unsafe partial class X11View : ViewLifetimeBase
     private const int ButtonRelease = 5;
     private const int MotionNotify = 6;
     private const int DestroyNotify = 17;
+    private const int ConfigureNotify = 22;
     private const int ClientMessage = 33;
 
     private const long KeyPressMask = 1L << 0;
@@ -148,6 +149,24 @@ public unsafe partial class X11View : ViewLifetimeBase
         public nuint window;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    private struct XConfigureEvent
+    {
+        public int type;
+        public nuint serial;
+        public int send_event;
+        public IntPtr display;
+        public nuint @event;
+        public nuint window;
+        public int x;
+        public int y;
+        public int width;
+        public int height;
+        public int border_width;
+        public nuint above;
+        public int override_redirect;
+    }
+
     [StructLayout(LayoutKind.Explicit)]
     private struct XClientMessageData
     {
@@ -179,6 +198,7 @@ public unsafe partial class X11View : ViewLifetimeBase
         [FieldOffset(0)] public XButtonEvent xbutton;
         [FieldOffset(0)] public XMotionEvent xmotion;
         [FieldOffset(0)] public XClientMessageEvent xclient;
+        [FieldOffset(0)] public XConfigureEvent xconfigure;
         [FieldOffset(0)] public XDestroyWindowEvent xdestroywindow;
     }
 
@@ -328,8 +348,8 @@ public unsafe partial class X11View : ViewLifetimeBase
     private static partial int XFree(IntPtr data);
 
     private readonly string _title;
-    private readonly int _width;
-    private readonly int _height;
+    private int _width;
+    private int _height;
     private readonly float _dpi;
     private readonly string? _requestedDisplayName;
     private readonly bool _borderless;
@@ -495,23 +515,7 @@ public unsafe partial class X11View : ViewLifetimeBase
             _lvDisplay = null;
         }
 
-        if (_xImage != IntPtr.Zero)
-        {
-            DestroyXImage();
-        }
-
-        if (_frameBuffer != null)
-        {
-            NativeMemory.Free(_frameBuffer);
-            _frameBuffer = null;
-        }
-
-        if (_drawBuffer != null)
-        {
-            NativeMemory.Free(_drawBuffer);
-            _drawBuffer = null;
-            _drawBufferByteSize = 0;
-        }
+        ReleaseBuffers();
 
         if (_gc != IntPtr.Zero && _display != IntPtr.Zero)
         {
@@ -610,26 +614,7 @@ public unsafe partial class X11View : ViewLifetimeBase
             throw new InvalidOperationException("X11 图形上下文创建失败。");
         }
 
-        AllocateBuffers();
-
-        var visual = XDefaultVisual(_display, _screen);
-        var depth = XDefaultDepth(_display, _screen);
-        _xImage = XCreateImage(
-            _display,
-            visual,
-            (uint)depth,
-            ZPixmap,
-            0,
-            (IntPtr)_frameBuffer,
-            (uint)_width,
-            (uint)_height,
-            32,
-            _width * sizeof(uint));
-
-        if (_xImage == IntPtr.Zero)
-        {
-            throw new InvalidOperationException("X11 图像缓冲创建失败。");
-        }
+        ResizeSurface(_width, _height);
 
         XMapWindow(_display, _window);
         XFlush(_display);
@@ -700,17 +685,91 @@ public unsafe partial class X11View : ViewLifetimeBase
 
     private void AllocateBuffers()
     {
-        _frameBuffer = (uint*)NativeMemory.AllocZeroed((nuint)(_width * _height), (nuint)sizeof(uint));
+        _frameBuffer = (uint*)NativeMemory.AllocZeroed((nuint)DisplayBufferSizeHelper.GetPixelCount(_width, _height), (nuint)sizeof(uint));
         if (_frameBuffer == null)
         {
             throw new OutOfMemoryException("X11 framebuffer 分配失败。");
         }
 
-        _drawBufferByteSize = checked((uint)(_width * _height * sizeof(ushort)));
+        _drawBufferByteSize = DisplayBufferSizeHelper.GetRgb565DrawBufferByteSize(_width, _height);
         _drawBuffer = (byte*)NativeMemory.AllocZeroed((nuint)_drawBufferByteSize);
         if (_drawBuffer == null)
         {
             throw new OutOfMemoryException("LVGL draw buffer 分配失败。");
+        }
+    }
+
+    private void CreateXImage()
+    {
+        var visual = XDefaultVisual(_display, _screen);
+        var depth = XDefaultDepth(_display, _screen);
+        _xImage = XCreateImage(
+            _display,
+            visual,
+            (uint)depth,
+            ZPixmap,
+            0,
+            (IntPtr)_frameBuffer,
+            (uint)_width,
+            (uint)_height,
+            32,
+            _width * sizeof(uint));
+
+        if (_xImage == IntPtr.Zero)
+        {
+            throw new InvalidOperationException("X11 图像缓冲创建失败。");
+        }
+    }
+
+    private void ReleaseBuffers()
+    {
+        if (_xImage != IntPtr.Zero)
+        {
+            DestroyXImage();
+        }
+
+        if (_frameBuffer != null)
+        {
+            NativeMemory.Free(_frameBuffer);
+            _frameBuffer = null;
+        }
+
+        if (_drawBuffer != null)
+        {
+            NativeMemory.Free(_drawBuffer);
+            _drawBuffer = null;
+            _drawBufferByteSize = 0;
+        }
+    }
+
+    private void ResizeSurface(int width, int height)
+    {
+        if (width <= 0 || height <= 0)
+        {
+            return;
+        }
+
+        if (width == _width && height == _height && _frameBuffer != null && _drawBuffer != null && _xImage != IntPtr.Zero)
+        {
+            return;
+        }
+
+        ReleaseBuffers();
+
+        _width = width;
+        _height = height;
+        AllocateBuffers();
+        CreateXImage();
+
+        if (_lvDisplay != null)
+        {
+            lv_display_set_resolution(_lvDisplay, _width, _height);
+            lv_display_set_buffers(_lvDisplay, _drawBuffer, null, _drawBufferByteSize, LV_DISPLAY_RENDER_MODE_FULL);
+        }
+
+        if (RootObject != null)
+        {
+            lv_obj_invalidate(RootObject);
         }
     }
 
@@ -786,6 +845,9 @@ public unsafe partial class X11View : ViewLifetimeBase
                     {
                         _running = false;
                     }
+                    break;
+                case ConfigureNotify:
+                    ResizeSurface(ev.xconfigure.width, ev.xconfigure.height);
                     break;
                 case DestroyNotify:
                     _running = false;

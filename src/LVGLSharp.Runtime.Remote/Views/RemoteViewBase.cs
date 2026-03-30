@@ -284,14 +284,14 @@ public abstract unsafe class RemoteViewBase : ViewLifetimeBase, IRemoteInputSink
 
     private void AllocateBuffers()
     {
-        _drawBufferByteSize = checked((uint)(_width * _height * sizeof(ushort)));
+        _drawBufferByteSize = DisplayBufferSizeHelper.GetRgb565DrawBufferByteSize(_width, _height);
         _drawBuffer = (byte*)NativeMemory.AllocZeroed((nuint)_drawBufferByteSize);
         if (_drawBuffer == null)
         {
             throw new OutOfMemoryException("Remote draw buffer 分配失败。");
         }
 
-        _frameBuffer = (uint*)NativeMemory.AllocZeroed((nuint)(_width * _height), (nuint)sizeof(uint));
+        _frameBuffer = (uint*)NativeMemory.AllocZeroed((nuint)DisplayBufferSizeHelper.GetPixelCount(_width, _height), (nuint)sizeof(uint));
         if (_frameBuffer == null)
         {
             throw new OutOfMemoryException("Remote frame buffer 分配失败。");

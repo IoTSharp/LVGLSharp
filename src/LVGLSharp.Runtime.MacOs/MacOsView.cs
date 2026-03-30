@@ -258,7 +258,7 @@ public unsafe sealed class MacOsView : ViewLifetimeBase
         }
 
         _frameBuffer = new MacOsFrameBuffer(width, height);
-        _drawBufferByteSize = checked((uint)(width * height * sizeof(ushort)));
+        _drawBufferByteSize = DisplayBufferSizeHelper.GetRgb565DrawBufferByteSize(width, height);
         _drawBuffer = (byte*)NativeMemory.AllocZeroed((nuint)_drawBufferByteSize);
         if (_drawBuffer == null)
         {

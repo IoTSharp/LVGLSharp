@@ -207,7 +207,7 @@ internal unsafe sealed partial class WaylandBufferPresenter : IDisposable
             return;
         }
 
-        _drawBufferByteSize = checked((uint)(PixelWidth * PixelHeight * sizeof(ushort)));
+        _drawBufferByteSize = DisplayBufferSizeHelper.GetRgb565DrawBufferByteSize(PixelWidth, PixelHeight);
         _drawBuffer = (byte*)NativeMemory.AllocZeroed((nuint)_drawBufferByteSize);
         if (_drawBuffer == null)
         {

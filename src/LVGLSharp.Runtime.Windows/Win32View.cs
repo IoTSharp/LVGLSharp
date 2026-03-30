@@ -24,7 +24,7 @@ namespace LVGLSharp.Runtime.Windows
         static IntPtr g_lvbuf;
         static lv_obj_t* g_focusSink;
 
-        static uint g_bufSize = 1024 * 1024 * 4;
+        static uint g_bufSize;
         static bool g_running;
         static volatile bool g_lvglReady;
         static lv_obj_t* label;
@@ -32,7 +32,7 @@ namespace LVGLSharp.Runtime.Windows
         static int mouseX = 0, mouseY = 0;
         static bool mousePressed = false;
         static uint mouseButton = 0;
-        static byte[] bgraBuf;
+        static byte[] bgraBuf = Array.Empty<byte>();
         static byte[] _timeBuf = new byte[32];
         static readonly object renderLock = new object();
         static uint last_key_processed;
@@ -63,6 +63,72 @@ namespace LVGLSharp.Runtime.Windows
             },
             bmiColors = new uint[256]
         };
+
+        static void EnsureDisplayBuffers(int width, int height)
+        {
+            if (width <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(width));
+            }
+
+            if (height <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(height));
+            }
+
+            uint drawBufferSize = DisplayBufferSizeHelper.GetRgb565DrawBufferByteSize(width, height);
+            int bgraBufferSize = DisplayBufferSizeHelper.GetColor32FrameBufferByteSize(width, height);
+            if (g_lvbuf != IntPtr.Zero && g_bufSize == drawBufferSize && bgraBuf.Length == bgraBufferSize)
+            {
+                return;
+            }
+
+            IntPtr newLvBuffer = IntPtr.Zero;
+            try
+            {
+                newLvBuffer = Marshal.AllocHGlobal(checked((int)drawBufferSize));
+                if (newLvBuffer == IntPtr.Zero)
+                {
+                    throw new OutOfMemoryException("Failed to allocate LVGL display buffer.");
+                }
+
+                byte[] newBgraBuffer = new byte[bgraBufferSize];
+
+                if (g_lvbuf != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(g_lvbuf);
+                }
+
+                g_lvbuf = newLvBuffer;
+                g_bufSize = drawBufferSize;
+                bgraBuf = newBgraBuffer;
+                newLvBuffer = IntPtr.Zero;
+            }
+            finally
+            {
+                if (newLvBuffer != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(newLvBuffer);
+                }
+            }
+        }
+
+        static void ResizeDisplay(int width, int height)
+        {
+            if (width <= 0 || height <= 0 || g_display == null)
+            {
+                return;
+            }
+
+            EnsureDisplayBuffers(width, height);
+            lv_display_set_resolution(g_display, width, height);
+            lv_display_set_buffers(g_display, g_lvbuf.ToPointer(), null, g_bufSize, LV_DISPLAY_RENDER_MODE_FULL);
+
+            if (RootObject != null)
+            {
+                lv_obj_invalidate(RootObject);
+            }
+        }
 
         static void ConvertRGB565ToBGRA(byte* src, byte* dst, int pixelCount)
         {
@@ -350,12 +416,17 @@ namespace LVGLSharp.Runtime.Windows
                     {
                         int newWidth = lParam.ToInt32() & 0xFFFF;
                         int newHeight = (lParam.ToInt32() >> 16) & 0xFFFF;
+                        if (newWidth <= 0 || newHeight <= 0)
+                        {
+                            break;
+                        }
+
                         Width = newWidth;
                         Height = newHeight;
                         // CreateWindow/ShowWindow can send WM_SIZE before LVGL display initialization.
                         if (g_lvglReady && g_display != null)
                         {
-                            lv_display_set_resolution(g_display, Width, Height);
+                            ResizeDisplay(Width, Height);
                         }
                     }
                     break;
@@ -461,7 +532,6 @@ namespace LVGLSharp.Runtime.Windows
 
         public Win32View(string title, uint width, uint height, bool borderless = false)
         {
-            bgraBuf = new byte[g_bufSize];
             _title = title;
             Width = (int)width;
             Height = (int)height;
@@ -544,6 +614,7 @@ namespace LVGLSharp.Runtime.Windows
             }
 
             lv_tick_set_cb(&my_tick);
+            EnsureDisplayBuffers(Width, Height);
 
             g_display = lv_display_create(Width, Height);
             if (g_display == null)
@@ -551,6 +622,8 @@ namespace LVGLSharp.Runtime.Windows
                 throw new InvalidOperationException("Failed to create LVGL display.");
             }
 
+            lv_display_set_buffers(g_display, g_lvbuf.ToPointer(), null, g_bufSize, LV_DISPLAY_RENDER_MODE_FULL);
+            lv_display_set_flush_cb(g_display, &FlushCb);
             lv_display_set_default(g_display);
 
             // Mouse
@@ -566,10 +639,6 @@ namespace LVGLSharp.Runtime.Windows
             lv_indev_set_display(_keyboardInputDevice, g_display);
             KeyInputGroupObject = lv_group_create();
             lv_indev_set_group(_keyboardInputDevice, KeyInputGroupObject);
-
-            g_lvbuf = Marshal.AllocHGlobal((int)g_bufSize);
-            lv_display_set_buffers(g_display, g_lvbuf.ToPointer(), null, g_bufSize, LV_DISPLAY_RENDER_MODE_FULL);
-            lv_display_set_flush_cb(g_display, &FlushCb);
 
             RootObject = lv_scr_act();
             lv_obj_set_flex_flow(RootObject, LV_FLEX_FLOW_COLUMN);
@@ -668,6 +737,9 @@ namespace LVGLSharp.Runtime.Windows
                 Marshal.FreeHGlobal(g_lvbuf);
                 g_lvbuf = IntPtr.Zero;
             }
+
+            g_bufSize = 0;
+            bgraBuf = Array.Empty<byte>();
 
             if (_defaultFontStyle != null)
             {

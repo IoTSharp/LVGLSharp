@@ -234,14 +234,14 @@ public unsafe sealed class OffscreenView : ViewLifetimeBase
 
     private void AllocateBuffers()
     {
-        _drawBufferByteSize = checked((uint)(_options.Width * _options.Height * sizeof(ushort)));
+        _drawBufferByteSize = DisplayBufferSizeHelper.GetRgb565DrawBufferByteSize(_options.Width, _options.Height);
         _drawBuffer = (byte*)NativeMemory.AllocZeroed((nuint)_drawBufferByteSize);
         if (_drawBuffer == null)
         {
             throw new OutOfMemoryException("Offscreen draw buffer ?????");
         }
 
-        _frameBuffer = (uint*)NativeMemory.AllocZeroed((nuint)(_options.Width * _options.Height), (nuint)sizeof(uint));
+        _frameBuffer = (uint*)NativeMemory.AllocZeroed((nuint)DisplayBufferSizeHelper.GetPixelCount(_options.Width, _options.Height), (nuint)sizeof(uint));
         if (_frameBuffer == null)
         {
             throw new OutOfMemoryException("Offscreen frame buffer ?????");

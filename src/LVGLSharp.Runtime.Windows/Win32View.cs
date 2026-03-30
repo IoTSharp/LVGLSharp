@@ -526,6 +526,7 @@ namespace LVGLSharp.Runtime.Windows
         private lv_font_t* _defaultFont;
         private lv_style_t* _defaultFontStyle;
         private SixLaborsFontManager _fontManager;
+        private LvglFontDiagnostics _fontDiagnostics;
         private lv_indev_t* _keyboardInputDevice;
         private lv_indev_t* _pointerInputDevice;
         private WNDCLASSEX wc;
@@ -654,24 +655,18 @@ namespace LVGLSharp.Runtime.Windows
             // SixLabors-based dynamic glyph rendering is currently opt-in because some glyph paths
             // can still crash in native rendering. Default to LVGL built-in font for stability.
             bool enableManagedFont = LvglManagedFontHelper.IsManagedFontEnabled();
-            if (enableManagedFont && LvglManagedFontHelper.TryResolveFontFamily(s_managedFontFamilyCandidates, out var managedFontFamily))
-            {
-                _fallbackFont = LvglFontHelper.GetEffectiveTextFont(RootObject, lv_part_t.LV_PART_MAIN);
-
-                _fontManager = LvglManagedFontHelper.TryApplyManagedFont(
-                    RootObject,
-                    managedFontFamily,
-                    12,
-                    GetDPI(),
-                    _fallbackFont,
-                    out _defaultFont,
-                    out _defaultFontStyle,
-                    enabled: true);
-            }
-            else
-            {
-                LvglRuntimeFontRegistry.ClearActiveTextFont();
-            }
+            LvglManagedFontHelper.InitializeManagedFont(
+                RootObject,
+                LvglManagedFontHelper.TryResolveFontFamily(s_managedFontFamilyCandidates, out var managedFontFamily) ? managedFontFamily : null,
+                s_managedFontFamilyCandidates,
+                12,
+                GetDPI(),
+                enableManagedFont).ApplyTo(
+                    ref _fallbackFont,
+                    ref _defaultFont,
+                    ref _fontManager,
+                    ref _fontDiagnostics,
+                    ref _defaultFontStyle);
             g_lvglReady = true;
         }
         protected override void RunLoopCore(Action iteration)
@@ -731,11 +726,7 @@ namespace LVGLSharp.Runtime.Windows
             g_bufSize = 0;
             bgraBuf = Array.Empty<byte>();
 
-            LvglManagedFontHelper.ReleaseManagedFont(
-                ref _fallbackFont,
-                ref _defaultFont,
-                ref _fontManager,
-                ref _defaultFontStyle);
+            LvglManagedFontHelper.ReleaseManagedFont(ref _fallbackFont, ref _defaultFont, ref _fontManager, ref _fontDiagnostics, ref _defaultFontStyle);
 
             if (g_hwnd != IntPtr.Zero)
             {
@@ -749,6 +740,11 @@ namespace LVGLSharp.Runtime.Windows
         }
 
         protected override bool CanSkipClose() => !g_running && g_hwnd == IntPtr.Zero && g_display == null && g_lvbuf == IntPtr.Zero;
+
+        public override string ToString()
+        {
+            return $"Title={_title}, Window={g_hwnd != IntPtr.Zero}:{Width}x{Height}, Running={g_running}, Initialized={g_lvglReady}, Display={g_display != null}, Root={RootObject != null}, KeyGroup={KeyInputGroupObject != null}, FontPath={_fontDiagnostics.DisplayResolvedFontPath}, FontDiag={_fontDiagnostics.DisplaySummary}, GlyphDiag={_fontDiagnostics.DisplayGlyphSummary}";
+        }
 
         public override void RegisterTextInput(lv_obj_t* textArea)
         {

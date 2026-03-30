@@ -27,8 +27,7 @@ public unsafe sealed class WaylandView : ViewLifetimeBase
     private lv_obj_t* _root;
     private lv_group_t* _keyInputGroup;
     private SixLaborsFontManager? _fontManager;
-    private string? _resolvedSystemFontPath;
-    private string? _fontDiagnosticSummary;
+    private LvglFontDiagnostics _fontDiagnostics;
     private bool _initialized;
     private bool _running;
     private bool _disposed;
@@ -186,12 +185,7 @@ public unsafe sealed class WaylandView : ViewLifetimeBase
             _lvDisplay = null;
         }
 
-        LinuxRuntimeFontHelper.ReleaseRuntimeFontPathAndDiagnostic(
-            ref _fallbackFont,
-            ref _fontManager,
-            ref _resolvedSystemFontPath,
-            ref _fontDiagnosticSummary,
-            ref _defaultFontStyle);
+        LvglManagedFontHelper.ReleaseManagedFont(ref _fallbackFont, ref _fontManager, ref _fontDiagnostics, ref _defaultFontStyle);
 
         _root = null;
         _bufferPresenter.Dispose();
@@ -217,13 +211,13 @@ public unsafe sealed class WaylandView : ViewLifetimeBase
 
 
     public override string ToString() => _fallbackView is null
-        ? $"{_diagnosticSummary}, Mode=WaylandSkeleton, Connected={_connection.IsConnected}, Compositor={_connection.HasCompositor}, Shm={_connection.HasSharedMemory}, XdgWmBase={_connection.HasXdgWmBase}, NativeSurface={_window.IsNativeSurfaceInitialized}, XdgSurface={_window.IsXdgSurfaceInitialized}, XdgToplevel={_window.IsXdgToplevelInitialized}, Configure={_window.HasReceivedConfigure}:{_window.LastConfigureSerial}, Ack={_window.HasAcknowledgedConfigure}, Pong={_window.HasRespondedToPing}:{_window.LastPingSerial}, ToplevelSize={_window.LastConfiguredWidth}x{_window.LastConfiguredHeight}, Close={_window.IsCloseRequested}, ShmBuffer={_bufferPresenter.HasSharedMemoryBuffer}:{_bufferPresenter.IsBufferReleased}:{_bufferPresenter.BufferReleaseCount}, Seat={_connection.HasSeat}:{_connection.SeatVersion}, FontPath={_resolvedSystemFontPath ?? "<none>"}, FontDiag={_fontDiagnosticSummary ?? "<unresolved>"}"
+        ? $"{_diagnosticSummary}, Mode=WaylandSkeleton, Connected={_connection.IsConnected}, Compositor={_connection.HasCompositor}, Shm={_connection.HasSharedMemory}, XdgWmBase={_connection.HasXdgWmBase}, NativeSurface={_window.IsNativeSurfaceInitialized}, XdgSurface={_window.IsXdgSurfaceInitialized}, XdgToplevel={_window.IsXdgToplevelInitialized}, Configure={_window.HasReceivedConfigure}:{_window.LastConfigureSerial}, Ack={_window.HasAcknowledgedConfigure}, Pong={_window.HasRespondedToPing}:{_window.LastPingSerial}, ToplevelSize={_window.LastConfiguredWidth}x{_window.LastConfiguredHeight}, Close={_window.IsCloseRequested}, ShmBuffer={_bufferPresenter.HasSharedMemoryBuffer}:{_bufferPresenter.IsBufferReleased}:{_bufferPresenter.BufferReleaseCount}, Seat={_connection.HasSeat}:{_connection.SeatVersion}, FontPath={_fontDiagnostics.DisplayResolvedFontPath}, FontDiag={_fontDiagnostics.DisplaySummary}"
         : $"{_diagnosticSummary}, Mode=X11Fallback, Connected={_connection.IsConnected}, Compositor={_connection.HasCompositor}, Shm={_connection.HasSharedMemory}, XdgWmBase={_connection.HasXdgWmBase}, NativeSurface={_window.IsNativeSurfaceInitialized}, XdgSurface={_window.IsXdgSurfaceInitialized}, XdgToplevel={_window.IsXdgToplevelInitialized}, Configure={_window.HasReceivedConfigure}:{_window.LastConfigureSerial}, Ack={_window.HasAcknowledgedConfigure}, Pong={_window.HasRespondedToPing}:{_window.LastPingSerial}, ToplevelSize={_window.LastConfiguredWidth}x{_window.LastConfiguredHeight}, Close={_window.IsCloseRequested}, ShmBuffer={_bufferPresenter.HasSharedMemoryBuffer}, Seat={_connection.HasSeat}:{_connection.SeatVersion}";
 
     private InvalidOperationException CreateNativeHostNotImplementedException()
     {
         return new InvalidOperationException(
-            $"Wayland native host is not implemented yet. {_connection.DiagnosticSummary}, Connected={_connection.IsConnected}, ConnectedDisplay={_connection.ConnectedDisplayName ?? "<default>"}, Compositor={_connection.HasCompositor}:{_connection.CompositorVersion}, Shm={_connection.HasSharedMemory}:{_connection.SharedMemoryVersion}, XdgWmBase={_connection.HasXdgWmBase}:{_connection.XdgWmBaseVersion}, Seat={_connection.HasSeat}:{_connection.SeatVersion}, Window={_window.Title}({_window.Width}x{_window.Height}), SurfaceReady={_window.HasSurfacePrerequisites}, NativeSurface={_window.IsNativeSurfaceInitialized}, XdgReady={_window.HasXdgShellPrerequisites}, XdgSurface={_window.IsXdgSurfaceInitialized}, XdgToplevel={_window.IsXdgToplevelInitialized}, Configure={_window.HasReceivedConfigure}:{_window.LastConfigureSerial}, Ack={_window.HasAcknowledgedConfigure}, Pong={_window.HasRespondedToPing}:{_window.LastPingSerial}, ToplevelSize={_window.LastConfiguredWidth}x{_window.LastConfiguredHeight}, Close={_window.IsCloseRequested}, WindowInit={_window.InitializationSummary ?? "<pending>"}, Pointer={_inputSource.SupportsPointer}:{_inputSource.CurrentMouseButton}@{_inputSource.CurrentMousePosition.X},{_inputSource.CurrentMousePosition.Y}:{_inputSource.HasPointerFocus}, Keyboard={_inputSource.SupportsKeyboard}:{_inputSource.CurrentKey}:{_inputSource.IsKeyPressed}:{_inputSource.HasKeyboardLayout}:{_inputSource.HasKeyboardFocus}, Repeat={_inputSource.RepeatRate}:{_inputSource.RepeatDelay}, TextInput={_inputSource.SupportsTextInput}, Surface={_bufferPresenter.PixelWidth}x{_bufferPresenter.PixelHeight}@{_bufferPresenter.Dpi:0.##}dpi, LvDisplay={_lvDisplay != null}, Root={_root != null}, KeyGroup={_keyInputGroup != null}, FontPath={_resolvedSystemFontPath ?? "<none>"}, FontDiag={_fontDiagnosticSummary ?? "<unresolved>"}, ShmBuffer={_bufferPresenter.HasSharedMemoryBuffer}:{_bufferPresenter.IsBufferReleased}:{_bufferPresenter.BufferReleaseCount}, Flushes={_bufferPresenter.FlushCount}:{_bufferPresenter.LastFlushWidth}x{_bufferPresenter.LastFlushHeight}, SkippedFlushes={_bufferPresenter.SkippedFlushCount}");
+            $"Wayland native host is not implemented yet. {_connection.DiagnosticSummary}, Connected={_connection.IsConnected}, ConnectedDisplay={_connection.ConnectedDisplayName ?? "<default>"}, Compositor={_connection.HasCompositor}:{_connection.CompositorVersion}, Shm={_connection.HasSharedMemory}:{_connection.SharedMemoryVersion}, XdgWmBase={_connection.HasXdgWmBase}:{_connection.XdgWmBaseVersion}, Seat={_connection.HasSeat}:{_connection.SeatVersion}, Window={_window.Title}({_window.Width}x{_window.Height}), SurfaceReady={_window.HasSurfacePrerequisites}, NativeSurface={_window.IsNativeSurfaceInitialized}, XdgReady={_window.HasXdgShellPrerequisites}, XdgSurface={_window.IsXdgSurfaceInitialized}, XdgToplevel={_window.IsXdgToplevelInitialized}, Configure={_window.HasReceivedConfigure}:{_window.LastConfigureSerial}, Ack={_window.HasAcknowledgedConfigure}, Pong={_window.HasRespondedToPing}:{_window.LastPingSerial}, ToplevelSize={_window.LastConfiguredWidth}x{_window.LastConfiguredHeight}, Close={_window.IsCloseRequested}, WindowInit={_window.InitializationSummary ?? "<pending>"}, Pointer={_inputSource.SupportsPointer}:{_inputSource.CurrentMouseButton}@{_inputSource.CurrentMousePosition.X},{_inputSource.CurrentMousePosition.Y}:{_inputSource.HasPointerFocus}, Keyboard={_inputSource.SupportsKeyboard}:{_inputSource.CurrentKey}:{_inputSource.IsKeyPressed}:{_inputSource.HasKeyboardLayout}:{_inputSource.HasKeyboardFocus}, Repeat={_inputSource.RepeatRate}:{_inputSource.RepeatDelay}, TextInput={_inputSource.SupportsTextInput}, Surface={_bufferPresenter.PixelWidth}x{_bufferPresenter.PixelHeight}@{_bufferPresenter.Dpi:0.##}dpi, LvDisplay={_lvDisplay != null}, Root={_root != null}, KeyGroup={_keyInputGroup != null}, FontPath={_fontDiagnostics.DisplayResolvedFontPath}, FontDiag={_fontDiagnostics.DisplaySummary}, ShmBuffer={_bufferPresenter.HasSharedMemoryBuffer}:{_bufferPresenter.IsBufferReleased}:{_bufferPresenter.BufferReleaseCount}, Flushes={_bufferPresenter.FlushCount}:{_bufferPresenter.LastFlushWidth}x{_bufferPresenter.LastFlushHeight}, SkippedFlushes={_bufferPresenter.SkippedFlushCount}");
     }
 
     private void HandlePendingResize()
@@ -296,11 +290,10 @@ public unsafe sealed class WaylandView : ViewLifetimeBase
             lv_indev_set_group(_keyboardIndev, _keyInputGroup);
         }
 
-        LinuxRuntimeFontHelper.InitializeRuntimeFont(_root, _bufferPresenter.Dpi).ApplyPathAndDiagnosticTo(
+        LinuxRuntimeFontHelper.InitializeRuntimeFont(_root, _bufferPresenter.Dpi).ApplyTo(
             ref _fallbackFont,
             ref _fontManager,
-            ref _resolvedSystemFontPath,
-            ref _fontDiagnosticSummary,
+            ref _fontDiagnostics,
             ref _defaultFontStyle);
     }
 

@@ -51,6 +51,47 @@ public static unsafe class LvglManagedFontHelper
     }
 
     /// <summary>
+    /// Initializes managed font state from a resolved font file path.
+    /// </summary>
+    public static LvglManagedFontState InitializeManagedFont(
+        lv_obj_t* root,
+        string? fontPath,
+        float size,
+        float dpi,
+        LvglFontDiagnostics diagnostics,
+        bool enabled)
+    {
+        var fallbackFont = LvglFontHelper.GetEffectiveTextFont(root, lv_part_t.LV_PART_MAIN);
+        var fontManager = TryApplyManagedFont(root, fontPath, size, dpi, fallbackFont, out var font, out var style, enabled);
+        return new LvglManagedFontState(fallbackFont, font, fontManager, diagnostics, style);
+    }
+
+    /// <summary>
+    /// Initializes managed font state from a resolved font family.
+    /// </summary>
+    public static LvglManagedFontState InitializeManagedFont(
+        lv_obj_t* root,
+        FontFamily? fontFamily,
+        IEnumerable<string> fontFamilyNames,
+        float size,
+        float dpi,
+        bool enabled)
+    {
+        var diagnostics = CreateFontDiagnostics(fontFamily, fontFamilyNames, enabled);
+        var fallbackFont = LvglFontHelper.GetEffectiveTextFont(root, lv_part_t.LV_PART_MAIN);
+        var fontManager = TryApplyManagedFont(root, fontFamily, size, dpi, fallbackFont, out var font, out var style, enabled);
+        return new LvglManagedFontState(fallbackFont, font, fontManager, diagnostics, style);
+    }
+
+    /// <summary>
+    /// Creates a shared diagnostics model for managed font family resolution.
+    /// </summary>
+    public static LvglFontDiagnostics CreateFontDiagnostics(FontFamily? fontFamily, IEnumerable<string> fontFamilyNames, bool enabled)
+    {
+        return LvglFontDiagnostics.FromFontFamily(fontFamily, fontFamilyNames, enabled);
+    }
+
+    /// <summary>
     /// Applies a managed font from the specified font file path when managed fonts are enabled.
     /// </summary>
     public static SixLaborsFontManager? TryApplyManagedFont(
@@ -126,5 +167,32 @@ public static unsafe class LvglManagedFontHelper
     {
         lv_font_t* font = null;
         ReleaseManagedFont(ref fallbackFont, ref font, ref fontManager, ref defaultFontStyle);
+    }
+
+    /// <summary>
+    /// Releases managed font state and diagnostics.
+    /// </summary>
+    public static void ReleaseManagedFont(
+        ref lv_font_t* fallbackFont,
+        ref lv_font_t* font,
+        ref SixLaborsFontManager? fontManager,
+        ref LvglFontDiagnostics diagnostics,
+        ref lv_style_t* defaultFontStyle)
+    {
+        ReleaseManagedFont(ref fallbackFont, ref font, ref fontManager, ref defaultFontStyle);
+        diagnostics = LvglFontDiagnostics.Empty;
+    }
+
+    /// <summary>
+    /// Releases managed font state and diagnostics.
+    /// </summary>
+    public static void ReleaseManagedFont(
+        ref lv_font_t* fallbackFont,
+        ref SixLaborsFontManager? fontManager,
+        ref LvglFontDiagnostics diagnostics,
+        ref lv_style_t* defaultFontStyle)
+    {
+        lv_font_t* font = null;
+        ReleaseManagedFont(ref fallbackFont, ref font, ref fontManager, ref diagnostics, ref defaultFontStyle);
     }
 }

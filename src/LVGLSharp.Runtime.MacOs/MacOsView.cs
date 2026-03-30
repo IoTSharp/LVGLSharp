@@ -28,6 +28,7 @@ public unsafe sealed class MacOsView : ViewLifetimeBase
     private lv_font_t* _defaultFont;
     private lv_style_t* _defaultFontStyle;
     private SixLaborsFontManager? _fontManager;
+    private LvglFontDiagnostics _fontDiagnostics;
     private GCHandle _selfHandle;
     private lv_obj_t* _focusedTextArea;
     private byte* _drawBuffer;
@@ -110,23 +111,18 @@ public unsafe sealed class MacOsView : ViewLifetimeBase
         lv_indev_set_group(_keyboardIndev, _keyInputGroup);
 
         bool enableManagedFont = LvglManagedFontHelper.IsManagedFontEnabled();
-        if (enableManagedFont && LvglManagedFontHelper.TryResolveFontFamily(s_managedFontFamilyCandidates, out var managedFontFamily))
-        {
-            _fallbackFont = LvglFontHelper.GetEffectiveTextFont(_root, lv_part_t.LV_PART_MAIN);
-            _fontManager = LvglManagedFontHelper.TryApplyManagedFont(
-                _root,
-                managedFontFamily,
-                12,
-                _surface.Dpi,
-                _fallbackFont,
-                out _defaultFont,
-                out _defaultFontStyle,
-                enabled: true);
-        }
-        else
-        {
-            LvglRuntimeFontRegistry.ClearActiveTextFont();
-        }
+        LvglManagedFontHelper.InitializeManagedFont(
+            _root,
+            LvglManagedFontHelper.TryResolveFontFamily(s_managedFontFamilyCandidates, out var managedFontFamily) ? managedFontFamily : null,
+            s_managedFontFamilyCandidates,
+            12,
+            _surface.Dpi,
+            enableManagedFont).ApplyTo(
+                ref _fallbackFont,
+                ref _defaultFont,
+                ref _fontManager,
+                ref _fontDiagnostics,
+                ref _defaultFontStyle);
 
         s_activeView = this;
         _initialized = true;
@@ -214,11 +210,7 @@ public unsafe sealed class MacOsView : ViewLifetimeBase
             _selfHandle.Free();
         }
 
-        LvglManagedFontHelper.ReleaseManagedFont(
-            ref _fallbackFont,
-            ref _defaultFont,
-            ref _fontManager,
-            ref _defaultFontStyle);
+        LvglManagedFontHelper.ReleaseManagedFont(ref _fallbackFont, ref _defaultFont, ref _fontManager, ref _fontDiagnostics, ref _defaultFontStyle);
 
         _root = null;
         _surface.Dispose();
@@ -239,7 +231,7 @@ public unsafe sealed class MacOsView : ViewLifetimeBase
         _root == null &&
         _keyInputGroup == null;
 
-    public override string ToString() => HostContext.ToString();
+    public override string ToString() => $"{HostContext}, FontPath={_fontDiagnostics.DisplayResolvedFontPath}, FontDiag={_fontDiagnostics.DisplaySummary}, GlyphDiag={_fontDiagnostics.DisplayGlyphSummary}";
 
     private void InitializeDisplay()
     {

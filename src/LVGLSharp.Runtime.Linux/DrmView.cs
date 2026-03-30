@@ -48,8 +48,7 @@ public unsafe sealed class DrmView : ViewLifetimeBase
     private lv_style_t* _defaultFontStyle;
     private SixLaborsFontManager? _fontManager;
     private string? _resolvedDevicePath;
-    private string? _fontDiagnosticSummary;
-    private string? _fontGlyphDiagnosticSummary;
+    private LvglFontDiagnostics _fontDiagnostics;
     private static DrmView? s_activeModeSelectorOwner;
 
     public DrmView(string devicePath = "/dev/dri/card0", int connectorId = -1, float dpi = 96f, DrmModePreference? modePreference = null)
@@ -102,11 +101,10 @@ public unsafe sealed class DrmView : ViewLifetimeBase
 
         _root = lv_scr_act();
         _keyInputGroup = lv_group_create();
-        LinuxRuntimeFontHelper.InitializeRuntimeFont(_root, _dpi).ApplyDiagnosticsTo(
+        LinuxRuntimeFontHelper.InitializeRuntimeFont(_root, _dpi).ApplyTo(
             ref _fallbackFont,
             ref _fontManager,
-            ref _fontDiagnosticSummary,
-            ref _fontGlyphDiagnosticSummary,
+            ref _fontDiagnostics,
             ref _defaultFontStyle);
 
         _running = true;
@@ -154,12 +152,7 @@ public unsafe sealed class DrmView : ViewLifetimeBase
             _display = null;
         }
 
-        LinuxRuntimeFontHelper.ReleaseRuntimeFontDiagnostics(
-            ref _fallbackFont,
-            ref _fontManager,
-            ref _fontDiagnosticSummary,
-            ref _fontGlyphDiagnosticSummary,
-            ref _defaultFontStyle);
+        LvglManagedFontHelper.ReleaseManagedFont(ref _fallbackFont, ref _fontManager, ref _fontDiagnostics, ref _defaultFontStyle);
         _resolvedDevicePath = null;
         _root = null;
         _initialized = false;
@@ -177,7 +170,7 @@ public unsafe sealed class DrmView : ViewLifetimeBase
             ? $"ModeSelector={_modePreference}"
             : "ModeSelector=default-preferred";
 
-        return $"Host=DRM, Device={_resolvedDevicePath ?? _devicePath}, Connector={_connectorId}, Dpi={_dpi:0.##}, Running={_running}, Initialized={_initialized}, Display={_display != null}, Root={_root != null}, KeyGroup={_keyInputGroup != null}, {modeText}, FontDiag={_fontDiagnosticSummary ?? "<unresolved>"}, GlyphDiag={_fontGlyphDiagnosticSummary ?? "<unresolved>"}";
+        return $"Host=DRM, Device={_resolvedDevicePath ?? _devicePath}, Connector={_connectorId}, Dpi={_dpi:0.##}, Running={_running}, Initialized={_initialized}, Display={_display != null}, Root={_root != null}, KeyGroup={_keyInputGroup != null}, {modeText}, FontDiag={_fontDiagnostics.DisplaySummary}, GlyphDiag={_fontDiagnostics.DisplayGlyphSummary}";
     }
 
     private string ResolveDevicePath()

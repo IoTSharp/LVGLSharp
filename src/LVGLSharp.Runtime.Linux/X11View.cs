@@ -383,9 +383,7 @@ public unsafe partial class X11View : ViewLifetimeBase
     private lv_font_t* _fallbackFont;
     private lv_style_t* _defaultFontStyle;
     private SixLaborsFontManager? _fontManager;
-    private string? _resolvedSystemFontPath;
-    private string? _fontDiagnosticSummary;
-    private string? _fontGlyphDiagnosticSummary;
+    private LvglFontDiagnostics _fontDiagnostics;
 
     public X11View(string title = "LVGLSharp X11", int width = 800, int height = 600, float dpi = 96f, string? displayName = null, bool borderless = false)
     {
@@ -422,12 +420,10 @@ public unsafe partial class X11View : ViewLifetimeBase
         RootObject = lv_scr_act();
         KeyInputGroupObject = lv_group_create();
         lv_indev_set_group(_keyboardIndev, KeyInputGroupObject);
-        LinuxRuntimeFontHelper.InitializeRuntimeFont(RootObject, _dpi).ApplyFullTo(
+        LinuxRuntimeFontHelper.InitializeRuntimeFont(RootObject, _dpi).ApplyTo(
             ref _fallbackFont,
             ref _fontManager,
-            ref _resolvedSystemFontPath,
-            ref _fontDiagnosticSummary,
-            ref _fontGlyphDiagnosticSummary,
+            ref _fontDiagnostics,
             ref _defaultFontStyle);
 
         SendTextAreaFocusCallbackCore = null;
@@ -521,13 +517,7 @@ public unsafe partial class X11View : ViewLifetimeBase
             _display = IntPtr.Zero;
         }
 
-        LinuxRuntimeFontHelper.ReleaseRuntimeFontFull(
-            ref _fallbackFont,
-            ref _fontManager,
-            ref _resolvedSystemFontPath,
-            ref _fontDiagnosticSummary,
-            ref _fontGlyphDiagnosticSummary,
-            ref _defaultFontStyle);
+        LvglManagedFontHelper.ReleaseManagedFont(ref _fallbackFont, ref _fontManager, ref _fontDiagnostics, ref _defaultFontStyle);
 
         RootObject = null;
         SendTextAreaFocusCallbackCore = null;
@@ -551,7 +541,7 @@ public unsafe partial class X11View : ViewLifetimeBase
     {
         string connectedDisplay = _requestedDisplayName ?? "<default>";
 
-        return $"Title={_title}, Display={connectedDisplay}, Window={_window != 0}:{_width}x{_height}, Running={_running}, Initialized={_initialized}, LvDisplay={_lvDisplay != null}, Root={RootObject != null}, KeyGroup={KeyInputGroupObject != null}, FontPath={_resolvedSystemFontPath ?? "<none>"}, FontDiag={_fontDiagnosticSummary ?? "<unresolved>"}, GlyphDiag={_fontGlyphDiagnosticSummary ?? "<unresolved>"}";
+        return $"Title={_title}, Display={connectedDisplay}, Window={_window != 0}:{_width}x{_height}, Running={_running}, Initialized={_initialized}, LvDisplay={_lvDisplay != null}, Root={RootObject != null}, KeyGroup={KeyInputGroupObject != null}, FontPath={_fontDiagnostics.DisplayResolvedFontPath}, FontDiag={_fontDiagnostics.DisplaySummary}, GlyphDiag={_fontDiagnostics.DisplayGlyphSummary}";
     }
 
     private void InitializeWindow()

@@ -24,4 +24,8 @@
 	  <ProjectReference Include="..\LVGLSharp.Interop\LVGLSharp.Interop.csproj" />
 	</ItemGroup>
 
+ <ItemGroup>
+   <Folder Include="Drawing\" />
+ </ItemGroup>
+
 </Project>

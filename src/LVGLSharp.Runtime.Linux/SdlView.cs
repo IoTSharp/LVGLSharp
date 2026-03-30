@@ -34,9 +34,7 @@ public unsafe sealed partial class SdlView : ViewLifetimeBase
     private lv_font_t* _fallbackFont;
     private lv_style_t* _defaultFontStyle;
     private SixLaborsFontManager? _fontManager;
-    private string? _resolvedSystemFontPath;
-    private string? _fontDiagnosticSummary;
-    private string? _fontGlyphDiagnosticSummary;
+    private LvglFontDiagnostics _fontDiagnostics;
     private lv_obj_t* _root;
     private lv_group_t* _keyInputGroup;
     private GCHandle _selfHandle;
@@ -78,12 +76,10 @@ public unsafe sealed partial class SdlView : ViewLifetimeBase
         _root = lv_scr_act();
         _keyInputGroup = lv_group_create();
         lv_indev_set_group(_keyboardIndev, _keyInputGroup);
-        LinuxRuntimeFontHelper.InitializeRuntimeFont(_root, _dpi).ApplyFullTo(
+        LinuxRuntimeFontHelper.InitializeRuntimeFont(_root, _dpi).ApplyTo(
             ref _fallbackFont,
             ref _fontManager,
-            ref _resolvedSystemFontPath,
-            ref _fontDiagnosticSummary,
-            ref _fontGlyphDiagnosticSummary,
+            ref _fontDiagnostics,
             ref _defaultFontStyle);
 
         s_activeView = this;
@@ -172,13 +168,7 @@ public unsafe sealed partial class SdlView : ViewLifetimeBase
 
         _bufferPresenter.Dispose();
 
-        LinuxRuntimeFontHelper.ReleaseRuntimeFontFull(
-            ref _fallbackFont,
-            ref _fontManager,
-            ref _resolvedSystemFontPath,
-            ref _fontDiagnosticSummary,
-            ref _fontGlyphDiagnosticSummary,
-            ref _defaultFontStyle);
+        LvglManagedFontHelper.ReleaseManagedFont(ref _fallbackFont, ref _fontManager, ref _fontDiagnostics, ref _defaultFontStyle);
 
         _root = null;
         _keyInputGroup = null;
@@ -216,7 +206,7 @@ public unsafe sealed partial class SdlView : ViewLifetimeBase
 
     public override string ToString()
     {
-        return $"Title={_title}, Window={_bufferPresenter.Window != IntPtr.Zero}:{_width}x{_height}, Renderer={_bufferPresenter.Renderer != IntPtr.Zero}, Texture={_bufferPresenter.Texture != IntPtr.Zero}, Running={_running}, Initialized={_initialized}, LvDisplay={_lvDisplay != null}, Root={_root != null}, KeyGroup={_keyInputGroup != null}, FontPath={_resolvedSystemFontPath ?? "<none>"}, FontDiag={_fontDiagnosticSummary ?? "<unresolved>"}, GlyphDiag={_fontGlyphDiagnosticSummary ?? "<unresolved>"}";
+        return $"Title={_title}, Window={_bufferPresenter.Window != IntPtr.Zero}:{_width}x{_height}, Renderer={_bufferPresenter.Renderer != IntPtr.Zero}, Texture={_bufferPresenter.Texture != IntPtr.Zero}, Running={_running}, Initialized={_initialized}, LvDisplay={_lvDisplay != null}, Root={_root != null}, KeyGroup={_keyInputGroup != null}, FontPath={_fontDiagnostics.DisplayResolvedFontPath}, FontDiag={_fontDiagnostics.DisplaySummary}, GlyphDiag={_fontDiagnostics.DisplayGlyphSummary}";
     }
 
     private void InitializeSdl()

@@ -74,7 +74,7 @@ public static unsafe class LvglManagedFontHelper
                 fallbackFont,
                 null,
                 null,
-                LvglFontDiagnostics.FromPath(null, "Source=LvglNativeFont; ManagedFontDisabled", null),
+                LvglFontDiagnostics.FromNativeFont("ManagedFontDisabled"),
                 null);
         }
 
@@ -98,7 +98,7 @@ public static unsafe class LvglManagedFontHelper
             fallbackFont,
             null,
             null,
-            LvglFontDiagnostics.FromPath(null, $"{diagnostics.DisplaySummary}; Source=LvglNativeFont; EmbeddedFallback=<none>", diagnostics.GlyphDiagnosticSummary),
+            LvglFontDiagnostics.FromNativeFont($"PlatformSystemFontUnavailable; Previous={diagnostics.DisplaySummary}; EmbeddedFallback=<none>"),
             null);
     }
 
@@ -111,9 +111,10 @@ public static unsafe class LvglManagedFontHelper
         IEnumerable<string> fontFamilyNames,
         float size,
         float dpi,
-        bool enabled)
+        bool enabled,
+        string? details = null)
     {
-        var diagnostics = CreateFontDiagnostics(fontFamily, fontFamilyNames, enabled);
+        var diagnostics = CreateFontDiagnostics(fontFamily, fontFamilyNames, enabled, details);
         var fallbackFont = LvglFontHelper.GetEffectiveTextFont(root, lv_part_t.LV_PART_MAIN);
         if (!enabled)
         {
@@ -140,16 +141,16 @@ public static unsafe class LvglManagedFontHelper
             fallbackFont,
             null,
             null,
-            LvglFontDiagnostics.FromPath(null, $"{diagnostics.DisplaySummary}; Source=LvglNativeFont; EmbeddedFallback=<none>", diagnostics.GlyphDiagnosticSummary),
+            LvglFontDiagnostics.FromNativeFont($"PlatformSystemFontUnavailable; Previous={diagnostics.DisplaySummary}; EmbeddedFallback=<none>"),
             null);
     }
 
     /// <summary>
     /// Creates a shared diagnostics model for managed font family resolution.
     /// </summary>
-    public static LvglFontDiagnostics CreateFontDiagnostics(FontFamily? fontFamily, IEnumerable<string> fontFamilyNames, bool enabled)
+    public static LvglFontDiagnostics CreateFontDiagnostics(FontFamily? fontFamily, IEnumerable<string> fontFamilyNames, bool enabled, string? details = null)
     {
-        return LvglFontDiagnostics.FromFontFamily(fontFamily, fontFamilyNames, enabled);
+        return LvglFontDiagnostics.FromFontFamily(fontFamily, fontFamilyNames, enabled, details);
     }
 
     /// <summary>
@@ -187,10 +188,10 @@ public static unsafe class LvglManagedFontHelper
         ArgumentException.ThrowIfNullOrWhiteSpace(fontPath);
 
         string summary = string.IsNullOrWhiteSpace(previousSummary)
-            ? $"Source=EmbeddedFallbackFont; Path={fontPath}"
-            : $"{previousSummary}; Source=EmbeddedFallbackFont; Path={fontPath}";
+            ? "Resolver=EmbeddedFallbackFont"
+            : $"Resolver=EmbeddedFallbackFont; Previous={previousSummary}";
 
-        return LvglFontDiagnostics.FromPath(fontPath, summary, CreateGlyphDiagnosticSummary(fontPath));
+        return LvglFontDiagnostics.FromEmbeddedFallbackFont(fontPath, summary, CreateGlyphDiagnosticSummary(fontPath));
     }
 
     /// <summary>

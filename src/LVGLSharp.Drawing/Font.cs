@@ -2,6 +2,22 @@ namespace LVGLSharp.Drawing;
 
 public sealed class Font : IEquatable<Font>
 {
+    public Font(FontFamily family, float emSize)
+        : this(family, emSize, FontStyle.Regular, GraphicsUnit.Point)
+    {
+    }
+
+    public Font(FontFamily family, float emSize, FontStyle style)
+        : this(family, emSize, style, GraphicsUnit.Point)
+    {
+    }
+
+    public Font(FontFamily family, float emSize, FontStyle style, GraphicsUnit unit)
+        : this((family ?? throw new ArgumentNullException(nameof(family))).Name, emSize, style, unit)
+    {
+        FontFamily = family;
+    }
+
     public Font(string familyName, float emSize)
         : this(familyName, emSize, FontStyle.Regular, GraphicsUnit.Point)
     {
@@ -24,6 +40,7 @@ public sealed class Font : IEquatable<Font>
         Size = emSize;
         Style = style;
         Unit = unit;
+        FontFamily = new FontFamily(familyName);
     }
 
     public string Name { get; }
@@ -44,11 +61,22 @@ public sealed class Font : IEquatable<Font>
 
     public bool Strikeout => (Style & FontStyle.Strikeout) != 0;
 
-    public FontFamily FontFamily => new(Name);
+    public FontFamily FontFamily { get; }
+
+    public string OriginalFontName => Name;
+
+    public byte GdiCharSet => 1;
+
+    public bool GdiVerticalFont => false;
+
+    public Font Clone()
+    {
+        return new Font(FontFamily, Size, Style, Unit);
+    }
 
     public Font WithSize(float emSize)
     {
-        return new Font(Name, emSize, Style, Unit);
+        return new Font(FontFamily, emSize, Style, Unit);
     }
 
     public bool Equals(Font? other)

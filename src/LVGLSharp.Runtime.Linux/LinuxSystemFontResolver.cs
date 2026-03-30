@@ -77,20 +77,30 @@ internal static class LinuxSystemFontResolver
 
         if (IsWslEnvironment() && TryResolveWslWindowsFontPath(out var wslWindowsFontPath, out var wslWindowsCoverage))
         {
-            return new FontPathResolutionResult(
+            var diagnostics = LvglFontDiagnostics.FromPlatformFontPath(
                 wslWindowsFontPath,
-                $"Source=WslWindowsFont; Path={wslWindowsFontPath}; Coverage={wslWindowsCoverage}/{s_requiredCoverage}",
-                    LvglManagedFontHelper.CreateGlyphDiagnosticSummary(wslWindowsFontPath));
+                $"Resolver=WslWindowsFont; Coverage={wslWindowsCoverage}/{s_requiredCoverage}",
+                LvglManagedFontHelper.CreateGlyphDiagnosticSummary(wslWindowsFontPath));
+
+            return new FontPathResolutionResult(
+                diagnostics.ResolvedFontPath,
+                diagnostics.DiagnosticSummary!,
+                diagnostics.GlyphDiagnosticSummary!);
         }
 
         foreach (var chineseFontPath in EnumerateFontconfigChineseFontPaths())
         {
             if (TryGetFileCoverage(chineseFontPath, out var chineseCoverage))
             {
-                return new FontPathResolutionResult(
+                var diagnostics = LvglFontDiagnostics.FromPlatformFontPath(
                     chineseFontPath,
-                    $"Source=FontconfigZh; Path={chineseFontPath}; Coverage={chineseCoverage}/{s_requiredCoverage}",
+                    $"Resolver=FontconfigZh; Coverage={chineseCoverage}/{s_requiredCoverage}",
                     LvglManagedFontHelper.CreateGlyphDiagnosticSummary(chineseFontPath));
+
+                return new FontPathResolutionResult(
+                    diagnostics.ResolvedFontPath,
+                    diagnostics.DiagnosticSummary!,
+                    diagnostics.GlyphDiagnosticSummary!);
             }
         }
 
@@ -100,10 +110,16 @@ internal static class LinuxSystemFontResolver
             if (!string.IsNullOrWhiteSpace(desktopFamilyName) &&
                 TryResolveFontconfigFilePath(desktopFamilyName, requireFullCoverage: true, out var desktopFontPath, out var desktopCoverage))
             {
-                return new FontPathResolutionResult(
+                var diagnostics = LvglFontDiagnostics.FromPlatformFontPath(
                     desktopFontPath,
-                    $"Source=DesktopSetting; Family={desktopFamilyName}; Path={desktopFontPath}; Coverage={desktopCoverage}/{s_requiredCoverage}",
-                    LvglManagedFontHelper.CreateGlyphDiagnosticSummary(desktopFontPath));
+                    $"Resolver=DesktopSetting; Coverage={desktopCoverage}/{s_requiredCoverage}",
+                    LvglManagedFontHelper.CreateGlyphDiagnosticSummary(desktopFontPath),
+                    desktopFamilyName);
+
+                return new FontPathResolutionResult(
+                    diagnostics.ResolvedFontPath,
+                    diagnostics.DiagnosticSummary!,
+                    diagnostics.GlyphDiagnosticSummary!);
             }
 
             if (!string.IsNullOrWhiteSpace(desktopFamilyName) &&
@@ -117,10 +133,17 @@ internal static class LinuxSystemFontResolver
         {
             if (TryResolveFontconfigFilePath(familyName, requireFullCoverage: true, out var preferredFontPath, out var preferredCoverage))
             {
-                return new FontPathResolutionResult(
+                var diagnostics = LvglFontDiagnostics.FromPlatformFontPath(
                     preferredFontPath,
-                    $"Source=PreferredFamily; Family={familyName}; Path={preferredFontPath}; Coverage={preferredCoverage}/{s_requiredCoverage}",
-                    LvglManagedFontHelper.CreateGlyphDiagnosticSummary(preferredFontPath));
+                    $"Resolver=PreferredFamily; Coverage={preferredCoverage}/{s_requiredCoverage}",
+                    LvglManagedFontHelper.CreateGlyphDiagnosticSummary(preferredFontPath),
+                    familyName,
+                    s_appPreferredFamilyNames);
+
+                return new FontPathResolutionResult(
+                    diagnostics.ResolvedFontPath,
+                    diagnostics.DiagnosticSummary!,
+                    diagnostics.GlyphDiagnosticSummary!);
             }
 
             if (TryResolveFontconfigFilePath(familyName, requireFullCoverage: false, out var matchedPreferredFontPath, out var matchedPreferredCoverage))
@@ -131,10 +154,15 @@ internal static class LinuxSystemFontResolver
 
         if (TryResolveWslWindowsFontPath(out var windowsFontPath, out var windowsCoverage))
         {
-            return new FontPathResolutionResult(
+            var diagnostics = LvglFontDiagnostics.FromPlatformFontPath(
                 windowsFontPath,
-                $"Source=WslWindowsFont; Path={windowsFontPath}; Coverage={windowsCoverage}/{s_requiredCoverage}",
+                $"Resolver=WslWindowsFont; Coverage={windowsCoverage}/{s_requiredCoverage}",
                 LvglManagedFontHelper.CreateGlyphDiagnosticSummary(windowsFontPath));
+
+            return new FontPathResolutionResult(
+                diagnostics.ResolvedFontPath,
+                diagnostics.DiagnosticSummary!,
+                diagnostics.GlyphDiagnosticSummary!);
         }
 
         string[] genericFallbackFamilies =
@@ -151,26 +179,38 @@ internal static class LinuxSystemFontResolver
             {
                 diagnostic.Append($"GenericFallback:{familyName}->{fallbackFontPath}({fallbackCoverage}/{s_requiredCoverage}); ");
 
-                return new FontPathResolutionResult(
+                var diagnostics = LvglFontDiagnostics.FromPlatformFontPath(
                     fallbackFontPath,
-                    $"NoCjkFontFound; SelectedGenericFallback={fallbackFontPath}; Coverage={fallbackCoverage}/{s_requiredCoverage}; Attempts={diagnostic.ToString().Trim()}",
-                    LvglManagedFontHelper.CreateGlyphDiagnosticSummary(fallbackFontPath));
+                    $"Resolver=GenericFallback; Coverage={fallbackCoverage}/{s_requiredCoverage}; Attempts={diagnostic.ToString().Trim()}",
+                    LvglManagedFontHelper.CreateGlyphDiagnosticSummary(fallbackFontPath),
+                    familyName);
+
+                return new FontPathResolutionResult(
+                    diagnostics.ResolvedFontPath,
+                    diagnostics.DiagnosticSummary!,
+                    diagnostics.GlyphDiagnosticSummary!);
             }
         }
 
         if (LvglManagedFontHelper.TryResolveEmbeddedFallbackFontPath(out var embeddedFontPath) &&
             TryGetFileCoverage(embeddedFontPath, out var embeddedFontCoverage))
         {
-            return new FontPathResolutionResult(
+            var diagnostics = LvglFontDiagnostics.FromEmbeddedFallbackFont(
                 embeddedFontPath,
-                $"Source=EmbeddedFallbackFont; Path={embeddedFontPath}; Coverage={embeddedFontCoverage}/{s_requiredCoverage}; Attempts={diagnostic.ToString().Trim()}",
+                $"Coverage={embeddedFontCoverage}/{s_requiredCoverage}; Attempts={diagnostic.ToString().Trim()}",
                 LvglManagedFontHelper.CreateGlyphDiagnosticSummary(embeddedFontPath));
+
+            return new FontPathResolutionResult(
+                diagnostics.ResolvedFontPath,
+                diagnostics.DiagnosticSummary!,
+                diagnostics.GlyphDiagnosticSummary!);
         }
 
+        var unresolvedDiagnostics = LvglFontDiagnostics.FromNativeFont($"PlatformSystemFontUnavailable; Attempts={diagnostic.ToString().Trim()}; EmbeddedFallback=<none>");
         return new FontPathResolutionResult(
-            null,
-            $"NoFontResolved; Attempts={diagnostic.ToString().Trim()}",
-            "<unresolved>");
+            unresolvedDiagnostics.ResolvedFontPath,
+            unresolvedDiagnostics.DiagnosticSummary!,
+            unresolvedDiagnostics.DisplayGlyphSummary);
     }
 
     private static FontFamily? TryResolveFontFamilyCore()

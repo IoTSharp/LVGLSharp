@@ -932,7 +932,19 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [SRCategoryAttribute("CatLayout")]
         [SRDescriptionAttribute("ControlBoundsDescr")]
-        public Rectangle Bounds { get; set; }
+        public Rectangle Bounds
+        {
+            get => new(_location, _size);
+            set
+            {
+                if (Bounds == value)
+                {
+                    return;
+                }
+
+                SetBoundsCore(value.X, value.Y, value.Width, value.Height, BoundsSpecified.All);
+            }
+        }
         //
         // ժҪ:
         //     Gets the distance, in pixels, between the bottom edge of the control and the
@@ -1238,7 +1250,19 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [SRCategoryAttribute("CatLayout")]
         [SRDescriptionAttribute("ControlClientSizeDescr")]
-        public Size ClientSize { get; set; }
+        public Size ClientSize
+        {
+            get => _clientSize;
+            set
+            {
+                if (_clientSize == value)
+                {
+                    return;
+                }
+
+                SetClientSizeCore(value.Width, value.Height);
+            }
+        }
         //
         // ժҪ:
         //     Gets the name of the company or creator of the application containing the control.
@@ -1380,7 +1404,16 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [SRCategoryAttribute("CatLayout")]
         [SRDescriptionAttribute("ControlClientRectangleDescr")]
-        public Rectangle ClientRectangle { get; }
+        public Rectangle ClientRectangle
+        {
+            get
+            {
+                var clientSize = ClientSize.Width > 0 || ClientSize.Height > 0
+                    ? ClientSize
+                    : Size;
+                return new Rectangle(Point.Empty, clientSize);
+            }
+        }
         //
         // ժҪ:
         //     Gets the rectangle that represents the display area of the control.
@@ -1391,7 +1424,11 @@ namespace LVGLSharp.Forms
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [SRDescriptionAttribute("ControlDisplayRectangleDescr")]
-        public virtual Rectangle DisplayRectangle { get; }
+        public virtual Rectangle DisplayRectangle => new(
+            Padding.Left,
+            Padding.Top,
+            Math.Max(0, ClientRectangle.Width - Padding.Horizontal),
+            Math.Max(0, ClientRectangle.Height - Padding.Vertical));
         //
         // ժҪ:
         //     Gets the DPI value for the display device where the control is currently being
@@ -2126,7 +2163,7 @@ namespace LVGLSharp.Forms
         //     in client coordinates.
         public Point PointToClient(Point p)
         {
-            return p;
+            return p - (Size)PointToScreen(Point.Empty);
         }
         //
         // ժҪ:
@@ -2142,7 +2179,7 @@ namespace LVGLSharp.Forms
         //     in screen coordinates.
         public Point PointToScreen(Point p)
         {
-            return p;
+            return p + (Size)GetScreenLocation();
         }
         //
         // ժҪ:
@@ -2235,7 +2272,7 @@ namespace LVGLSharp.Forms
         //     r, in client coordinates.
         public Rectangle RectangleToClient(Rectangle r)
         {
-            return default(Rectangle);
+            return new Rectangle(PointToClient(r.Location), r.Size);
         }
         //
         // ժҪ:
@@ -2251,7 +2288,7 @@ namespace LVGLSharp.Forms
         //     p, in screen coordinates.
         public Rectangle RectangleToScreen(Rectangle r)
         {
-            return default(Rectangle);
+            return new Rectangle(PointToScreen(r.Location), r.Size);
         }
         //
         // ժҪ:
@@ -2259,7 +2296,8 @@ namespace LVGLSharp.Forms
         //     and any child controls.
         public virtual void Refresh()
         {
-
+            NotifyInvalidate(ClientRectangle);
+            Update();
         }
         //
         // ժҪ:
@@ -2267,7 +2305,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void ResetBackColor()
         {
-
+            BackColor = DefaultBackColor;
         }
         //
         // ժҪ:
@@ -2284,7 +2322,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void ResetCursor()
         {
-
+            Cursor = DefaultCursor;
         }
         //
         // ժҪ:
@@ -2292,7 +2330,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void ResetFont()
         {
-
+            Font = DefaultFont;
         }
         //
         // ժҪ:
@@ -2300,7 +2338,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void ResetForeColor()
         {
-
+            ForeColor = DefaultForeColor;
         }
         //
         // ժҪ:
@@ -2316,7 +2354,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void ResetRightToLeft()
         {
-
+            RightToLeft = RightToLeft.Inherit;
         }
         //
         // ժҪ:
@@ -2369,7 +2407,27 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void Scale(SizeF factor)
         {
+            if (factor.Width <= 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(factor));
+            }
 
+            if (factor.Height <= 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(factor));
+            }
+
+            ScaleControl(factor, BoundsSpecified.All);
+
+            if (!ScaleChildren)
+            {
+                return;
+            }
+
+            foreach (var child in Controls)
+            {
+                child.Scale(factor);
+            }
         }
 
         //
@@ -2495,7 +2553,7 @@ namespace LVGLSharp.Forms
         //     Causes the control to redraw the invalidated regions within its client area.
         public void Update()
         {
-
+            NotifyInvalidate(ClientRectangle);
         }
 
         //
@@ -2601,7 +2659,11 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual Rectangle GetScaledBounds(Rectangle bounds, SizeF factor, BoundsSpecified specified)
         {
-            return bounds;
+            int x = (specified & BoundsSpecified.X) != 0 ? ScaleValue(bounds.X, factor.Width) : bounds.X;
+            int y = (specified & BoundsSpecified.Y) != 0 ? ScaleValue(bounds.Y, factor.Height) : bounds.Y;
+            int width = (specified & BoundsSpecified.Width) != 0 ? ScaleValue(bounds.Width, factor.Width) : bounds.Width;
+            int height = (specified & BoundsSpecified.Height) != 0 ? ScaleValue(bounds.Height, factor.Height) : bounds.Height;
+            return new Rectangle(x, y, width, height);
         }
         //
         // ժҪ:
@@ -2757,7 +2819,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void NotifyInvalidate(Rectangle invalidatedArea)
         {
-
+            Invalidated?.Invoke(this, EventArgs.Empty);
         }
         //
         // ժҪ:
@@ -3185,7 +3247,15 @@ namespace LVGLSharp.Forms
         // ����:
         //   e:
         //     A System.EventArgs that contains the event data.
-        protected virtual void OnPaddingChanged(EventArgs e) { PaddingChanged?.Invoke(this, e); }
+        protected virtual void OnPaddingChanged(EventArgs e)
+        {
+            PaddingChanged?.Invoke(this, e);
+
+            if (Controls.Count > 0)
+            {
+                PerformLayout(this, nameof(Padding));
+            }
+        }
         //
         // ժҪ:
         //     Raises the System.Windows.Forms.Control.Paint event.
@@ -3386,7 +3456,11 @@ namespace LVGLSharp.Forms
         //   e:
         //     An System.EventArgs that contains the event data.
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnRegionChanged(EventArgs e) { RegionChanged?.Invoke(this, e); }
+        protected virtual void OnRegionChanged(EventArgs e)
+        {
+            RegionChanged?.Invoke(this, e);
+            NotifyInvalidate(ClientRectangle);
+        }
         //
         // ժҪ:
         //     Raises the System.Windows.Forms.Control.Resize event.
@@ -3743,7 +3817,29 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void ScaleControl(SizeF factor, BoundsSpecified specified)
         {
+            var scaledBounds = GetScaledBounds(Bounds, factor, specified);
+            AutoScrollOffset = ScalePoint(AutoScrollOffset, factor);
+            Padding = ScalePadding(Padding, factor);
+            Margin = ScalePadding(Margin, factor);
 
+            if (!MinimumSize.IsEmpty)
+            {
+                MinimumSize = ScaleSize(MinimumSize, factor);
+            }
+
+            if (!MaximumSize.IsEmpty)
+            {
+                MaximumSize = ScaleSize(MaximumSize, factor);
+            }
+
+            if (_region is not null)
+            {
+                _region = _region.IsInfinite
+                    ? (Region)_region.Clone()
+                    : new Region(GetScaledBounds(_region.Bounds, factor, BoundsSpecified.All));
+            }
+
+            SetBoundsCore(scaledBounds.X, scaledBounds.Y, scaledBounds.Width, scaledBounds.Height, specified);
         }
         //
         // ժҪ:
@@ -3758,7 +3854,7 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected virtual void ScaleCore(float dx, float dy)
         {
-
+            Scale(new SizeF(dx, dy));
         }
         //
         // ժҪ:
@@ -3832,7 +3928,19 @@ namespace LVGLSharp.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void SetClientSizeCore(int x, int y)
         {
+            var oldClientSize = _clientSize;
+            _clientSize = new Size(x, y);
 
+            if (_size != _clientSize)
+            {
+                Size = _clientSize;
+                return;
+            }
+
+            if (oldClientSize != _clientSize)
+            {
+                OnClientSizeChanged(EventArgs.Empty);
+            }
         }
         //
         // ժҪ:
@@ -3928,7 +4036,7 @@ namespace LVGLSharp.Forms
         {
             var oldLocation = Location;
             var oldSize = Size;
-            var oldClientSize = ClientSize;
+            var oldClientSize = _clientSize;
 
             Left = x;
             Top = y;
@@ -3936,8 +4044,7 @@ namespace LVGLSharp.Forms
             Height = height;
             Location = new Point(x, y);
             Size = new Size(width, height);
-            Bounds = new Rectangle(x, y, width, height);
-            ClientSize = new Size(clientWidth, clientHeight);
+            _clientSize = new Size(clientWidth, clientHeight);
 
             if (oldLocation != Location)
             {
@@ -4107,6 +4214,7 @@ namespace LVGLSharp.Forms
         private bool _enabled = true;
         private string? _text;
         private Size _size;
+        private Size _clientSize;
         private Point _location;
         private Color _backColor;
         private Color _foreColor;
@@ -4494,6 +4602,41 @@ namespace LVGLSharp.Forms
 
             _anchorReferenceParentSize = parentSize;
             _anchorReferenceBounds = Bounds;
+        }
+
+        private Point GetScreenLocation()
+        {
+            Point location = Location;
+            for (Control? current = Parent; current is not null; current = current.Parent)
+            {
+                location += (Size)current.Location;
+            }
+
+            return location;
+        }
+
+        private static int ScaleValue(int value, float factor)
+        {
+            return (int)Math.Round(value * factor);
+        }
+
+        private static Point ScalePoint(Point point, SizeF factor)
+        {
+            return new Point(ScaleValue(point.X, factor.Width), ScaleValue(point.Y, factor.Height));
+        }
+
+        private static Size ScaleSize(Size size, SizeF factor)
+        {
+            return new Size(ScaleValue(size.Width, factor.Width), ScaleValue(size.Height, factor.Height));
+        }
+
+        private static Padding ScalePadding(Padding padding, SizeF factor)
+        {
+            return new Padding(
+                ScaleValue(padding.Left, factor.Width),
+                ScaleValue(padding.Top, factor.Height),
+                ScaleValue(padding.Right, factor.Width),
+                ScaleValue(padding.Bottom, factor.Height));
         }
 
     }

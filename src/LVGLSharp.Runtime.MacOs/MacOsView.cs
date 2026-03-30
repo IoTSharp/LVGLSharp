@@ -114,13 +114,15 @@ public unsafe sealed class MacOsView : ViewLifetimeBase
         var managedFontFamily = enableManagedFont && LvglManagedFontHelper.TryResolveFontFamily(s_managedFontFamilyCandidates, out var resolvedManagedFontFamily)
             ? resolvedManagedFontFamily
             : (FontFamily?)null;
+        string managedFontResolverDetails = $"Resolver=SystemFonts; Platform=MacOs; Dpi={_surface.Dpi:0.##}; CandidateCount={s_managedFontFamilyCandidates.Length}";
         LvglManagedFontHelper.InitializeManagedFont(
             _root,
             managedFontFamily,
             s_managedFontFamilyCandidates,
             12,
             _surface.Dpi,
-            enableManagedFont).ApplyTo(
+            enableManagedFont,
+            managedFontResolverDetails).ApplyTo(
                 ref _fallbackFont,
                 ref _defaultFont,
                 ref _fontManager,

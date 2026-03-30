@@ -658,13 +658,15 @@ namespace LVGLSharp.Runtime.Windows
             var managedFontFamily = enableManagedFont && LvglManagedFontHelper.TryResolveFontFamily(s_managedFontFamilyCandidates, out var resolvedManagedFontFamily)
                 ? resolvedManagedFontFamily
                 : (SixLabors.Fonts.FontFamily?)null;
+            string managedFontResolverDetails = $"Resolver=SystemFonts; Platform=Windows; Dpi={GetDPI():0.##}; CandidateCount={s_managedFontFamilyCandidates.Length}";
             LvglManagedFontHelper.InitializeManagedFont(
                 RootObject,
                 managedFontFamily,
                 s_managedFontFamilyCandidates,
                 12,
                 GetDPI(),
-                enableManagedFont).ApplyTo(
+                enableManagedFont,
+                managedFontResolverDetails).ApplyTo(
                     ref _fallbackFont,
                     ref _defaultFont,
                     ref _fontManager,

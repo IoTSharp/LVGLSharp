@@ -9,7 +9,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>lvgl128x128.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile Condition="'$(PackageReadmeFile)' == ''">README.md</PackageReadmeFile>
     <PackageTags>lvgl;embedded;ui;winforms;cross-platform</PackageTags>
     <!-- Canonical repository version used by project/package switching logic. -->
     <LVGLSharpVersion>9.5.0</LVGLSharpVersion>
@@ -26,8 +26,12 @@
     <NuGetPackageFolders>$(RestorePackagesPath)</NuGetPackageFolders>
   </PropertyGroup>
 
-  <!-- Include the repo-level README in every NuGet package. -->
-  <ItemGroup Condition="'$(IsPackable)' != 'false' And Exists('$(MSBuildThisFileDirectory)README.md')">
+  <!-- Prefer a package-local README when present; otherwise fall back to the repo README. -->
+  <ItemGroup Condition="'$(IsPackable)' != 'false' And Exists('$(MSBuildProjectDirectory)\README.md')">
+    <None Include="$(MSBuildProjectDirectory)\README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsPackable)' != 'false' And !Exists('$(MSBuildProjectDirectory)\README.md') And Exists('$(MSBuildThisFileDirectory)README.md')">
     <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 

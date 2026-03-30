@@ -268,6 +268,9 @@ prepare + pack + build-demos
 - `LVGLSharp.Core`
 - `LVGLSharp.Runtime.Windows`
 - `LVGLSharp.Runtime.Linux`
+- `LVGLSharp.Runtime.Headless`
+- `LVGLSharp.Runtime.MacOs`
+- `LVGLSharp.Runtime.Remote`
 - `LVGLSharp.Forms`
 
 ## 7. 为什么这样拆分
@@ -302,4 +305,3 @@ prepare + pack + build-demos
 ---
 
 如果后续还要补 GitHub Pages 文档站点工作流，可以在这套拆分基础上继续增加 `docs-pages.yml`，直接复用当前构建与发布体系。
-

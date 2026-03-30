@@ -7,6 +7,10 @@
     <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
     <IncludeBuildOutput>true</IncludeBuildOutput>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <PackageId>LVGLSharp.Analyzers</PackageId>
+    <Title>LVGLSharp Build and Usage Analyzers</Title>
+    <Description>Roslyn analyzers for LVGLSharp projects. Used to validate runtime package references and other repository-specific usage patterns, and bundled transitively by LVGLSharp.Forms.</Description>
+    <PackageTags>$(PackageTags);analyzers;roslyn;diagnostics</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

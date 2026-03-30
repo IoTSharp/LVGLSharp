@@ -11,7 +11,8 @@
   <PropertyGroup>
     <PackageId>LVGLSharp.Runtime.Headless</PackageId>
     <Title>LVGLSharp Headless Runtime</Title>
-    <Description>Headless runtime for offscreen rendering, snapshots, and automation in LVGLSharp.</Description>
+    <Description>Headless runtime for offscreen rendering, PNG export, snapshot regression testing, automation flows, and reusable remote frame sources in LVGLSharp.</Description>
+    <PackageTags>$(PackageTags);runtime;headless;snapshots;testing;automation</PackageTags>
     <DefaultItemExcludes>$(DefaultItemExcludes);buildTransitive\**\*.cs</DefaultItemExcludes>
   </PropertyGroup>
 

@@ -11,7 +11,8 @@
   <PropertyGroup>
     <PackageId>LVGLSharp.Runtime.Remote</PackageId>
     <Title>LVGLSharp Remote Runtime</Title>
-    <Description>Cross-platform remote runtime abstractions for LVGLSharp.</Description>
+    <Description>Cross-platform remote runtime abstractions for LVGLSharp, including remote sessions, frame encoding, input events, VNC transport pieces, and RDP skeleton support.</Description>
+    <PackageTags>$(PackageTags);runtime;remote;vnc;rdp</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

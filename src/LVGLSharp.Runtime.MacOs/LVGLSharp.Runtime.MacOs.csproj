@@ -10,8 +10,9 @@
 
   <PropertyGroup>
     <PackageId>LVGLSharp.Runtime.MacOs</PackageId>
-    <Title>LVGLSharp MacOs Runtime</Title>
-    <Description>MacOs host runtime skeleton for LVGLSharp.</Description>
+    <Title>LVGLSharp macOS Runtime</Title>
+    <Description>macOS runtime boundary package for LVGLSharp. Current releases provide diagnostics, context, surface, and frame-buffer scaffolding while the native host implementation continues to mature.</Description>
+    <PackageTags>$(PackageTags);runtime;macos;experimental</PackageTags>
     <DefaultItemExcludes>$(DefaultItemExcludes);buildTransitive\**\*.cs</DefaultItemExcludes>
   </PropertyGroup>
 

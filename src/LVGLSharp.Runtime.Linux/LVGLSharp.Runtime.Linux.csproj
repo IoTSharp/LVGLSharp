@@ -11,7 +11,8 @@
 	<PropertyGroup>
 		<PackageId>LVGLSharp.Runtime.Linux</PackageId>
 		<Title>LVGLSharp Linux Runtime</Title>
-      <Description>Linux host runtime for LVGLSharp.</Description>
+      <Description>Linux runtime for LVGLSharp with LinuxView host selection, WSLg, X11, Wayland, SDL, FrameBuffer paths, and DRM/KMS scaffolding.</Description>
+        <PackageTags>$(PackageTags);runtime;linux;x11;wayland;framebuffer</PackageTags>
         <DefaultItemExcludes>$(DefaultItemExcludes);buildTransitive\**\*.cs</DefaultItemExcludes>
 	</PropertyGroup>
 

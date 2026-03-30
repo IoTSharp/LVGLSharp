@@ -11,8 +11,9 @@
 
   <PropertyGroup>
     <PackageId>LVGLSharp.WPF</PackageId>
-    <Title>LVGLSharp.WPF</Title>
-    <Description>WPF-like application bootstrap for LVGLSharp.</Description>
+    <Title>LVGLSharp WPF Compatibility Layer</Title>
+    <Description>Experimental WPF-like bootstrap and XAML runtime loader for LVGLSharp, layered on top of LVGLSharp.Forms and the Windows runtime.</Description>
+    <PackageTags>$(PackageTags);wpf;xaml;experimental</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

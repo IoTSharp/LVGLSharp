@@ -11,7 +11,8 @@
 	<PropertyGroup>
 		<PackageId>LVGLSharp.Core</PackageId>
 		<Title>LVGLSharp Core Runtime Abstractions</Title>
-		<Description>Shared LVGLSharp runtime abstractions and font helpers used by the Forms and platform runtime packages.</Description>
+		<Description>Shared runtime abstractions, font services, image helpers, and native-library resolution support used by LVGLSharp.Forms and the platform runtime packages.</Description>
+		<PackageTags>$(PackageTags);core;runtime;fonts</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>

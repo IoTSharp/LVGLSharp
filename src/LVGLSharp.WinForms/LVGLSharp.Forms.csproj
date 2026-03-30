@@ -12,8 +12,9 @@
 
 	<PropertyGroup>
 		<PackageId>LVGLSharp.Forms</PackageId>
-		<Title>LVGLSharp.Forms — WinForms API over LVGL</Title>
-		<Description>A cross-platform WinForms API compatibility layer that renders UI through LVGL. Targets Windows and Linux (x64, arm, arm64) with NativeAOT support.</Description>
+		<Title>LVGLSharp.Forms - WinForms API over LVGL</Title>
+		<Description>WinForms-style application framework for LVGLSharp. Provides forms, controls, layout, runtime registration, and analyzer-backed guidance for Windows and Linux targets with NativeAOT-friendly publishing.</Description>
+		<PackageTags>$(PackageTags);forms;winforms;aot</PackageTags>
 	</PropertyGroup>
 
  

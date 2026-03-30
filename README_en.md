@@ -2,92 +2,76 @@
 
 [中文](./README.md) | English
 
-**LVGLSharp** is a cross-platform WinForms API compatibility project that uses [LVGL](https://github.com/lvgl/lvgl) as the underlying rendering engine. Its current core UI compatibility layer is still `LVGLSharp.Forms`. The goal is to achieve **WYSIWYG (What You See Is What You Get)** — UI designed with the Visual Studio Windows Forms Designer on Windows will render with high fidelity on Linux (arm / arm64 / x64) and other embedded platforms.
+**LVGLSharp** is a cross-platform WinForms-style UI stack built on top of [LVGL](https://github.com/lvgl/lvgl). The main application-facing package is `LVGLSharp.Forms`, while the rest of the package lineup separates runtime hosting, native assets, low-level bindings, and supporting infrastructure.
 
-📘 Documentation site (GitHub Pages):
+Repository development baseline: `9.5.0.5`
 
-- GitHub repository: `https://github.com/IoTSharp/LVGLSharp`
-- Primary site: `https://lvglsharp.net/`
-- Mirror site: `https://gtiee.com/IoTSharp/LVGLSharp`
+- Documentation: <https://lvglsharp.net/>
+- Roadmap: <https://github.com/IoTSharp/LVGLSharp/blob/main/ROADMAP.md>
+- Changelog: <https://github.com/IoTSharp/LVGLSharp/blob/main/CHANGELOG.md>
 
-- Chinese home: `docs/index.md`
-- English home: `docs/index.en.md`
-- Chinese CI documentation: `docs/ci-workflows.md`
-- English CI documentation: `docs/ci-workflows.en.md`
-- Chinese navigation: `docs/navigation.md`
-- English navigation: `docs/navigation.en.md`
-- Chinese blog index: `docs/blog/index.md`
-- English blog index: `docs/blog/index.en.md`
+> The project is still evolving quickly and should be evaluated carefully before production use.
 
-Suggested public entry points:
+## Features
 
-- Chinese home: <https://lvglsharp.net/>
-- English home: <https://lvglsharp.net/index.en.html>
+- WinForms-style API compatibility with `Control`, `Form`, `Button`, `Label`, `TextBox`, `CheckBox`, `RadioButton`, `ComboBox`, `ListBox`, `PictureBox`, `Panel`, `GroupBox`, `FlowLayoutPanel`, `TableLayoutPanel`, `ProgressBar`, `TrackBar`, `NumericUpDown`, `RichTextBox`, and related control infrastructure.
+- Full LVGL interop through `LVGLSharp.Interop`, generated with ClangSharpPInvokeGenerator so the complete LVGL C API remains reachable from .NET.
+- Layered runtime packages for Windows, Linux, Headless, macOS, and Remote paths, with current stable emphasis on Windows, Linux, and Headless flows.
+- NativeAOT-friendly publishing and multi-RID native asset distribution through `LVGLSharp.Native`.
+- Automatic runtime registration through `buildTransitive` when runtime packages are referenced.
+- Cross-platform drawing primitives via `LVGLSharp.Drawing` without a dependency on `System.Drawing`.
 
-> ⚠️ This project is currently in the experimental phase and is not yet suitable for production use.
+## Preview
 
----
+The screenshots below come from the captured demo output under `docs/images`.
 
-## 📢 Current Release
+<p align="center">
+  <img src="./docs/images/x11-pictureboxdemo.png" alt="LVGLSharp X11 PictureBoxDemo" width="48%" />
+  <img src="./docs/images/x11-musicdemo.png" alt="LVGLSharp X11 MusicDemo" width="48%" />
+</p>
 
-- **Version**: `9.5.0.5`
-- **Release Tag**: `v9.5.0.5`
-- **Release Positioning**: the first fully documented release derived from the initial project baseline, consolidating the current capabilities, package layout, and release notes.
+<p align="center">
+  <img src="./docs/images/x11-smartwatchdemo.png" alt="LVGLSharp X11 SmartWatchDemo" width="48%" />
+  <img src="./docs/images/wslg-pictureboxdemo-wayland-embedded-font-check.png" alt="LVGLSharp WSLg Wayland Embedded Font Check" width="48%" />
+</p>
 
-### 9.5.0.5 Highlights
+<p align="center">
+  <img src="./docs/images/winformsvncdemo-vnc-case.png" alt="LVGLSharp WinFormsVncDemo over VNC" width="48%" />
+</p>
 
-- Continues the initial LVGL-backed WinForms compatibility direction, documents the now-available controls, runtime hosts, and packaging layout, and aligns public links with the renamed `LVGLSharp` repository.
-- Clarifies the responsibilities of `LVGLSharp.Forms`, `LVGLSharp.Core`, the platform runtime packages, and `LVGLSharp.Native`.
-- Documents `Application.Run(Form)` lifecycle support, the LVGL event bridge, and NativeAOT publishing readiness.
-- Synchronizes the release summary with [`CHANGELOG.md`](./CHANGELOG.md) so future releases can build on top of tag-based release records.
+## Official NuGet Packages
 
-For the complete release history starting from the initial version, see [`CHANGELOG.md`](./CHANGELOG.md).
+The version and download columns below use live NuGet badges so the README stays aligned with what is actually published.
 
----
+| Package | Version | Downloads | Description |
+|---|---|---|---|
+| `LVGLSharp.Forms` | [![LVGLSharp.Forms](https://img.shields.io/nuget/v/LVGLSharp.Forms.svg)](https://www.nuget.org/packages/LVGLSharp.Forms/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Forms) | Main WinForms-style application package and runtime-registration entry point. |
+| `LVGLSharp.Core` | [![LVGLSharp.Core](https://img.shields.io/nuget/v/LVGLSharp.Core.svg)](https://www.nuget.org/packages/LVGLSharp.Core/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Core) | Shared runtime abstractions, fonts, diagnostics, and host helpers. |
+| `LVGLSharp.Interop` | [![LVGLSharp.Interop](https://img.shields.io/nuget/v/LVGLSharp.Interop.svg)](https://www.nuget.org/packages/LVGLSharp.Interop/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Interop) | Auto-generated low-level LVGL P/Invoke bindings. |
+| `LVGLSharp.Native` | [![LVGLSharp.Native](https://img.shields.io/nuget/v/LVGLSharp.Native.svg)](https://www.nuget.org/packages/LVGLSharp.Native/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Native) | RID-specific native LVGL assets and publish-time targets. |
+| `LVGLSharp.Runtime.Windows` | [![LVGLSharp.Runtime.Windows](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Windows.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Windows/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Windows) | Windows desktop runtime with Win32 hosting support. |
+| `LVGLSharp.Runtime.Linux` | [![LVGLSharp.Runtime.Linux](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Linux.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Linux/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Linux) | Linux runtime covering WSLg, X11, Wayland, SDL, and FrameBuffer paths. |
+| `LVGLSharp.Runtime.Headless` | [![LVGLSharp.Runtime.Headless](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Headless.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Headless/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Headless) | Headless runtime for offscreen rendering, snapshots, and automation. |
+| `LVGLSharp.Runtime.MacOs` | [![LVGLSharp.Runtime.MacOs](https://img.shields.io/nuget/v/LVGLSharp.Runtime.MacOs.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.MacOs/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.MacOs) | Early macOS runtime package with diagnostics and host scaffolding. |
+| `LVGLSharp.Runtime.Remote` | [![LVGLSharp.Runtime.Remote](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Remote.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Remote/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Remote) | Remote-session abstractions, frame transport, and VNC/RDP-oriented runtime pieces. |
 
-## ✨ Features
+All 9 packages above are currently published on NuGet. The repository also contains several supporting libraries that are documented below but are not part of the main public publishing workflow.
 
-- 🖥️ **WinForms API Compatibility**: An API surface closely mirroring `System.Windows.Forms`, making it easy to migrate existing code.
-- 🔤 **Full LVGL API Interop**: Auto-generated P/Invoke bindings via ClangSharpPInvokeGenerator covering the entire LVGL C API.
-- 🚀 **NativeAOT Support**: Publish as self-contained native executables with no managed runtime dependency (validated on win-x64 and linux-arm).
-- 🌍 **Cross-Platform**: Supports Windows (x64) and Linux (x64 / arm / arm64).
-- 🧩 **Built-in Common Controls**: Button, Label, TextBox, CheckBox, RadioButton, ComboBox, ListBox, ProgressBar, TrackBar, NumericUpDown, PictureBox, Panel, GroupBox, FlowLayoutPanel, TableLayoutPanel, RichTextBox, and more.
-- 🎨 **Custom Drawing Types**: The `LVGLSharp.Darwing` namespace provides `Size`, `Point`, `Color`, and other types without any dependency on `System.Drawing`, ensuring true cross-platform portability.
+## Repository-side Supporting Libraries
 
----
+| Library | Status | Description |
+|---|---|---|
+| `LVGLSharp.Drawing` | Repository library | Cross-platform drawing primitives used by runtimes and UI layers. |
+| `LVGLSharp.WPF` | Experimental repository library | WPF-like bootstrap and XAML runtime loader built on top of `LVGLSharp.Forms` and `LVGLSharp.Runtime.Windows`. |
+| `LVGLSharp.Analyzers` | Bundled with `LVGLSharp.Forms` | Roslyn analyzers that validate runtime-package usage and related build-time patterns. |
 
-## 📷 Preview
+`LVGLSharp.Forms` already carries the analyzers transitively. In most applications you start with `LVGLSharp.Forms` plus the runtime package that matches the host you want.
 
-The following screenshots show an application published with NativeAOT for win-x64 / linux-arm (no external dependencies required):
+## Quick Start
 
-<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116237182962589&bvid=BV12Fwjz5EuZ&cid=36733586714&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
----
+### 1. Project file
 
-## 📦 NuGet Packages
-
-| Package | Description |
-|---------|-------------|
-| `LVGLSharp.Forms` | WinForms API compatibility layer |
-| `LVGLSharp.Core` | Shared runtime abstractions and common font/host helper capabilities |
-| `LVGLSharp.Runtime.Windows` | Windows platform runtime |
-| `LVGLSharp.Runtime.Linux` | Linux platform runtime |
-| `LVGLSharp.Interop` | LVGL P/Invoke bindings (auto-generated) |
-| `LVGLSharp.Native` | Platform-native LVGL libraries (win-x86 / win-x64 / win-arm64, linux-arm, etc.) |
-
----
-
-## 🚀 Quick Start
-
-### 1. Create a Project
-
-Use the same multi-target pattern as the demos in this repository:
-
-- use `UseWindowsForms=true` on the `net10.0-windows` target so it stays on the standard WinForms path
-- use `UseLVGLSharpForms=true` on the `net10.0` target so it uses the `LVGLSharp.Forms` path
-
-Whether a target uses WinForms or `LVGLSharp.Forms` must be decided only by `UseWindowsForms` and `UseLVGLSharpForms`, not by OS symbols such as `WINDOWS`.
-
-Typical project configuration:
+The recommended starting point is the same multi-target pattern used by the demos in this repository:
 
 ```xml
 <PropertyGroup>
@@ -102,106 +86,55 @@ Typical project configuration:
   <UseLVGLSharpForms>true</UseLVGLSharpForms>
   <PublishAot>true</PublishAot>
 </PropertyGroup>
+
+<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+  <PackageReference Include="LVGLSharp.Forms" Version="*" />
+  <PackageReference Include="LVGLSharp.Runtime.Windows" Version="*" />
+  <PackageReference Include="LVGLSharp.Runtime.Linux" Version="*" />
+</ItemGroup>
 ```
 
-On the `UseLVGLSharpForms=true` target:
+Add `LVGLSharp.Runtime.Headless` when you need snapshots or automation. Add `LVGLSharp.Runtime.Remote` or `LVGLSharp.Runtime.MacOs` only when you are intentionally exploring those paths.
 
-- reference `LVGLSharp.Forms`
-- reference `LVGLSharp.Runtime.Windows`
-- reference `LVGLSharp.Runtime.Linux`
-- `buildTransitive` generates the matching platform registration code from the referenced runtime packages and runs it from `ApplicationConfiguration.Initialize()`
+### 2. Entry point
 
-See [`src/Demos/PictureBoxDemo/PictureBoxDemo.csproj`](./src/Demos/PictureBoxDemo/PictureBoxDemo.csproj).
-
-### 2. Entry Point
-
-The `UseWindowsForms=true` target does not require any `LVGLSharp` runtime registration.
-
-The `UseLVGLSharpForms=true` target only needs a normal `ApplicationConfiguration.Initialize()` call. If `LVGLSharp.Runtime.Windows` and/or `LVGLSharp.Runtime.Linux` are referenced, the runtime is registered automatically:
+The `UseLVGLSharpForms=true` target uses the normal startup pattern:
 
 ```csharp
 ApplicationConfiguration.Initialize();
-
-Application.Run(new frmMain());
+Application.Run(new MainForm());
 ```
 
-If only the Windows runtime is referenced, only the Windows registration is generated. If only the Linux runtime is referenced, only the Linux registration is generated. If both are referenced, startup selects the matching LVGL host and image implementation for the current platform automatically.
-
-### 3. Run on Linux
-
-Publish using NativeAOT:
+### 3. Publish examples
 
 ```bash
-dotnet publish -r linux-arm64 -c Release
-```
-
-Windows publish example:
-
-```powershell
+dotnet publish -f net10.0 -r linux-arm64 -c Release
+dotnet publish -f net10.0 -r linux-x64 -c Release
 dotnet publish -f net10.0-windows -r win-x64 -c Release
 ```
 
-Linux / `LVGLSharp.Forms` publish example:
+## Current Runtime Status
 
-```bash
-dotnet publish -f net10.0 -r linux-x64 -c Release
-```
+| Area | Status | Notes |
+|---|---|---|
+| WinForms compatibility layer | Usable | Core controls, form lifecycle, and basic layout patterns are already available. |
+| Windows runtime | Usable | One of the current stable host paths. |
+| Linux `WSLg` / `X11` | Usable | Main desktop-side Linux validation path. |
+| Linux `FrameBuffer` | Usable | Main device-side Linux path. |
+| Linux `Wayland` / `SDL` | Experimental | Implemented, but still needs more validation and release discipline. |
+| Headless `Offscreen` | Usable | Supports PNG snapshots, screenshots, and regression-entry scenarios. |
+| Linux `DRM/KMS` | Scaffolded | `DrmView` exists, but the native backend still needs to be completed. |
+| macOS runtime | Early package boundary | Diagnostics, context, and surface/frame-buffer scaffolding are in the repository and package. |
+| Remote runtime | Early package boundary | VNC / RDP abstractions, sessions, and transport skeletons are present. |
 
----
+See the roadmap for the fuller engineering status and priority order.
 
-## 🏗️ Project Structure
+## Community
 
-```
-src/
-├── LVGLSharp.WinForms/     # WinForms API compatibility layer (core)
-│   ├── Forms/              # Control implementations (Control, Form, Button, etc.)
-│   ├── Drawing/            # Cross-platform drawing types (Size, Point, Color, etc.)
-│   └── Runtime/            # Shared runtime registration glue and host integration
-├── LVGLSharp.Interop/      # LVGL P/Invoke auto-generated bindings
-├── LVGLSharp.Native/       # Platform-native libraries
-├── LVGLSharp.Core/         # Shared core library
-├── LVGLSharp.Runtime.Windows/ # Windows platform runtime
-├── LVGLSharp.Runtime.Linux/# Linux platform runtime
-└── Demos/
-    ├── WinFormsDemo/       # Baseline WinForms / LVGLSharp.Forms comparison demo
-    ├── PictureBoxDemo/     # PictureBox demo
-    ├── MusicDemo/          # MusicDemo demo application
-    ├── SmartWatchDemo/     # SmartWatch UI demo
-    └── SerialPort/         # SerialPort demo application
-libs/
-└── lvgl/                   # LVGL source code (submodule)
-```
-
----
-
-## 📚 Developer Docs
-
-- [`ROADMAP.md`](./ROADMAP.md): completed milestones, current host/runtime status, and the recommended next engineering step.
-- [`docs/WSL-Developer-Guide.md`](./docs/WSL-Developer-Guide.md): a developer guide for running, validating, and debugging demos on `WSL2/WSLg`.
-- [`docs/navigation.en.md`](./docs/navigation.en.md): the docs-site navigation page for home pages, blog entries, roadmap, and reference docs.
-
----
-
-## 🙏 Acknowledgements
-
-- **[imxcstar / LVGLSharp](https://github.com/imxcstar/LVGLSharp)**: Provides the foundational low-level LVGL .NET wrapper that this project is built upon.
-- **[LVGL](https://github.com/lvgl/lvgl)**: A lightweight, high-performance embedded GUI library.
-- **[ClangSharpPInvokeGenerator](https://github.com/dotnet/ClangSharp)**: Used to auto-generate the complete LVGL P/Invoke bindings.
-- **[SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp)**: Cross-platform image processing library.
-- **[SixLabors.Fonts](https://github.com/SixLabors/Fonts)**: Cross-platform font parsing library.
-
----
-
-## 💬 Community
-
-You are welcome to join our WeChat group to discuss project usage, cross-platform adaptation, control implementation, and troubleshooting.
-
-If you are interested in LVGLSharp.Forms, scan the QR code below to join the WeChat group.
+The documentation site, Issues, and the WeChat group are all valid ways to discuss usage, cross-platform adaptation, and troubleshooting.
 
 ![LVGLSharp WeChat Group](./preview/wechat-group.png)
 
----
-
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](./LICENSE.txt).

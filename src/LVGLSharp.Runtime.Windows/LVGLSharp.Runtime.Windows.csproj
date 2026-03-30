@@ -11,7 +11,8 @@
 	<PropertyGroup>
 		<PackageId>LVGLSharp.Runtime.Windows</PackageId>
 		<Title>LVGLSharp Windows Runtime</Title>
-        <Description>Windows host runtime for LVGLSharp.</Description>
+        <Description>Windows desktop runtime for LVGLSharp with Win32 hosting, image integration, and generated runtime registration support for application startup.</Description>
+        <PackageTags>$(PackageTags);runtime;windows;win32</PackageTags>
         <DefaultItemExcludes>$(DefaultItemExcludes);buildTransitive\**\*.cs</DefaultItemExcludes>
 	</PropertyGroup>
 

@@ -10,7 +10,8 @@
 	<PropertyGroup>
 		<PackageId>LVGLSharp.Interop</PackageId>
 		<Title>LVGLSharp P/Invoke Bindings</Title>
-		<Description>Auto-generated P/Invoke bindings for LVGL (via ClangSharpPInvokeGenerator). Provides low-level access to the full LVGL C API from .NET.</Description>
+		<Description>Auto-generated low-level P/Invoke bindings for LVGL, generated through ClangSharpPInvokeGenerator and intended for advanced integrations, custom hosts, and full C API access from .NET.</Description>
+		<PackageTags>$(PackageTags);interop;pinvoke;bindings</PackageTags>
 	</PropertyGroup>
 
 	<!-- Pack keeps the package dependency metadata for downstream NuGet consumers.

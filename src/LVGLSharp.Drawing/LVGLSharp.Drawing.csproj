@@ -4,6 +4,10 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageId>LVGLSharp.Drawing</PackageId>
+    <Title>LVGLSharp Drawing Primitives</Title>
+    <Description>Cross-platform drawing primitives such as Size, Point, Rectangle, Region, Font, and Color used by LVGLSharp without depending on System.Drawing.</Description>
+    <PackageTags>$(PackageTags);drawing;geometry;color</PackageTags>
   </PropertyGroup>
 
 </Project>

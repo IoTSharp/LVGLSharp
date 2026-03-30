@@ -268,6 +268,9 @@ Produced by `pack-nuget.yml`:
 - `LVGLSharp.Core`
 - `LVGLSharp.Runtime.Windows`
 - `LVGLSharp.Runtime.Linux`
+- `LVGLSharp.Runtime.Headless`
+- `LVGLSharp.Runtime.MacOs`
+- `LVGLSharp.Runtime.Remote`
 - `LVGLSharp.Forms`
 
 ## 7. Why the Pipeline Is Split This Way
@@ -293,4 +296,3 @@ Recommended conventions going forward:
 ---
 
 If the repository later adds a GitHub Pages documentation publishing workflow, it can continue to build on this same decomposed CI structure.
-

@@ -113,6 +113,13 @@ jobs:
             -p:LVGLSharpNativePackageVersion=${{ inputs.package_version }} \
             --output nupkgs
 
+      - name: Pack LVGLSharp.Drawing
+        run: |
+          dotnet pack src/LVGLSharp.Drawing/LVGLSharp.Drawing.csproj \
+            -c Release \
+            -p:Version=${{ inputs.package_version }} \
+            --output nupkgs
+
       - name: Pack LVGLSharp.Runtime.Windows
         run: |
           dotnet pack src/LVGLSharp.Runtime.Windows/LVGLSharp.Runtime.Windows.csproj \
@@ -153,9 +160,24 @@ jobs:
             -p:LVGLSharpNativePackageVersion=${{ inputs.package_version }} \
             --output nupkgs
 
+      - name: Pack LVGLSharp.Analyzers
+        run: |
+          dotnet pack src/LVGLSharp.Analyzers/LVGLSharp.Analyzers.csproj \
+            -c Release \
+            -p:Version=${{ inputs.package_version }} \
+            --output nupkgs
+
       - name: Pack LVGLSharp.Forms
         run: |
           dotnet pack src/LVGLSharp.WinForms/LVGLSharp.Forms.csproj \
+            -c Release \
+            -p:Version=${{ inputs.package_version }} \
+            -p:LVGLSharpNativePackageVersion=${{ inputs.package_version }} \
+            --output nupkgs
+
+      - name: Pack LVGLSharp.WPF
+        run: |
+          dotnet pack src/LVGLSharp.WPF/LVGLSharp.WPF.csproj \
             -c Release \
             -p:Version=${{ inputs.package_version }} \
             -p:LVGLSharpNativePackageVersion=${{ inputs.package_version }} \

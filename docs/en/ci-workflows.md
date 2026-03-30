@@ -263,15 +263,18 @@ Produced by `build-demos.yml`:
 
 Produced by `pack-nuget.yml`:
 
+- `LVGLSharp.Analyzers`
 - `LVGLSharp.Native`
 - `LVGLSharp.Interop`
 - `LVGLSharp.Core`
+- `LVGLSharp.Drawing`
 - `LVGLSharp.Runtime.Windows`
 - `LVGLSharp.Runtime.Linux`
 - `LVGLSharp.Runtime.Headless`
 - `LVGLSharp.Runtime.MacOs`
 - `LVGLSharp.Runtime.Remote`
 - `LVGLSharp.Forms`
+- `LVGLSharp.WPF`
 
 ## 7. Why the Pipeline Is Split This Way
 

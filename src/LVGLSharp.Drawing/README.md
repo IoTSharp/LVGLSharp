@@ -8,7 +8,7 @@
 - color and font abstractions
 - drawing-oriented types that avoid a direct dependency on `System.Drawing`
 
-This library currently lives in the repository as a supporting package and is not part of the main public NuGet publishing workflow.
+This package is published as part of the LVGLSharp package line and can be referenced directly when you need these primitives outside the higher-level UI packages.
 
 Docs and package guidance: <https://lvglsharp.net/en/nuget.html>  
 Repository: <https://github.com/IoTSharp/LVGLSharp>

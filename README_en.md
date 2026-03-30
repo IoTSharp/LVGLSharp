@@ -39,31 +39,30 @@ The screenshots below come from the captured demo output under `docs/images`.
   <img src="./docs/images/winformsvncdemo-vnc-case.png" alt="LVGLSharp WinFormsVncDemo over VNC" width="48%" />
 </p>
 
-## Official NuGet Packages
+<p align="center">
+  <img src="./docs/images/wpf-layout-parity-stability-20260330.png" alt="LVGLSharp WPF compatibility preview" width="96%" />
+</p>
 
-The version and download columns below use live NuGet badges so the README stays aligned with what is actually published.
+## 12-Package Lineup
 
-| Package | Version | Downloads | Description |
-|---|---|---|---|
-| `LVGLSharp.Forms` | [![LVGLSharp.Forms](https://img.shields.io/nuget/v/LVGLSharp.Forms.svg)](https://www.nuget.org/packages/LVGLSharp.Forms/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Forms) | Main WinForms-style application package and runtime-registration entry point. |
-| `LVGLSharp.Core` | [![LVGLSharp.Core](https://img.shields.io/nuget/v/LVGLSharp.Core.svg)](https://www.nuget.org/packages/LVGLSharp.Core/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Core) | Shared runtime abstractions, fonts, diagnostics, and host helpers. |
-| `LVGLSharp.Interop` | [![LVGLSharp.Interop](https://img.shields.io/nuget/v/LVGLSharp.Interop.svg)](https://www.nuget.org/packages/LVGLSharp.Interop/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Interop) | Auto-generated low-level LVGL P/Invoke bindings. |
-| `LVGLSharp.Native` | [![LVGLSharp.Native](https://img.shields.io/nuget/v/LVGLSharp.Native.svg)](https://www.nuget.org/packages/LVGLSharp.Native/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Native) | RID-specific native LVGL assets and publish-time targets. |
-| `LVGLSharp.Runtime.Windows` | [![LVGLSharp.Runtime.Windows](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Windows.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Windows/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Windows) | Windows desktop runtime with Win32 hosting support. |
-| `LVGLSharp.Runtime.Linux` | [![LVGLSharp.Runtime.Linux](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Linux.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Linux/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Linux) | Linux runtime covering WSLg, X11, Wayland, SDL, and FrameBuffer paths. |
-| `LVGLSharp.Runtime.Headless` | [![LVGLSharp.Runtime.Headless](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Headless.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Headless/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Headless) | Headless runtime for offscreen rendering, snapshots, and automation. |
-| `LVGLSharp.Runtime.MacOs` | [![LVGLSharp.Runtime.MacOs](https://img.shields.io/nuget/v/LVGLSharp.Runtime.MacOs.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.MacOs/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.MacOs) | Early macOS runtime package with diagnostics and host scaffolding. |
-| `LVGLSharp.Runtime.Remote` | [![LVGLSharp.Runtime.Remote](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Remote.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Remote/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Remote) | Remote-session abstractions, frame transport, and VNC/RDP-oriented runtime pieces. |
+The repository currently maintains a 12-package line, and the table below uses live NuGet badges for version and download counts across the full list.
 
-All 9 packages above are currently published on NuGet. The repository also contains several supporting libraries that are documented below but are not part of the main public publishing workflow.
+| Package | Version | Downloads | Status | Description |
+|---|---|---|---|---|
+| `LVGLSharp.Forms` | [![LVGLSharp.Forms](https://img.shields.io/nuget/v/LVGLSharp.Forms.svg)](https://www.nuget.org/packages/LVGLSharp.Forms/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Forms) | Published on NuGet | Main WinForms-style application package and runtime-registration entry point. |
+| `LVGLSharp.Core` | [![LVGLSharp.Core](https://img.shields.io/nuget/v/LVGLSharp.Core.svg)](https://www.nuget.org/packages/LVGLSharp.Core/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Core) | Published on NuGet | Shared runtime abstractions, fonts, diagnostics, and host helpers. |
+| `LVGLSharp.Drawing` | [![LVGLSharp.Drawing](https://img.shields.io/nuget/v/LVGLSharp.Drawing.svg)](https://www.nuget.org/packages/LVGLSharp.Drawing/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Drawing) | Published on NuGet | Cross-platform drawing primitives used by runtimes and UI layers. |
+| `LVGLSharp.Interop` | [![LVGLSharp.Interop](https://img.shields.io/nuget/v/LVGLSharp.Interop.svg)](https://www.nuget.org/packages/LVGLSharp.Interop/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Interop) | Published on NuGet | Auto-generated low-level LVGL P/Invoke bindings. |
+| `LVGLSharp.Native` | [![LVGLSharp.Native](https://img.shields.io/nuget/v/LVGLSharp.Native.svg)](https://www.nuget.org/packages/LVGLSharp.Native/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Native) | Published on NuGet | RID-specific native LVGL assets and publish-time targets. |
+| `LVGLSharp.Runtime.Windows` | [![LVGLSharp.Runtime.Windows](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Windows.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Windows/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Windows) | Published on NuGet | Windows desktop runtime with Win32 hosting support. |
+| `LVGLSharp.Runtime.Linux` | [![LVGLSharp.Runtime.Linux](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Linux.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Linux/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Linux) | Published on NuGet | Linux runtime covering WSLg, X11, Wayland, SDL, and FrameBuffer paths. |
+| `LVGLSharp.Runtime.Headless` | [![LVGLSharp.Runtime.Headless](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Headless.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Headless/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Headless) | Published on NuGet | Headless runtime for offscreen rendering, snapshots, and automation. |
+| `LVGLSharp.Runtime.MacOs` | [![LVGLSharp.Runtime.MacOs](https://img.shields.io/nuget/v/LVGLSharp.Runtime.MacOs.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.MacOs/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.MacOs) | Published on NuGet | Early macOS runtime package with diagnostics and host scaffolding. |
+| `LVGLSharp.Runtime.Remote` | [![LVGLSharp.Runtime.Remote](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Remote.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Remote/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Remote) | Published on NuGet | Remote-session abstractions, frame transport, and VNC/RDP-oriented runtime pieces. |
+| `LVGLSharp.WPF` | [![LVGLSharp.WPF](https://img.shields.io/nuget/v/LVGLSharp.WPF.svg)](https://www.nuget.org/packages/LVGLSharp.WPF/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.WPF) | Published on NuGet | WPF-like bootstrap and XAML runtime loader built on top of `LVGLSharp.Forms` and `LVGLSharp.Runtime.Windows`. |
+| `LVGLSharp.Analyzers` | [![LVGLSharp.Analyzers](https://img.shields.io/nuget/v/LVGLSharp.Analyzers.svg)](https://www.nuget.org/packages/LVGLSharp.Analyzers/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Analyzers) | Published on NuGet | Roslyn analyzers that validate runtime-package usage and related build-time patterns. |
 
-## Repository-side Supporting Libraries
-
-| Library | Status | Description |
-|---|---|---|
-| `LVGLSharp.Drawing` | Repository library | Cross-platform drawing primitives used by runtimes and UI layers. |
-| `LVGLSharp.WPF` | Experimental repository library | WPF-like bootstrap and XAML runtime loader built on top of `LVGLSharp.Forms` and `LVGLSharp.Runtime.Windows`. |
-| `LVGLSharp.Analyzers` | Bundled with `LVGLSharp.Forms` | Roslyn analyzers that validate runtime-package usage and related build-time patterns. |
+All 12 packages are now documented and maintained as published packages, with live NuGet badges used for versions and download counts across the full list.
 
 `LVGLSharp.Forms` already carries the analyzers transitively. In most applications you start with `LVGLSharp.Forms` plus the runtime package that matches the host you want.
 

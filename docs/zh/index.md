@@ -158,3 +158,11 @@ sections:
       - label: "NativeAOT 与 GUI"
         url: "/zh/blog/nativeaot-gui.html"
 ---
+
+## WPF 预览
+
+`LVGLSharp.WPF` 当前已经进入包线，并可用于基础控件与 XAML 运行时加载链路验证。下面这张图来自 `src/Demos/WpfApp` 的实际运行效果。
+
+<p align="center">
+  <img src="/images/wpf-layout-parity-stability-20260330.png" alt="LVGLSharp WPF 预览" width="96%" />
+</p>

@@ -8,7 +8,7 @@
 - a XAML runtime loader
 - Windows-runtime integration built on top of `LVGLSharp.Forms`
 
-This library currently remains a repository-side experiment and is not part of the main public NuGet publishing workflow.
+This package is published as part of the LVGLSharp package line. It remains experimental in capability, but it is no longer documented as a repository-only library.
 
 Docs and package guidance: <https://lvglsharp.net/en/nuget.html>  
 Repository: <https://github.com/IoTSharp/LVGLSharp>

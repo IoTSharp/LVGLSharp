@@ -158,3 +158,11 @@ sections:
       - label: "NativeAOT and GUI"
         url: "/en/blog/nativeaot-gui.html"
 ---
+
+## WPF Preview
+
+`LVGLSharp.WPF` is now part of the package line and can already be used to validate the basic controls path and XAML runtime-loading flow. The screenshot below comes from the real `src/Demos/WpfApp` demo.
+
+<p align="center">
+  <img src="/images/wpf-layout-parity-stability-20260330.png" alt="LVGLSharp WPF preview" width="96%" />
+</p>

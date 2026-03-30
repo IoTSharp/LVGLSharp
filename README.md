@@ -39,31 +39,30 @@
   <img src="./docs/images/winformsvncdemo-vnc-case.png" alt="LVGLSharp WinFormsVncDemo over VNC" width="48%" />
 </p>
 
-## 正式 NuGet 包
+<p align="center">
+  <img src="./docs/images/wpf-layout-parity-stability-20260330.png" alt="LVGLSharp WPF compatibility preview" width="96%" />
+</p>
 
-下表中的版本和下载量使用 NuGet 实时徽章展示，避免 README 再和实际发布状态脱节。
+## 12 个包总览
 
-| NuGet 名称 | 版本 | 下载量 | 说明 |
-|---|---|---|---|
-| `LVGLSharp.Forms` | [![LVGLSharp.Forms](https://img.shields.io/nuget/v/LVGLSharp.Forms.svg)](https://www.nuget.org/packages/LVGLSharp.Forms/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Forms) | 主应用入口包，提供 WinForms 风格 API 与运行时注册入口。 |
-| `LVGLSharp.Core` | [![LVGLSharp.Core](https://img.shields.io/nuget/v/LVGLSharp.Core.svg)](https://www.nuget.org/packages/LVGLSharp.Core/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Core) | 共享运行时抽象、字体、诊断与宿主辅助能力。 |
-| `LVGLSharp.Interop` | [![LVGLSharp.Interop](https://img.shields.io/nuget/v/LVGLSharp.Interop.svg)](https://www.nuget.org/packages/LVGLSharp.Interop/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Interop) | 自动生成的 LVGL 底层 P/Invoke 绑定。 |
-| `LVGLSharp.Native` | [![LVGLSharp.Native](https://img.shields.io/nuget/v/LVGLSharp.Native.svg)](https://www.nuget.org/packages/LVGLSharp.Native/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Native) | 多 RID 原生 LVGL 资产与发布时目标文件。 |
-| `LVGLSharp.Runtime.Windows` | [![LVGLSharp.Runtime.Windows](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Windows.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Windows/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Windows) | Windows 桌面运行时与 Win32 宿主支持。 |
-| `LVGLSharp.Runtime.Linux` | [![LVGLSharp.Runtime.Linux](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Linux.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Linux/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Linux) | Linux 运行时，覆盖 WSLg、X11、Wayland、SDL 与 FrameBuffer 路径。 |
-| `LVGLSharp.Runtime.Headless` | [![LVGLSharp.Runtime.Headless](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Headless.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Headless/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Headless) | 无头渲染、PNG 快照、回归验证与自动化运行时。 |
-| `LVGLSharp.Runtime.MacOs` | [![LVGLSharp.Runtime.MacOs](https://img.shields.io/nuget/v/LVGLSharp.Runtime.MacOs.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.MacOs/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.MacOs) | 早期 macOS 运行时包，已包含诊断与宿主骨架。 |
-| `LVGLSharp.Runtime.Remote` | [![LVGLSharp.Runtime.Remote](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Remote.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Remote/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Remote) | 远程会话抽象、帧传输与 VNC/RDP 相关运行时能力。 |
+当前仓库的正式包线按 12 个包维护。下表中的版本和下载量统一使用 NuGet 实时徽章展示。
 
-上面 9 个包当前都已经发布到 NuGet。仓库里另外还有几类辅助库，它们也需要理解，但不属于当前主发布流水线里的正式对外包。
+| 包名 | 版本 | 下载量 | 状态 | 说明 |
+|---|---|---|---|---|
+| `LVGLSharp.Forms` | [![LVGLSharp.Forms](https://img.shields.io/nuget/v/LVGLSharp.Forms.svg)](https://www.nuget.org/packages/LVGLSharp.Forms/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Forms) | NuGet 已发布 | 主应用入口包，提供 WinForms 风格 API 与运行时注册入口。 |
+| `LVGLSharp.Core` | [![LVGLSharp.Core](https://img.shields.io/nuget/v/LVGLSharp.Core.svg)](https://www.nuget.org/packages/LVGLSharp.Core/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Core) | NuGet 已发布 | 共享运行时抽象、字体、诊断与宿主辅助能力。 |
+| `LVGLSharp.Drawing` | [![LVGLSharp.Drawing](https://img.shields.io/nuget/v/LVGLSharp.Drawing.svg)](https://www.nuget.org/packages/LVGLSharp.Drawing/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Drawing) | NuGet 已发布 | 运行时与 UI 层共享的跨平台绘图基础类型。 |
+| `LVGLSharp.Interop` | [![LVGLSharp.Interop](https://img.shields.io/nuget/v/LVGLSharp.Interop.svg)](https://www.nuget.org/packages/LVGLSharp.Interop/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Interop) | NuGet 已发布 | 自动生成的 LVGL 底层 P/Invoke 绑定。 |
+| `LVGLSharp.Native` | [![LVGLSharp.Native](https://img.shields.io/nuget/v/LVGLSharp.Native.svg)](https://www.nuget.org/packages/LVGLSharp.Native/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Native) | NuGet 已发布 | 多 RID 原生 LVGL 资产与发布时目标文件。 |
+| `LVGLSharp.Runtime.Windows` | [![LVGLSharp.Runtime.Windows](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Windows.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Windows/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Windows) | NuGet 已发布 | Windows 桌面运行时与 Win32 宿主支持。 |
+| `LVGLSharp.Runtime.Linux` | [![LVGLSharp.Runtime.Linux](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Linux.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Linux/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Linux) | NuGet 已发布 | Linux 运行时，覆盖 WSLg、X11、Wayland、SDL 与 FrameBuffer 路径。 |
+| `LVGLSharp.Runtime.Headless` | [![LVGLSharp.Runtime.Headless](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Headless.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Headless/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Headless) | NuGet 已发布 | 无头渲染、PNG 快照、回归验证与自动化运行时。 |
+| `LVGLSharp.Runtime.MacOs` | [![LVGLSharp.Runtime.MacOs](https://img.shields.io/nuget/v/LVGLSharp.Runtime.MacOs.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.MacOs/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.MacOs) | NuGet 已发布 | 早期 macOS 运行时包，已包含诊断与宿主骨架。 |
+| `LVGLSharp.Runtime.Remote` | [![LVGLSharp.Runtime.Remote](https://img.shields.io/nuget/v/LVGLSharp.Runtime.Remote.svg)](https://www.nuget.org/packages/LVGLSharp.Runtime.Remote/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Runtime.Remote) | NuGet 已发布 | 远程会话抽象、帧传输与 VNC/RDP 相关运行时能力。 |
+| `LVGLSharp.WPF` | [![LVGLSharp.WPF](https://img.shields.io/nuget/v/LVGLSharp.WPF.svg)](https://www.nuget.org/packages/LVGLSharp.WPF/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.WPF) | NuGet 已发布 | 基于 `LVGLSharp.Forms` 与 `LVGLSharp.Runtime.Windows` 的 WPF 风格启动与 XAML 运行时加载层。 |
+| `LVGLSharp.Analyzers` | [![LVGLSharp.Analyzers](https://img.shields.io/nuget/v/LVGLSharp.Analyzers.svg)](https://www.nuget.org/packages/LVGLSharp.Analyzers/) | ![NuGet](https://img.shields.io/nuget/dt/LVGLSharp.Analyzers) | NuGet 已发布 | 用于校验运行时包引用方式和仓库约束的 Roslyn 分析器。 |
 
-## 仓库内附带库
-
-| 库 | 状态 | 说明 |
-|---|---|---|
-| `LVGLSharp.Drawing` | 仓库辅助库 | 运行时与 UI 层共享的跨平台绘图基础类型。 |
-| `LVGLSharp.WPF` | 实验性仓库库 | 基于 `LVGLSharp.Forms` 与 `LVGLSharp.Runtime.Windows` 的 WPF 风格启动与 XAML 运行时加载层。 |
-| `LVGLSharp.Analyzers` | 由 `LVGLSharp.Forms` 携带 | 用于校验运行时包引用方式和仓库约束的 Roslyn 分析器。 |
+当前 12 个包都按统一口径发布与维护，README 中的版本和下载量也全部由 NuGet 实时徽章展示。
 
 `LVGLSharp.Forms` 已经会把分析器一并带入。一般应用只需要先选 `LVGLSharp.Forms`，再按目标宿主添加对应运行时包即可。
 

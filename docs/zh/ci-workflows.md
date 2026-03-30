@@ -263,15 +263,18 @@ prepare + pack + build-demos
 
 由 `pack-nuget.yml` 输出：
 
+- `LVGLSharp.Analyzers`
 - `LVGLSharp.Native`
 - `LVGLSharp.Interop`
 - `LVGLSharp.Core`
+- `LVGLSharp.Drawing`
 - `LVGLSharp.Runtime.Windows`
 - `LVGLSharp.Runtime.Linux`
 - `LVGLSharp.Runtime.Headless`
 - `LVGLSharp.Runtime.MacOs`
 - `LVGLSharp.Runtime.Remote`
 - `LVGLSharp.Forms`
+- `LVGLSharp.WPF`
 
 ## 7. 为什么这样拆分
 

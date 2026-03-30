@@ -294,21 +294,12 @@ public unsafe sealed class WaylandView : ViewLifetimeBase
             lv_indev_set_group(_keyboardIndev, _keyInputGroup);
         }
 
-        _fallbackFont = lv_obj_get_style_text_font(_root, lv_part_t.LV_PART_MAIN);
-        _fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
-
-        _resolvedSystemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
-        if (!string.IsNullOrWhiteSpace(_resolvedSystemFontPath))
-        {
-            _fontManager = new SixLaborsFontManager(
-                _resolvedSystemFontPath,
-                12,
-                _bufferPresenter.Dpi,
-                _fallbackFont,
-                LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
-
-            _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(_root, _fontManager.GetLvFontPtr());
-        }
+        LinuxRuntimeFontHelper.InitializeRuntimeFont(_root, _bufferPresenter.Dpi).ApplyPathAndDiagnosticTo(
+            ref _fallbackFont,
+            ref _fontManager,
+            ref _resolvedSystemFontPath,
+            ref _fontDiagnosticSummary,
+            ref _defaultFontStyle);
     }
 
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]

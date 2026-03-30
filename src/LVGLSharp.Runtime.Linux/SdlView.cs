@@ -78,22 +78,13 @@ public unsafe sealed partial class SdlView : ViewLifetimeBase
         _root = lv_scr_act();
         _keyInputGroup = lv_group_create();
         lv_indev_set_group(_keyboardIndev, _keyInputGroup);
-        _fallbackFont = lv_obj_get_style_text_font(_root, lv_part_t.LV_PART_MAIN);
-        _fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
-        _fontGlyphDiagnosticSummary = LinuxSystemFontResolver.GetGlyphDiagnosticSummary();
-
-        _resolvedSystemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
-        if (!string.IsNullOrWhiteSpace(_resolvedSystemFontPath))
-        {
-            _fontManager = new SixLaborsFontManager(
-                _resolvedSystemFontPath,
-                12,
-                _dpi,
-                _fallbackFont,
-                LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
-
-            _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(_root, _fontManager.GetLvFontPtr());
-        }
+        LinuxRuntimeFontHelper.InitializeRuntimeFont(_root, _dpi).ApplyFullTo(
+            ref _fallbackFont,
+            ref _fontManager,
+            ref _resolvedSystemFontPath,
+            ref _fontDiagnosticSummary,
+            ref _fontGlyphDiagnosticSummary,
+            ref _defaultFontStyle);
 
         s_activeView = this;
         _running = true;

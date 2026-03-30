@@ -79,20 +79,10 @@ public unsafe class FrameBufferView : ViewLifetimeBase
 
             RootObject = lv_scr_act();
 
-            _fallbackFont = lv_obj_get_style_text_font(RootObject, lv_part_t.LV_PART_MAIN);
-
-            var systemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
-            if (!string.IsNullOrWhiteSpace(systemFontPath))
-            {
-                _fontManager = new SixLaborsFontManager(
-                    systemFontPath,
-                    12,
-                    _dpi,
-                    _fallbackFont,
-                    LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
-
-                _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(RootObject, _fontManager.GetLvFontPtr());
-            }
+            LinuxRuntimeFontHelper.InitializeRuntimeFont(RootObject, _dpi).ApplyTo(
+                ref _fallbackFont,
+                ref _fontManager,
+                ref _defaultFontStyle);
         }
 
         public override void RegisterTextInput(lv_obj_t* textArea)

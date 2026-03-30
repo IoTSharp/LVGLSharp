@@ -422,7 +422,7 @@ public unsafe partial class X11View : ViewLifetimeBase
         RootObject = lv_scr_act();
         KeyInputGroupObject = lv_group_create();
         lv_indev_set_group(_keyboardIndev, KeyInputGroupObject);
-        _fallbackFont = lv_obj_get_style_text_font(RootObject, lv_part_t.LV_PART_MAIN);
+        _fallbackFont = LvglFontHelper.GetEffectiveTextFont(RootObject, lv_part_t.LV_PART_MAIN);
         _fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
         _fontGlyphDiagnosticSummary = LinuxSystemFontResolver.GetGlyphDiagnosticSummary();
 
@@ -431,18 +431,13 @@ public unsafe partial class X11View : ViewLifetimeBase
             "1",
             StringComparison.Ordinal);
 
-        _resolvedSystemFontPath = disableCustomFont ? null : LinuxSystemFontResolver.TryResolveFontPath();
-        if (!string.IsNullOrWhiteSpace(_resolvedSystemFontPath))
-        {
-            _fontManager = new SixLaborsFontManager(
-                _resolvedSystemFontPath,
-                12,
-                _dpi,
-                _fallbackFont,
-                LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
-
-            _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(RootObject, _fontManager.GetLvFontPtr());
-        }
+        LinuxRuntimeFontHelper.InitializeRuntimeFont(RootObject, _dpi, disableCustomFont).ApplyFullTo(
+            ref _fallbackFont,
+            ref _fontManager,
+            ref _resolvedSystemFontPath,
+            ref _fontDiagnosticSummary,
+            ref _fontGlyphDiagnosticSummary,
+            ref _defaultFontStyle);
 
         SendTextAreaFocusCallbackCore = null;
         s_activeView = this;

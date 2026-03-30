@@ -102,22 +102,12 @@ public unsafe sealed class DrmView : ViewLifetimeBase
 
         _root = lv_scr_act();
         _keyInputGroup = lv_group_create();
-        _fallbackFont = lv_obj_get_style_text_font(_root, lv_part_t.LV_PART_MAIN);
-        _fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
-        _fontGlyphDiagnosticSummary = LinuxSystemFontResolver.GetGlyphDiagnosticSummary();
-
-        var systemFontPath = LinuxSystemFontResolver.TryResolveFontPath();
-        if (!string.IsNullOrWhiteSpace(systemFontPath))
-        {
-            _fontManager = new SixLaborsFontManager(
-                systemFontPath,
-                12,
-                _dpi,
-                _fallbackFont,
-                LvglHostDefaults.CreateDefaultFontFallbackGlyphs());
-
-            _defaultFontStyle = LvglHostDefaults.ApplyDefaultFontStyle(_root, _fontManager.GetLvFontPtr());
-        }
+        LinuxRuntimeFontHelper.InitializeRuntimeFont(_root, _dpi).ApplyDiagnosticsTo(
+            ref _fallbackFont,
+            ref _fontManager,
+            ref _fontDiagnosticSummary,
+            ref _fontGlyphDiagnosticSummary,
+            ref _defaultFontStyle);
 
         _running = true;
         _initialized = true;

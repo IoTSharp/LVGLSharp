@@ -655,9 +655,12 @@ namespace LVGLSharp.Runtime.Windows
             // SixLabors-based dynamic glyph rendering is currently opt-in because some glyph paths
             // can still crash in native rendering. Default to LVGL built-in font for stability.
             bool enableManagedFont = LvglManagedFontHelper.IsManagedFontEnabled();
+            var managedFontFamily = enableManagedFont && LvglManagedFontHelper.TryResolveFontFamily(s_managedFontFamilyCandidates, out var resolvedManagedFontFamily)
+                ? resolvedManagedFontFamily
+                : (SixLabors.Fonts.FontFamily?)null;
             LvglManagedFontHelper.InitializeManagedFont(
                 RootObject,
-                LvglManagedFontHelper.TryResolveFontFamily(s_managedFontFamilyCandidates, out var managedFontFamily) ? managedFontFamily : null,
+                managedFontFamily,
                 s_managedFontFamilyCandidates,
                 12,
                 GetDPI(),

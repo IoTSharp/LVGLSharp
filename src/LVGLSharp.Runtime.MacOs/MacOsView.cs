@@ -111,9 +111,12 @@ public unsafe sealed class MacOsView : ViewLifetimeBase
         lv_indev_set_group(_keyboardIndev, _keyInputGroup);
 
         bool enableManagedFont = LvglManagedFontHelper.IsManagedFontEnabled();
+        var managedFontFamily = enableManagedFont && LvglManagedFontHelper.TryResolveFontFamily(s_managedFontFamilyCandidates, out var resolvedManagedFontFamily)
+            ? resolvedManagedFontFamily
+            : (FontFamily?)null;
         LvglManagedFontHelper.InitializeManagedFont(
             _root,
-            LvglManagedFontHelper.TryResolveFontFamily(s_managedFontFamilyCandidates, out var managedFontFamily) ? managedFontFamily : null,
+            managedFontFamily,
             s_managedFontFamilyCandidates,
             12,
             _surface.Dpi,

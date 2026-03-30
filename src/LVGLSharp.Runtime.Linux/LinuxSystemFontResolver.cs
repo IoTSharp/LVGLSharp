@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
 using System.Text;
 using SixLabors.Fonts;
 using SixLabors.Fonts.Unicode;
@@ -14,9 +13,6 @@ namespace LVGLSharp.Runtime.Linux;
 
 internal static class LinuxSystemFontResolver
 {
-    private const string EmbeddedFontResourceName = "LVGLSharp.Runtime.Linux.Assets.Fonts.NotoSansSC-Regular.otf";
-    private const string EmbeddedFontFileName = "NotoSansSC-Regular.otf";
-
     private static readonly Lazy<FontFamily?> s_cachedFontFamily = new(TryResolveFontFamilyCore);
     private static readonly Lazy<FontPathResolutionResult> s_cachedFontPath = new(TryResolveFontPathCore);
 
@@ -79,20 +75,12 @@ internal static class LinuxSystemFontResolver
     {
         StringBuilder diagnostic = new();
 
-        if (TryResolveEmbeddedFontPath(out var embeddedFontPath, out var embeddedFontCoverage))
-        {
-            return new FontPathResolutionResult(
-                embeddedFontPath,
-                $"Source=EmbeddedFont; Path={embeddedFontPath}; Coverage={embeddedFontCoverage}/{s_requiredCoverage}",
-                CreateGlyphDiagnosticSummary(embeddedFontPath));
-        }
-
         if (IsWslEnvironment() && TryResolveWslWindowsFontPath(out var wslWindowsFontPath, out var wslWindowsCoverage))
         {
             return new FontPathResolutionResult(
                 wslWindowsFontPath,
                 $"Source=WslWindowsFont; Path={wslWindowsFontPath}; Coverage={wslWindowsCoverage}/{s_requiredCoverage}",
-                CreateGlyphDiagnosticSummary(wslWindowsFontPath));
+                    LvglManagedFontHelper.CreateGlyphDiagnosticSummary(wslWindowsFontPath));
         }
 
         foreach (var chineseFontPath in EnumerateFontconfigChineseFontPaths())
@@ -102,7 +90,7 @@ internal static class LinuxSystemFontResolver
                 return new FontPathResolutionResult(
                     chineseFontPath,
                     $"Source=FontconfigZh; Path={chineseFontPath}; Coverage={chineseCoverage}/{s_requiredCoverage}",
-                    CreateGlyphDiagnosticSummary(chineseFontPath));
+                    LvglManagedFontHelper.CreateGlyphDiagnosticSummary(chineseFontPath));
             }
         }
 
@@ -115,7 +103,7 @@ internal static class LinuxSystemFontResolver
                 return new FontPathResolutionResult(
                     desktopFontPath,
                     $"Source=DesktopSetting; Family={desktopFamilyName}; Path={desktopFontPath}; Coverage={desktopCoverage}/{s_requiredCoverage}",
-                    CreateGlyphDiagnosticSummary(desktopFontPath));
+                    LvglManagedFontHelper.CreateGlyphDiagnosticSummary(desktopFontPath));
             }
 
             if (!string.IsNullOrWhiteSpace(desktopFamilyName) &&
@@ -132,7 +120,7 @@ internal static class LinuxSystemFontResolver
                 return new FontPathResolutionResult(
                     preferredFontPath,
                     $"Source=PreferredFamily; Family={familyName}; Path={preferredFontPath}; Coverage={preferredCoverage}/{s_requiredCoverage}",
-                    CreateGlyphDiagnosticSummary(preferredFontPath));
+                    LvglManagedFontHelper.CreateGlyphDiagnosticSummary(preferredFontPath));
             }
 
             if (TryResolveFontconfigFilePath(familyName, requireFullCoverage: false, out var matchedPreferredFontPath, out var matchedPreferredCoverage))
@@ -146,7 +134,7 @@ internal static class LinuxSystemFontResolver
             return new FontPathResolutionResult(
                 windowsFontPath,
                 $"Source=WslWindowsFont; Path={windowsFontPath}; Coverage={windowsCoverage}/{s_requiredCoverage}",
-                CreateGlyphDiagnosticSummary(windowsFontPath));
+                LvglManagedFontHelper.CreateGlyphDiagnosticSummary(windowsFontPath));
         }
 
         string[] genericFallbackFamilies =
@@ -166,8 +154,17 @@ internal static class LinuxSystemFontResolver
                 return new FontPathResolutionResult(
                     fallbackFontPath,
                     $"NoCjkFontFound; SelectedGenericFallback={fallbackFontPath}; Coverage={fallbackCoverage}/{s_requiredCoverage}; Attempts={diagnostic.ToString().Trim()}",
-                    CreateGlyphDiagnosticSummary(fallbackFontPath));
+                    LvglManagedFontHelper.CreateGlyphDiagnosticSummary(fallbackFontPath));
             }
+        }
+
+        if (LvglManagedFontHelper.TryResolveEmbeddedFallbackFontPath(out var embeddedFontPath) &&
+            TryGetFileCoverage(embeddedFontPath, out var embeddedFontCoverage))
+        {
+            return new FontPathResolutionResult(
+                embeddedFontPath,
+                $"Source=EmbeddedFallbackFont; Path={embeddedFontPath}; Coverage={embeddedFontCoverage}/{s_requiredCoverage}; Attempts={diagnostic.ToString().Trim()}",
+                LvglManagedFontHelper.CreateGlyphDiagnosticSummary(embeddedFontPath));
         }
 
         return new FontPathResolutionResult(
@@ -204,52 +201,6 @@ internal static class LinuxSystemFontResolver
         }
 
         return null;
-    }
-
-    private static string CreateGlyphDiagnosticSummary(string fontPath)
-    {
-        try
-        {
-            FontCollection collection = new();
-            FontFamily family = collection.Add(fontPath);
-            Font font = family.CreateFont(12);
-            Rune[] sampleRunes = [new Rune('图'), new Rune('像'), new Rune('路'), new Rune('径')];
-            Dictionary<string, int> signatureCounts = new(StringComparer.Ordinal);
-            List<string> parts = new(sampleRunes.Length);
-
-            foreach (var rune in sampleRunes)
-            {
-                if (!TryGetGlyphSignature(font, rune, out var signature))
-                {
-                    parts.Add($"{rune}:Missing");
-                    continue;
-                }
-
-                parts.Add($"{rune}:{signature}");
-                signatureCounts[signature] = signatureCounts.TryGetValue(signature, out var count) ? count + 1 : 1;
-            }
-
-            bool uniformSignature = signatureCounts.Count == 1 && signatureCounts.Values.First() == sampleRunes.Length;
-            return $"Uniform={uniformSignature}; Distinct={signatureCounts.Count}; Samples={string.Join(", ", parts)}";
-        }
-        catch (Exception ex)
-        {
-            return $"GlyphDiagError={ex.GetType().Name}:{ex.Message}";
-        }
-    }
-
-    private static bool TryGetGlyphSignature(Font font, Rune rune, out string signature)
-    {
-        signature = string.Empty;
-
-        if (!font.TryGetGlyphs(new CodePoint(rune.Value), out var glyphs) || glyphs.Count == 0)
-        {
-            return false;
-        }
-
-        FontRectangle bbox = glyphs[0].BoundingBox(GlyphLayoutMode.Horizontal, Vector2.Zero, 72f);
-        signature = $"Count={glyphs.Count};Adv={Math.Round((double)glyphs[0].GlyphMetrics.AdvanceWidth, 2)};BBox={Math.Round((double)bbox.Width, 2)}x{Math.Round((double)bbox.Height, 2)}@{Math.Round((double)bbox.Left, 2)},{Math.Round((double)bbox.Top, 2)}";
-        return true;
     }
 
     private static FontFamily? TryResolveDesktopPreferredFamily()
@@ -554,59 +505,6 @@ internal static class LinuxSystemFontResolver
 
         resolvedFontPath = string.Empty;
         return false;
-    }
-
-    private static bool TryResolveEmbeddedFontPath(out string resolvedFontPath, out int coverage)
-    {
-        coverage = 0;
-
-        if (!TryExtractEmbeddedFont(out var extractedFontPath))
-        {
-            resolvedFontPath = string.Empty;
-            return false;
-        }
-
-        if (TryGetFileCoverage(extractedFontPath, out coverage))
-        {
-            resolvedFontPath = extractedFontPath;
-            return true;
-        }
-
-        resolvedFontPath = string.Empty;
-        return false;
-    }
-
-    private static bool TryExtractEmbeddedFont(out string extractedFontPath)
-    {
-        extractedFontPath = string.Empty;
-
-        try
-        {
-            Assembly assembly = typeof(LinuxSystemFontResolver).Assembly;
-            using Stream? resourceStream = assembly.GetManifestResourceStream(EmbeddedFontResourceName);
-            if (resourceStream is null)
-            {
-                return false;
-            }
-
-            string targetDirectory = Path.Combine(Path.GetTempPath(), "LVGLSharp", "fonts");
-            Directory.CreateDirectory(targetDirectory);
-
-            extractedFontPath = Path.Combine(targetDirectory, EmbeddedFontFileName);
-            if (File.Exists(extractedFontPath) && new FileInfo(extractedFontPath).Length == resourceStream.Length)
-            {
-                return true;
-            }
-
-            using FileStream outputStream = File.Create(extractedFontPath);
-            resourceStream.CopyTo(outputStream);
-            return true;
-        }
-        catch
-        {
-            extractedFontPath = string.Empty;
-            return false;
-        }
     }
 
     private static bool TryResolveWslWindowsFontPath(out string resolvedFontPath, out int coverage)

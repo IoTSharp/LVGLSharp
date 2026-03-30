@@ -26,18 +26,18 @@ public readonly record struct LvglFontDiagnostics(
 
         if (!enabled)
         {
-            return new LvglFontDiagnostics(null, "ManagedFontDisabled", null);
+            return new LvglFontDiagnostics(null, "Source=LvglNativeFont; ManagedFontDisabled", null);
         }
 
         var candidateList = string.Join(", ", candidates.Where(static candidate => !string.IsNullOrWhiteSpace(candidate)));
         if (fontFamily is null)
         {
-            return new LvglFontDiagnostics(null, $"ManagedFontEnabled; Family=<none>; Candidates={candidateList}", null);
+            return new LvglFontDiagnostics(null, $"Source=PlatformSystemFont; ManagedFontEnabled; Family=<none>; Candidates={candidateList}", null);
         }
 
         return new LvglFontDiagnostics(
             fontFamily.Value.Name,
-            $"ManagedFontEnabled; Family={fontFamily.Value.Name}; Candidates={candidateList}",
+            $"Source=PlatformSystemFont; ManagedFontEnabled; Family={fontFamily.Value.Name}; Candidates={candidateList}",
             null);
     }
 }

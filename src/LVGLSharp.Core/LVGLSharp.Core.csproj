@@ -24,6 +24,11 @@
 	  <ProjectReference Include="..\LVGLSharp.Interop\LVGLSharp.Interop.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Include="..\LVGLSharp.Runtime.Linux\Assets\Fonts\NotoSansSC-Regular.otf" Link="Assets\Fonts\NotoSansSC-Regular.otf" LogicalName="LVGLSharp.Core.Assets.Fonts.NotoSansSC-Regular.otf" />
+		<None Include="..\LVGLSharp.Runtime.Linux\Assets\Fonts\NOTICE.txt" Pack="true" PackagePath="THIRD-PARTY-NOTICES\LVGLSharp.Core\" Visible="false" />
+	</ItemGroup>
+
  <ItemGroup>
    <Folder Include="Drawing\" />
  </ItemGroup>

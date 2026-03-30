@@ -27,8 +27,6 @@ namespace LVGLSharp.Runtime.Windows
         static uint g_bufSize = 1024 * 1024 * 4;
         static bool g_running;
         static volatile bool g_lvglReady;
-        static int g_timerCallCount;
-        static int g_flushCallCount;
         static lv_obj_t* label;
         static int startTick;
         static int mouseX = 0, mouseY = 0;
@@ -89,12 +87,6 @@ namespace LVGLSharp.Runtime.Windows
                 int width = area->x2 - area->x1 + 1;
                 int height = area->y2 - area->y1 + 1;
                 int pixelCount = width * height;
-                int flushIndex = Interlocked.Increment(ref g_flushCallCount);
-
-                if (flushIndex <= 5)
-                {
-                    Console.Error.WriteLine($"[lvgl] flush#{flushIndex} area=({area->x1},{area->y1})-({area->x2},{area->y2}) pixels={pixelCount} colorPtr=0x{((nuint)color_p):X}");
-                }
 
                 fixed (byte* pBGRA = bgraBuf)
                 {
@@ -309,12 +301,6 @@ namespace LVGLSharp.Runtime.Windows
             bool hadMessages = PumpPendingMessages();
             if (g_lvglReady && g_display != null && lv_is_initialized())
             {
-                int callIndex = Interlocked.Increment(ref g_timerCallCount);
-                if (callIndex <= 10)
-                {
-                    Console.Error.WriteLine($"[lvgl] timer#{callIndex} running display=0x{((nuint)g_display):X}");
-                }
-
                 lv_timer_handler();
             }
 
@@ -495,8 +481,6 @@ namespace LVGLSharp.Runtime.Windows
             mousePressed = false;
             mouseButton = 0;
             mouseWheelDelta = 0;
-            g_timerCallCount = 0;
-            g_flushCallCount = 0;
 
             while (keyQueue.TryDequeue(out _))
             {
@@ -568,9 +552,6 @@ namespace LVGLSharp.Runtime.Windows
             }
 
             lv_display_set_default(g_display);
-            var colorFormat = lv_display_get_color_format(g_display);
-            byte bytesPerPixel = lv_color_format_get_size(colorFormat);
-            Console.Error.WriteLine($"[lvgl] display={Width}x{Height} format={colorFormat} bpp={bytesPerPixel} buffer={g_bufSize}");
 
             // Mouse
             _pointerInputDevice = lv_indev_create();
@@ -599,24 +580,30 @@ namespace LVGLSharp.Runtime.Windows
             lv_obj_set_size(g_focusSink, 1, 1);
             lv_obj_add_flag(g_focusSink, lv_obj_flag_t.LV_OBJ_FLAG_HIDDEN | lv_obj_flag_t.LV_OBJ_FLAG_IGNORE_LAYOUT);
 
-            _fallbackFont = lv_obj_get_style_text_font(RootObject, lv_part_t.LV_PART_MAIN);
+            // SixLabors-based dynamic glyph rendering is currently opt-in because some glyph paths
+            // can still crash in native rendering. Default to LVGL built-in font for stability.
+            bool enableManagedFont = string.Equals(Environment.GetEnvironmentVariable("LVGLSHARP_ENABLE_MANAGED_FONT"), "1", StringComparison.OrdinalIgnoreCase);
+            if (enableManagedFont)
+            {
+                _fallbackFont = lv_obj_get_style_text_font(RootObject, lv_part_t.LV_PART_MAIN);
 
-            _fontManager = new SixLaborsFontManager(SystemFonts.Get("Microsoft YaHei"), 12, GetDPI(), _fallbackFont, [
-                61441, 61448, 61451, 61452, 61453, 61457, 61459, 61461, 61465, 61468,
-                61473, 61478, 61479, 61480, 61502, 61507, 61512, 61515, 61516, 61517,
-                61521, 61522, 61523, 61524, 61543, 61544, 61550, 61552, 61553, 61556,
-                61559, 61560, 61561, 61563, 61587, 61589, 61636, 61637, 61639, 61641,
-                61664, 61671, 61674, 61683, 61724, 61732, 61787, 61931, 62016, 62017,
-                62018, 62019, 62020, 62087, 62099, 62189, 62212, 62810, 63426, 63650
-            ]);
-            _defaultFont = _fontManager.GetLvFontPtr();
+                _fontManager = new SixLaborsFontManager(SystemFonts.Get("Microsoft YaHei"), 12, GetDPI(), _fallbackFont, [
+                    61441, 61448, 61451, 61452, 61453, 61457, 61459, 61461, 61465, 61468,
+                    61473, 61478, 61479, 61480, 61502, 61507, 61512, 61515, 61516, 61517,
+                    61521, 61522, 61523, 61524, 61543, 61544, 61550, 61552, 61553, 61556,
+                    61559, 61560, 61561, 61563, 61587, 61589, 61636, 61637, 61639, 61641,
+                    61664, 61671, 61674, 61683, 61724, 61732, 61787, 61931, 62016, 62017,
+                    62018, 62019, 62020, 62087, 62099, 62189, 62212, 62810, 63426, 63650
+                ]);
+                _defaultFont = _fontManager.GetLvFontPtr();
 
-            _defaultFontStyle = (lv_style_t*)NativeMemory.Alloc((nuint)sizeof(lv_style_t));
-            NativeMemory.Clear(_defaultFontStyle, (nuint)sizeof(lv_style_t));
-            lv_style_init(_defaultFontStyle);
-            lv_style_set_text_font(_defaultFontStyle, _defaultFont);
+                _defaultFontStyle = (lv_style_t*)NativeMemory.Alloc((nuint)sizeof(lv_style_t));
+                NativeMemory.Clear(_defaultFontStyle, (nuint)sizeof(lv_style_t));
+                lv_style_init(_defaultFontStyle);
+                lv_style_set_text_font(_defaultFontStyle, _defaultFont);
 
-            lv_obj_add_style(RootObject, _defaultFontStyle, 0);
+                lv_obj_add_style(RootObject, _defaultFontStyle, 0);
+            }
             g_lvglReady = true;
         }
         protected override void RunLoopCore(Action iteration)

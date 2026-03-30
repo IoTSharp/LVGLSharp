@@ -152,7 +152,7 @@ namespace LVGLSharp
             dsc.box_h = (ushort)Math.Round(bbox.Height + bounds.Top);
             dsc.ofs_x = 0;
             dsc.ofs_y = (short)Math.Round(manager._lineHeight - dsc.box_h);
-            dsc.stride = dsc.box_w;
+            dsc.stride = (ushort)lv_draw_buf_width_to_stride(dsc.box_w, lv_color_format_t.LV_COLOR_FORMAT_A8);
             dsc.format = lv_font_glyph_format_t.LV_FONT_GLYPH_FORMAT_A8;
             dsc.is_placeholder = 0;
             dsc.gid.index = unicode_letter;
@@ -198,10 +198,42 @@ namespace LVGLSharp
                 Dpi = manager._dpi
             }, characterToDraw, Color.Black));
 
-            int bufferSize = dsc->box_w * dsc->box_h;
-            if (draw_buf == null || draw_buf->data == null || draw_buf->data_size < bufferSize)
+            if (draw_buf == null || draw_buf->data == null)
             {
                 return null;
+            }
+
+            int rowStride = (int)draw_buf->header.stride;
+            if (rowStride <= 0)
+            {
+                rowStride = dsc->box_w;
+            }
+
+            int requiredBufferSize = rowStride * dsc->box_h;
+            if (draw_buf->data_size < requiredBufferSize)
+            {
+                return null;
+            }
+
+            if (!image.DangerousTryGetSinglePixelMemory(out Memory<A8> sourcePixels))
+            {
+                return null;
+            }
+
+            var sourceBytes = MemoryMarshal.AsBytes(sourcePixels.Span);
+            var destinationBytes = new Span<byte>(draw_buf->data, requiredBufferSize);
+
+            for (int y = 0; y < dsc->box_h; y++)
+            {
+                int sourceOffset = y * dsc->box_w;
+                int destinationOffset = y * rowStride;
+                sourceBytes.Slice(sourceOffset, dsc->box_w).CopyTo(destinationBytes.Slice(destinationOffset, dsc->box_w));
+
+                // Clear the alignment padding bytes so stale alpha doesn't leak into the next glyph.
+                if (rowStride > dsc->box_w)
+                {
+                    destinationBytes.Slice(destinationOffset + dsc->box_w, rowStride - dsc->box_w).Clear();
+                }
             }
 
             if (s_traceGlyphs)
@@ -211,10 +243,7 @@ namespace LVGLSharp
                         $"bitmap U+{unicodeCodePoint:X4} '{FormatGlyph(unicodeCodePoint)}' req={dsc->box_w}x{dsc->box_h} stride={dsc->stride} draw_buf=({draw_buf->header.w}x{draw_buf->header.h} stride={draw_buf->header.stride} cf={draw_buf->header.cf} size={draw_buf->data_size})"));
             }
 
-            var destinationSpan = new Span<byte>(draw_buf->data, bufferSize);
-            image.CopyPixelDataTo(destinationSpan);
-
-            return draw_buf->data;
+            return draw_buf;
         }
 
         [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]

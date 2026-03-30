@@ -24,10 +24,15 @@
 
 	<ItemGroup>
           <ProjectReference Include="..\LVGLSharp.Core\LVGLSharp.Core.csproj" />
+          <ProjectReference Include="..\LVGLSharp.Drawing\LVGLSharp.Drawing.csproj" />
 		<ProjectReference Include="..\LVGLSharp.Interop\LVGLSharp.Interop.csproj" />
         <ProjectReference Include="..\LVGLSharp.Analyzers\LVGLSharp.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" />
         <None Include="..\LVGLSharp.Analyzers\bin\$(Configuration)\netstandard2.0\LVGLSharp.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs/" Visible="false" />
         <None Include="buildTransitive\LVGLSharp.Forms.targets" Pack="true" PackagePath="buildTransitive\" Visible="false" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Drawing\**\*.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

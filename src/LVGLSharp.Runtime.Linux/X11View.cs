@@ -422,16 +422,7 @@ public unsafe partial class X11View : ViewLifetimeBase
         RootObject = lv_scr_act();
         KeyInputGroupObject = lv_group_create();
         lv_indev_set_group(_keyboardIndev, KeyInputGroupObject);
-        _fallbackFont = LvglFontHelper.GetEffectiveTextFont(RootObject, lv_part_t.LV_PART_MAIN);
-        _fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
-        _fontGlyphDiagnosticSummary = LinuxSystemFontResolver.GetGlyphDiagnosticSummary();
-
-        bool disableCustomFont = string.Equals(
-            Environment.GetEnvironmentVariable("LVGLSHARP_DISABLE_CUSTOM_FONT"),
-            "1",
-            StringComparison.Ordinal);
-
-        LinuxRuntimeFontHelper.InitializeRuntimeFont(RootObject, _dpi, disableCustomFont).ApplyFullTo(
+        LinuxRuntimeFontHelper.InitializeRuntimeFont(RootObject, _dpi).ApplyFullTo(
             ref _fallbackFont,
             ref _fontManager,
             ref _resolvedSystemFontPath,

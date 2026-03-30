@@ -71,8 +71,6 @@ public static unsafe class LvglFontHelper
         out lv_font_t* font,
         out lv_style_t* style)
     {
-        ArgumentNullException.ThrowIfNull(fontFamily);
-
         var manager = new SixLaborsFontManager(fontFamily, size, dpi, fallback, CreateDefaultFontFallbackGlyphs());
         font = manager.GetLvFontPtr();
         style = ApplyDefaultFontStyle(root, font);

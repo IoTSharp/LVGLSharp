@@ -1,5 +1,6 @@
 using LVGLSharp;
 using LVGLSharp.Interop;
+using SixLabors.Fonts;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -9,6 +10,8 @@ namespace LVGLSharp.Runtime.MacOs;
 
 public unsafe sealed class MacOsView : ViewLifetimeBase
 {
+    private static readonly string[] s_managedFontFamilyCandidates = ["PingFang SC", "Hiragino Sans GB", "Helvetica", "Arial Unicode MS"];
+
     private readonly MacOsViewOptions _options;
     private readonly IMacOsSurface _surface;
     private MacOsFrameBuffer _frameBuffer;
@@ -21,6 +24,10 @@ public unsafe sealed class MacOsView : ViewLifetimeBase
     private lv_indev_t* _wheelIndev;
     private lv_obj_t* _root;
     private lv_group_t* _keyInputGroup;
+    private lv_font_t* _fallbackFont;
+    private lv_font_t* _defaultFont;
+    private lv_style_t* _defaultFontStyle;
+    private SixLaborsFontManager? _fontManager;
     private GCHandle _selfHandle;
     private lv_obj_t* _focusedTextArea;
     private byte* _drawBuffer;
@@ -101,6 +108,25 @@ public unsafe sealed class MacOsView : ViewLifetimeBase
         _root = lv_scr_act();
         _keyInputGroup = lv_group_create();
         lv_indev_set_group(_keyboardIndev, _keyInputGroup);
+
+        bool enableManagedFont = LvglManagedFontHelper.IsManagedFontEnabled();
+        if (enableManagedFont && LvglManagedFontHelper.TryResolveFontFamily(s_managedFontFamilyCandidates, out var managedFontFamily))
+        {
+            _fallbackFont = LvglFontHelper.GetEffectiveTextFont(_root, lv_part_t.LV_PART_MAIN);
+            _fontManager = LvglManagedFontHelper.TryApplyManagedFont(
+                _root,
+                managedFontFamily,
+                12,
+                _surface.Dpi,
+                _fallbackFont,
+                out _defaultFont,
+                out _defaultFontStyle,
+                enabled: true);
+        }
+        else
+        {
+            LvglRuntimeFontRegistry.ClearActiveTextFont();
+        }
 
         s_activeView = this;
         _initialized = true;
@@ -187,6 +213,12 @@ public unsafe sealed class MacOsView : ViewLifetimeBase
         {
             _selfHandle.Free();
         }
+
+        LvglManagedFontHelper.ReleaseManagedFont(
+            ref _fallbackFont,
+            ref _defaultFont,
+            ref _fontManager,
+            ref _defaultFontStyle);
 
         _root = null;
         _surface.Dispose();

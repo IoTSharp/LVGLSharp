@@ -76,11 +76,6 @@ namespace LVGLSharp.Drawing
 
         private static IImageSource CreateSource(string path)
         {
-            if (s_factory is null)
-            {
-                PlatformRuntimeRegistration.EnsureCurrentPlatformRegistered();
-            }
-
             return s_factory?.Invoke(path)
                 ?? throw new InvalidOperationException("No LVGLSharp image runtime has been configured. Reference the matching runtime assembly or call the matching runtime setup method before loading images.");
         }

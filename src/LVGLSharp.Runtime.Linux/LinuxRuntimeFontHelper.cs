@@ -123,22 +123,19 @@ internal static unsafe class LinuxRuntimeFontHelper
     {
         fontDiagnosticSummary = LinuxSystemFontResolver.GetFontPathDiagnosticSummary();
         glyphDiagnosticSummary = LinuxSystemFontResolver.GetGlyphDiagnosticSummary();
-        resolvedSystemFontPath = disableManagedFont ? null : LinuxSystemFontResolver.TryResolveFontPath();
+        bool managedFontEnabled = !disableManagedFont && LvglManagedFontHelper.IsManagedFontEnabled(defaultEnabled: true);
+        resolvedSystemFontPath = managedFontEnabled ? LinuxSystemFontResolver.TryResolveFontPath() : null;
         defaultFontStyle = null;
 
-        if (string.IsNullOrWhiteSpace(resolvedSystemFontPath))
-        {
-            return null;
-        }
-
-        return LvglFontHelper.ApplyManagedFont(
+        return LvglManagedFontHelper.TryApplyManagedFont(
             root,
             resolvedSystemFontPath,
             size,
             dpi,
             fallback,
             out _,
-            out defaultFontStyle);
+            out defaultFontStyle,
+            managedFontEnabled);
     }
 
     internal static void ReleaseRuntimeFont(
@@ -146,11 +143,7 @@ internal static unsafe class LinuxRuntimeFontHelper
         ref SixLaborsFontManager? fontManager,
         ref lv_style_t* defaultFontStyle)
     {
-        LvglRuntimeFontRegistry.ClearActiveTextFont();
-        fontManager?.Dispose();
-        fontManager = null;
-        fallbackFont = null;
-        defaultFontStyle = null;
+        LvglManagedFontHelper.ReleaseManagedFont(ref fallbackFont, ref fontManager, ref defaultFontStyle);
     }
 
     internal static void ReleaseRuntimeFontDiagnostics(

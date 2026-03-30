@@ -64,6 +64,8 @@ namespace LVGLSharp.Runtime.Windows
             bmiColors = new uint[256]
         };
 
+        private static readonly string[] s_managedFontFamilyCandidates = ["Microsoft YaHei", "Segoe UI", "Arial Unicode MS"];
+
         static void EnsureDisplayBuffers(int width, int height)
         {
             if (width <= 0)
@@ -651,19 +653,20 @@ namespace LVGLSharp.Runtime.Windows
 
             // SixLabors-based dynamic glyph rendering is currently opt-in because some glyph paths
             // can still crash in native rendering. Default to LVGL built-in font for stability.
-            bool enableManagedFont = string.Equals(Environment.GetEnvironmentVariable("LVGLSHARP_ENABLE_MANAGED_FONT"), "1", StringComparison.OrdinalIgnoreCase);
-            if (enableManagedFont)
+            bool enableManagedFont = LvglManagedFontHelper.IsManagedFontEnabled();
+            if (enableManagedFont && LvglManagedFontHelper.TryResolveFontFamily(s_managedFontFamilyCandidates, out var managedFontFamily))
             {
                 _fallbackFont = LvglFontHelper.GetEffectiveTextFont(RootObject, lv_part_t.LV_PART_MAIN);
 
-                _fontManager = LvglFontHelper.ApplyManagedFont(
+                _fontManager = LvglManagedFontHelper.TryApplyManagedFont(
                     RootObject,
-                    SystemFonts.Get("Microsoft YaHei"),
+                    managedFontFamily,
                     12,
                     GetDPI(),
                     _fallbackFont,
                     out _defaultFont,
-                    out _defaultFontStyle);
+                    out _defaultFontStyle,
+                    enabled: true);
             }
             else
             {
@@ -728,15 +731,11 @@ namespace LVGLSharp.Runtime.Windows
             g_bufSize = 0;
             bgraBuf = Array.Empty<byte>();
 
-            if (_defaultFontStyle != null)
-            {
-                lv_style_reset(_defaultFontStyle);
-                NativeMemory.Free(_defaultFontStyle);
-                _defaultFontStyle = null;
-            }
-
-            _fontManager?.Dispose();
-            LvglRuntimeFontRegistry.ClearActiveTextFont();
+            LvglManagedFontHelper.ReleaseManagedFont(
+                ref _fallbackFont,
+                ref _defaultFont,
+                ref _fontManager,
+                ref _defaultFontStyle);
 
             if (g_hwnd != IntPtr.Zero)
             {

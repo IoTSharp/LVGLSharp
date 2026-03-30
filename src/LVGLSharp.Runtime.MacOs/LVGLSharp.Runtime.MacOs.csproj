@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LVGLSharp.Core\LVGLSharp.Core.csproj" />
+    <ProjectReference Include="..\LVGLSharp.Drawing\LVGLSharp.Drawing.csproj" />
   </ItemGroup>
 
   <ItemGroup>

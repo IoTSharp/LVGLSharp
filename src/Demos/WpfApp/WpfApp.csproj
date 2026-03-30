@@ -32,4 +32,9 @@
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
 	  <EmbeddedResource Include="lvgl128x128.png" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\LVGLSharp.Runtime.Windows\LVGLSharp.Runtime.Windows.csproj" />
+	  <ProjectReference Include="..\..\LVGLSharp.WPF\LVGLSharp.WPF.csproj" />
+	</ItemGroup>
 </Project>

@@ -33,4 +33,7 @@
     <ProjectReference Include="..\..\src\LVGLSharp.Native\LVGLSharp.Native.csproj" />
   </ItemGroup>
 
+  <Import Project="..\..\src\LVGLSharp.Native\buildTransitive\LVGLSharp.Native.targets"
+          Condition="Exists('..\..\src\LVGLSharp.Native\buildTransitive\LVGLSharp.Native.targets')" />
+
 </Project>

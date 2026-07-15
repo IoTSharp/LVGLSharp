@@ -10,7 +10,7 @@ public sealed class HeadlessRemoteFrameSourceTests
     [Fact]
     public void CreateHeadlessFrameSource_CanCaptureArgbFrame()
     {
-        var view = new OffscreenView(new OffscreenOptions
+        var view = HeadlessTestEnvironment.CreateOpenView(new OffscreenOptions
         {
             Width = 32,
             Height = 16,
@@ -20,8 +20,6 @@ public sealed class HeadlessRemoteFrameSourceTests
 
         using (view)
         {
-            view.Open();
-
             var source = RemoteRuntimeFactory.CreateHeadlessFrameSource(view);
             var frame = source.CaptureFrame();
 

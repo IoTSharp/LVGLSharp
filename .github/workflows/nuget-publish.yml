@@ -35,16 +35,23 @@ jobs:
     permissions:
       contents: read
 
+  headless-tests:
+    name: Headless Release test gate
+    needs: prepare
+    uses: ./.github/workflows/headless-tests.yml
+    permissions:
+      contents: read
+
   build-native:
     name: Build native assets
-    needs: prepare
+    needs: [prepare, headless-tests]
     uses: ./.github/workflows/build-native.yml
     permissions:
       contents: read
 
   pack:
     name: Pack NuGet packages
-    needs: [prepare, build-native]
+    needs: [prepare, headless-tests, build-native]
     uses: ./.github/workflows/pack-nuget.yml
     with:
       package_version: ${{ needs.prepare.outputs.package_version }}
@@ -54,7 +61,7 @@ jobs:
   build-demos:
     name: Build demo assets
     if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
-    needs: prepare
+    needs: [prepare, headless-tests]
     uses: ./.github/workflows/build-demos.yml
     with:
       package_version: ${{ needs.prepare.outputs.package_version }}

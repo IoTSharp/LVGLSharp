@@ -43,3 +43,10 @@ jobs:
               throw "Build failed for $($project.FullName)"
             }
           }
+
+  headless-tests:
+    name: Headless Release test gate
+    needs: build-all
+    uses: ./.github/workflows/headless-tests.yml
+    permissions:
+      contents: read

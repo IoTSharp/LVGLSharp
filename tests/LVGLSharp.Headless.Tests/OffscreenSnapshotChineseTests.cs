@@ -128,11 +128,7 @@ public unsafe class OffscreenSnapshotChineseTests
         };
 
     private static OffscreenView CreateOpenView(OffscreenOptions options)
-    {
-        var view = new OffscreenView(options);
-        view.Open();
-        return view;
-    }
+        => HeadlessTestEnvironment.CreateOpenView(options);
 
     private static lv_obj_t* CreateContainer(lv_obj_t* parent, int x, int y, int width, int height, int padAll)
     {
@@ -171,7 +167,7 @@ public unsafe class OffscreenSnapshotChineseTests
         var metrics = CollectInkMetrics(image, background);
         Assert.True(
             metrics.InkPixels >= minimumInkPixels,
-            $"Snapshot content too small. InkPixels={metrics.InkPixels}, Signature={CreateSnapshotSignature(image, background, metrics)}");
+            $"[SnapshotContentRegression] Snapshot content too small. InkPixels={metrics.InkPixels}, Signature={CreateSnapshotSignature(image, background, metrics)}");
     }
 
     private static void AssertSnapshotMatches(Image<Rgba32> image, Rgba32 background, string expectedSignature, int minimumInkPixels)
@@ -179,12 +175,12 @@ public unsafe class OffscreenSnapshotChineseTests
         var metrics = CollectInkMetrics(image, background);
         Assert.True(
             metrics.InkPixels >= minimumInkPixels,
-            $"Snapshot content too small. InkPixels={metrics.InkPixels}, Signature={CreateSnapshotSignature(image, background, metrics)}");
+            $"[SnapshotContentRegression] Snapshot content too small. InkPixels={metrics.InkPixels}, Signature={CreateSnapshotSignature(image, background, metrics)}");
 
         var actualSignature = CreateSnapshotSignature(image, background, metrics);
         Assert.True(
             string.Equals(expectedSignature, actualSignature, StringComparison.Ordinal),
-            $"Snapshot signature mismatch. Expected={expectedSignature}; Actual={actualSignature}");
+            $"[SnapshotMismatch] Snapshot signature mismatch. Expected={expectedSignature}; Actual={actualSignature}");
     }
 
     private static string CreateSnapshotSignature(Image<Rgba32> image, Rgba32 background, InkMetrics metrics)

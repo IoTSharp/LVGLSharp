@@ -18,8 +18,7 @@ public unsafe class OffscreenSnapshotTests
             BackgroundColor = new Rgba32(0x12, 0x34, 0x56, 0xFF),
         };
 
-        using var view = new OffscreenView(options);
-        view.Open();
+        using var view = HeadlessTestEnvironment.CreateOpenView(options);
 
         var root = view.Root;
         Assert.NotEqual(nint.Zero, (nint)root);
@@ -49,8 +48,7 @@ public unsafe class OffscreenSnapshotTests
             BackgroundColor = new Rgba32(255, 255, 255, 255),
         };
 
-        using var view = new OffscreenView(options);
-        view.Open();
+        using var view = HeadlessTestEnvironment.CreateOpenView(options);
 
         var label = lv_label_create(view.Root);
         Assert.NotEqual(nint.Zero, (nint)label);
